@@ -1,5 +1,6 @@
-.container-fluid {
+#navbar-main {
   background-color: rgb(78,178,102);
+<<<<<<< Updated upstream
   font: white;
 }
 
@@ -13,3 +14,10 @@
 #homepage-body button {
   background-color: #4EB266;
 }
+=======
+}
+
+body {
+  background-image: url("./Pictures/grocery-store-background.jpg");
+}
+>>>>>>> Stashed changes
