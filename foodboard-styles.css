@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
+/* Header -> NavBar */
+
 .navbar {
   min-height:30px;
 }
@@ -10,8 +12,7 @@
   background-color: #4EB266;
   font-family:'Raleway';
   color:white;
-  padding-top: 0.5%;
-  min-height: 30px;
+  padding: 0.5% 0% 0% 0%;
 } 
 
 .navbar-default .navbar-nav > li > a {
@@ -28,18 +29,27 @@
   font-weight:bold;
 }
 
+.navbar-foodboard img {
+  width: 12%;
+  margin-top: -15px;
+}
 a.navbar-foodboard:hover {
   text-decoration: none;
 }
 
 .navbar-right {
   padding-right: 5%;
+  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+
 }
 
 .jumbotron {
-  width: 100vw;
   background-color:white;
   color:black;
+  padding-left: 1%;
+  padding-right: 1%;
+  border-radius:0px!important;
+  margin-bottom:0px;
 }
 
 #row-title .col-lg-4 {
@@ -50,10 +60,20 @@ a.navbar-foodboard:hover {
   font-size: 16pt;
 }
 
+.col-lg-4 img {
+  width: 50%;
+  margin: 5%;
+}
+
+.col-lg-12 {
+  padding: 15% 0% 15% 0%;
+  margin: 10 10 10 10;
+}
+
 #homepage-body-container {
   padding: 0%;
-  margin: 0%;
 }
+
 #homepage-body {
   font-size: 34pt;
   color: white;
@@ -80,8 +100,9 @@ a.navbar-foodboard:hover {
   background-color:#4EB266;
   font-size: 20pt;
 }
+
 #how-it-works {
-  font-family:'Raleway';
+  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size: 40pt;
   color:white;
   background-color: #36453B;
@@ -89,28 +110,17 @@ a.navbar-foodboard:hover {
   padding-right: 0px;
 }
 
-/*
+.col-lg-12 {
+  padding: 0% 0 10% 0;
+}
+
+
 #how-it-works::before {
   display:block;
   content: " ";
   margin-top: -75px;
-  height:70px;
-  visibility:hidden;
+  height:63px;
+  background: white;
 }
 
-#myCarousel {
-  width:55%;
-}
-
-
-.item img{
-  filter: blur(5px);
-}
-
-.carousel-caption {
-  padding-bottom: 20%;
-} */
-
-/*body {
-  background: url("./Pictures/grocery-store-background.jpg") no-repeat;
-}
+@media screen 
