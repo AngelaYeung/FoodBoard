@@ -50,7 +50,10 @@ a.navbar-foodboard:hover {
   font-size: 16pt;
 }
 
-
+#homepage-body-container {
+  padding: 0%;
+  margin: 0%;
+}
 #homepage-body {
   font-size: 30pt;
   color: white;
@@ -74,7 +77,6 @@ a.navbar-foodboard:hover {
 #homepage-body button {
   background-color: #4EB266;
 }
-
 #how-it-works {
   font-family:'Raleway';
   font-size: 40pt;
