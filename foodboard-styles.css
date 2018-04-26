@@ -1,23 +1,58 @@
-#navbar-main {
-  background-color: rgb(78,178,102);
-<<<<<<< Updated upstream
-  font: white;
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+
+#header {
+  background-color: #4EB266;
+  color: white;
+  font-family:'Raleway';
+  font-size: 16pt;
 }
 
 #homepage-body {
   background-color: #E5F9E0;
   font-size: 30pt;
 }
+
 #homepage-body img {
-  margin:0 auto;
+  margin: 0 auto;
 }
+
 #homepage-body button {
   background-color: #4EB266;
 }
-=======
+
+#how-it-works {
+  font-family:'Raleway';
+  font-size: 50pt;
+  color:white;
+  background-color: #36453B;
+  padding-bottom: 5%;
+}
+
+#myCarousel {
+  width:60%;
+}
+
+.navbar-brand .navbar-foodboard {
+  color:white;
+  font-size:50pt;
+}
+
+.item img{
+  filter: blur(5px);
+}
+
+.carousel-caption {
+  padding-bottom: 20%;
+}
+
+.navbar {
+  color: white;
 }
 
 body {
-  background-image: url("./Pictures/grocery-store-background.jpg");
+  background: url("./Pictures/grocery-store-background.jpg") no-repeat;
 }
->>>>>>> Stashed changes
+
+div>ul {
+  padding-right:5%;
+}
