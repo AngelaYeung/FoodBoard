@@ -8,19 +8,12 @@
 .navbar-fixed-top {
   border: none;
 }
-.navbar-default {
+.navbar-custom {
   background-color: #4EB266;
   font-family:'Raleway';
   color:white;
-  padding: 0.5% 0% 0% 0%;
 } 
 
-.navbar-default .navbar-nav > li > a {
-  color: white;
-  font-size:16pt;
-  padding-bottom: 0px;
-  
-}
 
 .navbar-brand .navbar-foodboard {
   color:white;
@@ -33,17 +26,24 @@
   width: 12%;
   margin-top: -15px;
 }
-a.navbar-foodboard:hover {
-  text-decoration: none;
+.nav>li>a:focus, .nav>li>a:hover {
+  background-color: transparent;
+  color:black;
 }
 
-.navbar-right {
+.nav>li>a {
+  color:white;
+}
+
+.navbar-right-custom {
   padding-right: 5%;
   font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-
+  font-size:14pt;
+  
 }
 
-.jumbotron {
+
+.jumbotron-custom {
   background-color:white;
   color:black;
   padding-left: 1%;
@@ -81,11 +81,11 @@ a.navbar-foodboard:hover {
   transform:translate(0%,-250%);
   font-family: 'Railway';
 }
-#homepage-background {
+.homepage-background {
   background-color: black;
   padding: 0%
 }
-#homepage-background img {
+.homepage-background img {
   filter: blur(5px);
   opacity: 0.7;
   width: 100%;
@@ -101,6 +101,7 @@ a.navbar-foodboard:hover {
   font-size: 20pt;
 }
 
+
 #how-it-works {
   font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size: 40pt;
@@ -115,12 +116,10 @@ a.navbar-foodboard:hover {
 }
 
 
-#how-it-works::before {
+.container-fluid-custom::before {
   display:block;
   content: " ";
   margin-top: -75px;
   height:63px;
   background: white;
 }
-
-@media screen 
