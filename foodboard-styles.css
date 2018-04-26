@@ -29,6 +29,10 @@
   font-weight:bold;
 }
 
+.navbar-foodboard img {
+  width: 12%;
+  margin-top: -15px;
+}
 a.navbar-foodboard:hover {
   text-decoration: none;
 }
@@ -119,19 +123,4 @@ a.navbar-foodboard:hover {
   background: white;
 }
 
-/*
-#myCarousel {
-  width:55%;
-}
-
-
-.item img{
-  filter: blur(5px);
-}
-
-.carousel-caption {
-  padding-bottom: 20%;
-} */
-
-/*body {
-  background: url("./Pictures/grocery-store-background
+@media screen 
