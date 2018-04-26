@@ -1,16 +1,24 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
+.navbar {
+  min-height:30px;
+}
+.navbar-fixed-top {
+  border: none;
+}
 .navbar-default {
   background-color: #4EB266;
   font-family:'Raleway';
   color:white;
-  padding-top:1.8%;
-  min-height: 40px;
+  padding-top: 0.5%;
+  min-height: 30px;
 } 
 
 .navbar-default .navbar-nav > li > a {
   color: white;
   font-size:16pt;
+  padding-bottom: 0px;
+  
 }
 
 .navbar-brand .navbar-foodboard {
@@ -19,6 +27,29 @@
   padding-left:5%;
   font-weight:bold;
 }
+
+a.navbar-foodboard:hover {
+  text-decoration: none;
+}
+
+.navbar-right {
+  padding-right: 5%;
+}
+
+.jumbotron {
+  width: 100vw;
+  background-color:white;
+  color:black;
+}
+
+#row-title .col-lg-4 {
+  font-size:20pt;
+  font-weight:bold;
+}
+.col-lg-4 {
+  font-size: 16pt;
+}
+
 
 #homepage-body {
   background-color: #E5F9E0;
@@ -39,11 +70,21 @@
   font-size: 40pt;
   color:white;
   background-color: #36453B;
-  padding-bottom: 5%;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+/*
+#how-it-works::before {
+  display:block;
+  content: " ";
+  margin-top: -75px;
+  height:70px;
+  visibility:hidden;
 }
 
 #myCarousel {
-  width:60%;
+  width:55%;
 }
 
 
@@ -53,12 +94,8 @@
 
 .carousel-caption {
   padding-bottom: 20%;
-}
+} */
 
 body {
   background: url("./Pictures/grocery-store-background.jpg") no-repeat;
-}
-
-div>ul {
-  padding-right:5%;
 }
