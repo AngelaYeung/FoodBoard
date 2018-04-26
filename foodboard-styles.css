@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#navbar-main {
-  background-color: rgb(78,178,102);
-  font: white;
-=======
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
 #header {
@@ -10,7 +5,6 @@
   color: white;
   font-family:'Raleway';
   font-size: 16pt;
->>>>>>> michael-feature
 }
 
 #homepage-body {
@@ -25,8 +19,6 @@
 #homepage-body button {
   background-color: #4EB266;
 }
-<<<<<<< HEAD
-=======
 
 #how-it-works {
   font-family:'Raleway';
@@ -57,15 +49,11 @@
 .navbar {
   color: white;
 }
->>>>>>> michael-feature
 
 body {
   background: url("./Pictures/grocery-store-background.jpg") no-repeat;
 }
-<<<<<<< HEAD
-=======
 
 div>ul {
   padding-right:5%;
 }
->>>>>>> michael-feature
