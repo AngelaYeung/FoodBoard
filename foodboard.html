@@ -17,15 +17,16 @@
           <nav class = "navbar navbar-expand-sm navbar-fixed-top navbar-custom">
             <div class = "nav navbar-brand">
               <a class = "navbar-foodboard" href = "#page-top">
-                <img src ="./Pictures/fb-logo.jpg">
+                <img src ="./Pictures/fb-logo-transparent.png" alt = "FoodBoard">
               </a>
             </div>
 
             <!-- navbar logo for mobile-->
             <div class="nav navbar-brand-sm">
               <div class = "text-center">
+
               <a class = "navbar-foodboard" href = "#page-top">
-                <img src ="./Pictures/fb-logo.jpg">
+                <img src ="./Pictures/fb-logo-transparent.png" alt = "FoodBoard">
               </a>
               </div>
               <div class="navbar-right dropdown">
@@ -37,12 +38,11 @@
                   </ul>
                 </div>
             </div>
-            
-
             <ul class="nav navbar-nav navbar-right navbar-right-custom">
-              <li class = "nav-item"><a href ="#homepage-body-container" class = "nav-link">ABOUT</a></li>
-              <li class = "nav-item"><a href ="#how-it-works" class = "nav-link">HOW IT WORKS</a></li>
-              <li class = "nav-item"><a href ="#" class = "nav-link">LOGIN</a></li>
+              <li class = "nav-item"><a href ="#homepage-body-container" class = "nav-link" id = "about-link">ABOUT</a></li>
+              <li class = "nav-item"><a href ="#how-it-works" class = "nav-link" id = "how-link">HOW IT WORKS</a></li>
+              <li class = "nav-item"><a href ="#" class = "nav-link" id = "login-link">LOGIN</a></li>
+
             </ul>
           </nav>
          </div>
@@ -51,7 +51,9 @@
       <!-- Homepage-->
       <div id="homepage-body-container" class="container-fluid">
         <div class="container-fluid-custom homepage-background">
-         <img class="background" src="./Pictures/hero-image.jpg" alt="background">
+
+         <img class="background" src="./Pictures/hero-image-flat.jpg" alt="background">
+
         </div>
         <div id="homepage-body" class="text-center">
          <img class="img-responsive" src="./Pictures/largelogo-text-transparent.png" alt="FoodBoard logo">
@@ -93,6 +95,54 @@
         </div>
       
       </div>
+
+      <script>
+        $(document).ready(function() {
+
+        // add scrollspy onto body of the page for about link
+          $("#about-link").click(function() {
+           $('html, body').animate({
+            scrollTop: $("#homepage-body-container").offset().top
+          }, 500);
+        });
+
+        // add scrollspy onto body of the page for how it works link
+        $("#how-link").click(function() {
+           $('html, body').animate({
+            scrollTop: $("#how-it-works").offset().top
+          }, 500);
+        });
+
+        // add scrollspy onto body of the page for login link
+        $("#about-link").click(function() {
+           $('html, body').animate({
+            scrollTop: $("#homepage-body-container").offset().top
+          }, 500);
+        });
+
+        // add scrollspy onto body of the page for home link        
+        $(".navbar-brand a").click(function() {
+           $('html, body').animate({
+            scrollTop: $("#page-top").offset().top
+          }, 500);
+        });
+      });
+
+      // Scroll property to transition navbar from transparent to green
+      $(function () {
+        $(document).scroll(function () {
+        var $nav = $(".navbar-fixed-top");
+        if ($(window).scrollTop() >= 100) {
+          $nav.css("background-color", "#4EB266");
+          $nav.css("transition", "background-color 300ms linear");
+        } else {
+          $nav.css("background-color", "transparent");
+          $nav.css("transition", "background-color 300ms linear");
+        }
+        });
+      });
+      </script>
+
       
       <!-- FAQ Section-->
       <div class="container-fluid" id="faq">
