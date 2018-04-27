@@ -1,136 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <Title>FoodBoard</Title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel ="stylesheet" href ="./foodboard-styles.css">
 
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <Title>FoodBoard</Title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="./foodboard-styles.css">
 
-  <body id = "page-top">
-      <header id = "header">
-        <div class = "container-fluid">
-          <nav class = "navbar navbar-expand-sm navbar-fixed-top navbar-custom">
-            <div class = "nav navbar-brand">
-              <a class = "navbar-foodboard" href = "#page-top">
-                <img src ="./Pictures/fb-logo-transparent.png" alt = "FoodBoard">
-              </a>
-            </div>
+</head>
 
-            <!-- navbar logo for mobile-->
-            <div class="nav navbar-brand-sm">
-              <div class = "text-center">
+<body id="page-top">
+  <header id="header">
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-sm navbar-fixed-top navbar-custom">
+        <div class="nav navbar-brand">
+          <a class="navbar-foodboard" href="#page-top">
+            <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
+          </a>
+        </div>
 
-              <a class = "navbar-foodboard" href = "#page-top">
-                <img src ="./Pictures/fb-logo-transparent.png" alt = "FoodBoard">
-              </a>
-              </div>
-              <div class="navbar-right dropdown">
-                  <a class="btn btn-primary btn-lg dropdown-toggle glyphicon glyphicon-menu-hamburger" data-toggle="dropdown"></a>
-                  <ul class="dropdown-menu">
-                    <li class = "nav-item text-center"><a href ="#homepage-body-container" class = "nav-link">ABOUT</a></li>
-                    <li class = "nav-item text-center"><a href ="#how-it-works" class = "nav-link">HOW IT WORKS</a></li>
-                    <li class = "nav-item text-center"><a href ="#" class = "nav-link">LOGIN</a></li>
-                  </ul>
-                </div>
-            </div>
-            <ul class="nav navbar-nav navbar-right navbar-right-custom">
-              <li class = "nav-item"><a href ="#homepage-body-container" class = "nav-link" id = "about-link">ABOUT</a></li>
-              <li class = "nav-item"><a href ="#how-it-works" class = "nav-link" id = "how-link">HOW IT WORKS</a></li>
-              <li class = "nav-item"><a href ="#" class = "nav-link" id = "login-link">LOGIN</a></li>
+        <!-- navbar logo for mobile-->
+        <div class="nav navbar-brand-sm">
+          <div class="text-center">
 
+            <a class="navbar-foodboard" href="#page-top">
+              <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
+            </a>
+          </div>
+          <div class="navbar-right dropdown">
+            <a class="btn btn-primary btn-lg dropdown-toggle glyphicon glyphicon-menu-hamburger" data-toggle="dropdown"></a>
+            <ul class="dropdown-menu">
+              <li class="nav-item text-center">
+                <a href="#homepage-body-container" class="nav-link">ABOUT</a>
+              </li>
+              <li class="nav-item text-center">
+                <a href="#how-it-works" class="nav-link">HOW IT WORKS</a>
+              </li>
+              <li class="nav-item text-center">
+                <a href="#" class="nav-link">LOGIN</a>
+              </li>
             </ul>
-          </nav>
-         </div>
-      </header>
-      
-      <!-- Homepage-->
-      <div id="homepage-body-container" class="container-fluid">
-        <div class="container-fluid-custom homepage-background">
+          </div>
+        </div>
+        <ul class="nav navbar-nav navbar-right navbar-right-custom">
+          <li class="nav-item">
+            <a href="#homepage-body-container" class="nav-link" id="about-link">ABOUT</a>
+          </li>
+          <li class="nav-item">
+            <a href="#how-it-works" class="nav-link" id="how-link">HOW IT WORKS</a>
+          </li>
+          <li class="nav-item">
+            <a href="" class="nav-link" id="login-link">LOGIN</a>
+          </li>
 
-         <img class="background" src="./Pictures/hero-image-flat.jpg" alt="background">
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-        </div>
-        <div id="homepage-body" class="text-center">
-         <img class="img-responsive" src="./Pictures/largelogo-text-transparent.png" alt="FoodBoard logo">
-         <p>Share More, Waste Less</p>
-         <button type="button" class="btn btn-primary btn-lg">Get Started!</button>
-        </div>
-       </div>
-     
-      <div class = "container-fluid container-fluid-custom" id = "how-it-works">
-        <div class = "jumbotron jumbotron-custom">
-            <div class = "row">
-                <div class = "col-lg-12 text-center">HOW IT WORKS</div>
-              </div>
-              <div class = "row">
-                <div class="col-lg-4 text-center"><img src = "./Pictures/sustain.png"></div>
-                <div class="col-lg-4 text-center"><img src = "./Pictures/groceries.png"></div>
-                <div class="col-lg-4 text-center"><img src = "./Pictures/grow.png"></div>
-              </div>
-              <div class = "row" id = "row-title">
-                  <div class="col-lg-4 text-center">Sustain</div>
-                  <div class="col-lg-4 text-center">Share</div>
-                  <div class="col-lg-4 text-center">Grow</div>
-              </div>
-              <div class = "row">
-                  <div class="col-lg-4 text-center">
-                      <p>Track and reduce the amount of perishable foods your community produces.</p>
-                    </div>
-                  <div class="col-lg-4 text-center">
-                    <p>
-                      Users can post and claim items with a click of a button.
-                    </p>
-                  </div>
-                  <div class="col-lg-4 text-center">
-                    <p>Create a sustainable community within your neighborhood.</p>
-                  </div>
-                
-              </div>
-              </div>
-        </div>
-      
+  <!-- Homepage-->
+  <div id="homepage-body-container" class="container-fluid">
+    <div class="container-fluid-custom homepage-background">
+
+      <img class="background" src="./Pictures/hero-image-flat.jpg" alt="background">
+
+    </div>
+    <div id="homepage-body" class="text-center">
+      <img class="img-responsive" src="./Pictures/largelogo-text-transparent.png" alt="FoodBoard logo">
+      <p>Share More, Waste Less</p>
+      <button type="button" class="btn btn-primary btn-lg">Get Started!</button>
+    </div>
+  </div>
+
+  <div class="container-fluid container-fluid-custom" id="how-it-works">
+    <div class="jumbotron jumbotron-custom">
+      <div class="row">
+        <div class="col-lg-12 text-center">HOW IT WORKS</div>
       </div>
+      <div class="row">
+        <div class="col-lg-4 text-center">
+          <img src="./Pictures/sustain.png">
+        </div>
+        <div class="col-lg-4 text-center">
+          <img src="./Pictures/groceries.png">
+        </div>
+        <div class="col-lg-4 text-center">
+          <img src="./Pictures/grow.png">
+        </div>
+      </div>
+      <div class="row" id="row-title">
+        <div class="col-lg-4 text-center">Sustain</div>
+        <div class="col-lg-4 text-center">Share</div>
+        <div class="col-lg-4 text-center">Grow</div>
+      </div>
+      <div class="row">
+        <div class="col-lg-4 text-center">
+          <p>Track and reduce the amount of perishable foods your community produces.</p>
+        </div>
+        <div class="col-lg-4 text-center">
+          <p>
+            Users can post and claim items with a click of a button.
+          </p>
+        </div>
+        <div class="col-lg-4 text-center">
+          <p>Create a sustainable community within your neighborhood.</p>
+        </div>
 
-      <script>
-        $(document).ready(function() {
+      </div>
+    </div>
+  </div>
+  <!-- FAQ Section-->
+  <!-- <div class="container-fluid" id="faq">
+    <div class="row">
+      <div class="text-center">FAQ</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4 text-center">
+        1.
+      </div>
+      <div class="col-sm-8">
+        <p class="question">The question will go here.</p>
+        <p class="answer">Answer to the question</p>
+      </div>
+    </div>
+  </div> -->
+  <script>
+    $(document).ready(function () {
 
-        // add scrollspy onto body of the page for about link
-          $("#about-link").click(function() {
-           $('html, body').animate({
-            scrollTop: $("#homepage-body-container").offset().top
-          }, 500);
-        });
-
-        // add scrollspy onto body of the page for how it works link
-        $("#how-link").click(function() {
-           $('html, body').animate({
-            scrollTop: $("#how-it-works").offset().top
-          }, 500);
-        });
-
-        // add scrollspy onto body of the page for login link
-        $("#about-link").click(function() {
-           $('html, body').animate({
-            scrollTop: $("#homepage-body-container").offset().top
-          }, 500);
-        });
-
-        // add scrollspy onto body of the page for home link        
-        $(".navbar-brand a").click(function() {
-           $('html, body').animate({
-            scrollTop: $("#page-top").offset().top
-          }, 500);
-        });
+      // add scrollspy onto body of the page for about link
+      $("#about-link").click(function () {
+        $('html, body').animate({
+          scrollTop: $("#homepage-body-container").offset().top
+        }, 500);
       });
 
-      // Scroll property to transition navbar from transparent to green
-      $(function () {
-        $(document).scroll(function () {
+      // add scrollspy onto body of the page for how it works link
+      $("#how-link").click(function () {
+        $('html, body').animate({
+          scrollTop: $("#how-it-works").offset().top
+        }, 500);
+      });
+
+      // add scrollspy onto body of the page for login link
+      $("#about-link").click(function () {
+        $('html, body').animate({
+          scrollTop: $("#homepage-body-container").offset().top
+        }, 500);
+      });
+
+      // add scrollspy onto body of the page for home link        
+      $(".navbar-brand a").click(function () {
+        $('html, body').animate({
+          scrollTop: $("#page-top").offset().top
+        }, 500);
+      });
+    });
+
+    // Scroll property to transition navbar from transparent to green
+    $(function () {
+      $(document).scroll(function () {
         var $nav = $(".navbar-fixed-top");
         if ($(window).scrollTop() >= 100) {
           $nav.css("background-color", "#4EB266");
@@ -139,25 +170,10 @@
           $nav.css("background-color", "transparent");
           $nav.css("transition", "background-color 300ms linear");
         }
-        });
       });
-      </script>
-
-      
-      <!-- FAQ Section-->
-      <div class="container-fluid" id="faq">
-        <div class = "row">
-            <div class="text-center">FAQ</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4 text-center">
-              1.
-            </div>
-            <div class="col-sm-8"><p class="question">The question will go here.</p>
-            <p class="answer">Answer to the question</p></div>
-        </div>
-      </div>
-    <!-- <div id="homepage-body" class="container text-center">
+    });
+  </script>
+  <!-- <div id="homepage-body" class="container text-center">
         <img class="img-responsive" src="" alt="FoodBoard logo">
         <p>Share more, Waste Less.</p>
         <button type="button" class="btn btn-primary btn-lg">Get Started!</button>
@@ -167,15 +183,15 @@
     <div class="container-fluid text-center" id = "how-it-works">
         <p id = "how-it-works-caption"><b>HOW IT WORKS</b></p>
         <div id="myCarousel" class="carousel slide center-block" data-ride="carousel"> -->
-          <!-- slide indicators -->
-          <!-- <ol class="carousel-indicators">
+  <!-- slide indicators -->
+  <!-- <ol class="carousel-indicators">
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
             <li data-target="#myCarousel" data-slide-to="1"></li>
             <li data-target="#myCarousel" data-slide-to="2"></li>
           </ol> -->
-      
-          <!-- slide wrappers -->
-          <!-- <div class="carousel-inner">
+
+  <!-- slide wrappers -->
+  <!-- <div class="carousel-inner">
       
             <div class="item active">
               <img class = "center-block" src="./Pictures/sharing-food.jpg" alt="Share" style="width:100%;">
@@ -202,9 +218,9 @@
             </div>
         
           </div> -->
-      
-          <!-- slide controls -->
-          <!-- <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+
+  <!-- slide controls -->
+  <!-- <a class="left carousel-control" href="#myCarousel" data-slide="prev">
             <span class="glyphicon glyphicon-chevron-left"></span>
             <span class="sr-only">Previous</span>
           </a>
@@ -214,10 +230,10 @@
           </a>
         </div>
       </div> -->
-  </body>
+</body>
 
-  <footer>
+<footer>
 
-  </footer>
+</footer>
 
 </html>
