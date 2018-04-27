@@ -66,6 +66,9 @@
     width: 12%;
     margin-top: -15px;
   }
+  #background-sm {
+    display: none;
+  }
 
   
 #homepage-body {
