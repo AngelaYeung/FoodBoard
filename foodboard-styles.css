@@ -22,6 +22,10 @@
     opacity: 0.7;
     width: 100%;
   }
+
+  .col-lg-12 {
+    display:none;
+  }
   #homepage-body {
     font-size: 16pt;
     color: white;
@@ -52,6 +56,8 @@
     width: 12%;
     margin-top: -15px;
   }
+
+  
   #homepage-body {
     font-size: 34pt;
     color: white;
@@ -112,6 +118,7 @@ body {
   background-color: transparent;
   animation-name: underline-animation;
   animation-duration: 2s;
+  color:white;
 }
 
 .nav>li>a {
@@ -144,7 +151,6 @@ body {
 
 .nav>li>a:focus, .nav>li>a:hover {
   background-color: transparent;
-  color:black;
 }
 
 .nav>li>a {
