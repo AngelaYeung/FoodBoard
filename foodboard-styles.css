@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+
+/* Header -> NavBar */
+@media screen and (max-width: 480px) {
+  .navbar-right-custom {
+    display: none;
+  }
+  .navbar-brand {
+    display: none;
+  }
+  .navbar-brand-sm {
+    padding: 3%;
+  }
+  .navbar-brand-sm .dropdown {
+    margin-top: -30px;
+  }
+  .navbar-brand-sm img {
+    width: 10%;
+  }
+  .homepage-background img {
+    filter: blur(5px);
+    opacity: 0.7;
+    width: 100%;
+  }
+  #homepage-body {
+    font-size: 16pt;
+    color: white;
+    z-index: 1;
+    transform:translate(0%,-100%);
+    font-family: 'Railway';
+  }
+  #homepage-body img {
+    width: 50%;
+    margin: 0 auto;
+  }
+
+}
+
+@media screen and (min-width: 481px) {
+  .homepage-background img {
+    filter: blur(5px);
+    opacity: 0.7;
+    width: 100%;
+  }
+  .navbar-brand-sm {
+    display:none;
+  }
+  .dropdown {
+    display: none;
+  }
+  .navbar-foodboard img {
+    width: 12%;
+    margin-top: -15px;
+  }
+  #homepage-body {
+    font-size: 34pt;
+    color: white;
+    z-index: 1;
+    transform:translate(0%,-250%);
+    font-family: 'Railway';
+  }
+  #homepage-body img {
+    margin: 0 auto;
+    height: 50%;
+  }
+  
+  #homepage-body button {
+    background-color:#4EB266;
+    font-size: 20pt;
+  }
+}
+
+.navbar {
+  min-height:30px;
+}
+.navbar-fixed-top {
+  border: none;
+}
+.navbar-custom {
+  background-color: #4EB266;
+  font-family:'Raleway';
+  color:white;
+} 
+.dropdown .btn-primary {
+  background-color: transparent;
+  border-style: none;
+  padding: 0;
+}
+.dropdown-menu {
+  width: 100%;
+}
+.navbar-brand .navbar-foodboard {
+  color:white;
+  font-size:50pt;
+  padding-left:5%;
+  font-weight:bold;
+}
+
+
+
+.nav>li>a:focus, .nav>li>a:hover {
+  background-color: transparent;
+  color:black;
+}
+
+.nav>li>a {
+  color:white;
+}
+
+.navbar-right-custom {
+  padding-right: 5%;
+  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size:14pt;
+  
+}
+
+
+.jumbotron-custom {
+  background-color:white;
+  color:black;
+  padding-left: 1%;
+  padding-right: 1%;
+  border-radius:0px!important;
+  margin-bottom:0px;
+}
+
+#row-title .col-lg-4 {
+  font-size:20pt;
+  font-weight:bold;
+}
+.col-lg-4 {
+  font-size: 16pt;
+}
+
+.col-lg-4 img {
+  width: 50%;
+  margin: 5%;
+}
+
+.col-lg-12 {
+  padding: 15% 0% 15% 0%;
+  margin: 10 10 10 10;
+}
+
+#homepage-body-container {
+  padding: 0%;
+}
+
+
+.homepage-background {
+  background-color: black;
+  padding: 0%
+}
+
+
+
+
+
+#how-it-works {
+  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 40pt;
+  color:white;
+  background-color: #36453B;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.col-lg-12 {
+  padding: 0% 0 10% 0;
+}
+
+
+.container-fluid-custom::before {
+  display:block;
+  content: " ";
+  margin-top: -75px;
+  height:63px;
+  background: white;
+}
