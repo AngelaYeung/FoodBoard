@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <Title>"Board"</Title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Button to open modal (hopefully)-->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#itemModal">
+      Add new item
+    </button>
+
+    <!-- This is the modal that will allow users to enter item info-->
+    <div class="modal fade" id="itemModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header-->
+          <div class="modal-header">
+            <h2 class="modal-title">New Food to Share</h2>
+          </div>
+
+          <!-- Modal Body-->
+          <div class="modal-body">
+            <!--Sets up the form when the modal is opened-->
+            <form action="">
+
+              <label for="name">Name:</label>
+              <input id="name" type="text" class="form-control" placeholder="Enter food name" name="name">
+              
+              <label for="description">Description:</label>
+              <input id="description" type="text" class="form-control" placeholder="Enter food description" name="description">
+              
+              <button id="submit" type="submit" class="btn btn-primary">Post Contents (hopefully)</button>
+            </form>
+          </div>
+
+          <!--<div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Button</button>
+          </div>-->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /*<![CDATA[*/
+    //$("#submit").click()
+
+    /*]]>*/
+  </script>
+
+</body>
+
+</html>
