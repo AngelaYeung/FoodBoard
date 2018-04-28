@@ -37,7 +37,7 @@
                 <a href="#homepage-body-container" class="nav-link">ABOUT</a>
               </li>
               <li class="nav-item text-center">
-                <a href="#how-it-works" class="nav-link">HOW IT WORKS</a>
+                <a href="#how-it-works" class="nav-link">VALUES</a>
               </li>
               <li class="nav-item text-center">
                 <a href="#" class="nav-link">LOGIN</a>
@@ -50,7 +50,7 @@
             <a href="#homepage-body-container" class="nav-link" id="about-link">ABOUT</a>
           </li>
           <li class="nav-item">
-            <a href="#how-it-works" class="nav-link" id="how-link">HOW IT WORKS</a>
+            <a href="#how-it-works" class="nav-link" id="how-link">VALUES</a>
           </li>
           <li class="nav-item">
             <a href="" class="nav-link" id="login-link">LOGIN</a>
@@ -63,11 +63,16 @@
 
   <!-- Homepage-->
   <div id="homepage-body-container" class="container-fluid">
-    <div class="container-fluid-custom homepage-background">
+    <div id="background-lg" class="container-fluid-custom homepage-background">
 
       <img class="background" src="./Pictures/hero-image-flat.jpg" alt="background">
 
     </div>
+    <!-- background image for mobile -->
+    <div id="background-sm" class="container-fluid-custom homepage-background-sm">
+      <img class="background" src="./Pictures/hero-image.jpg" alt="background">
+    </div>
+
     <div id="homepage-body" class="text-center">
       <img class="img-responsive" src="./Pictures/largelogo-text-transparent.png" alt="FoodBoard logo">
       <p>Share More, Waste Less</p>
@@ -75,40 +80,34 @@
     </div>
   </div>
 
+  <!-- How it works section-->
   <div class="container-fluid container-fluid-custom" id="how-it-works">
     <div class="jumbotron jumbotron-custom">
       <div class="row">
-        <div class="col-lg-12 text-center">HOW IT WORKS</div>
+        <div class="col-lg-12 text-center"><b>VALUES</b></div>
       </div>
       <div class="row">
         <div class="col-lg-4 text-center">
           <img src="./Pictures/sustain.png">
+          <div>
+            <h2><b>Sustain</b></h2>
+            <p>Reduce the amount of perishable foods in your community.</p> 
+          </div>
         </div>
         <div class="col-lg-4 text-center">
           <img src="./Pictures/groceries.png">
+          <div>
+            <h2><b>Share</b></h2>
+            <p>Post and claim items with the click of a button.</p>
+          </div>
         </div>
         <div class="col-lg-4 text-center">
           <img src="./Pictures/grow.png">
+          <div>
+            <h2><b>Grow</b></h2>
+            <p>Create a sustainable community within your neighborhood.</p>
+          </div>
         </div>
-      </div>
-      <div class="row" id="row-title">
-        <div class="col-lg-4 text-center">Sustain</div>
-        <div class="col-lg-4 text-center">Share</div>
-        <div class="col-lg-4 text-center">Grow</div>
-      </div>
-      <div class="row">
-        <div class="col-lg-4 text-center">
-          <p>Track and reduce the amount of perishable foods your community produces.</p>
-        </div>
-        <div class="col-lg-4 text-center">
-          <p>
-            Users can post and claim items with a click of a button.
-          </p>
-        </div>
-        <div class="col-lg-4 text-center">
-          <p>Create a sustainable community within your neighborhood.</p>
-        </div>
-
       </div>
     </div>
   </div>

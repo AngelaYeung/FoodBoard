@@ -16,28 +16,51 @@
   }
   .navbar-brand-sm img {
     width: 10%;
+    
   }
-  .homepage-background img {
+  .homepage-background-sm img {
     filter: blur(5px);
     opacity: 0.7;
     width: 100%;
+    height: 400px;
+  }
+  #background-lg {
+    display: none;
+  }
+  .home-background img{
+    display:none;
   }
 
   .col-lg-12 {
     display:none;
   }
-  #homepage-body {
-    font-size: 16pt;
-    color: white;
-    z-index: 1;
-    transform:translate(0%,-100%);
-    font-family: 'Railway';
-  }
+
   #homepage-body img {
     width: 50%;
     margin: 0 auto;
   }
 
+  #homepage-body {
+    font-size: 16pt;
+    color: white;
+    z-index: 1;
+    transform:translate(0%, -175%);
+    font-family: 'Railway';
+  }
+<<<<<<< HEAD
+  #homepage-body img {
+    width: 50%;
+    margin: 0 auto;
+  }
+
+  .container-fluid-custom::before {
+    display:none;
+    border:none;
+  }
+
+=======
+  
+>>>>>>> db54d895edd54a7a94742708ec6fdf0309d748af
 }
 
 @media screen and (min-width: 481px) {
@@ -56,15 +79,19 @@
     width: 12%;
     margin-top: -15px;
   }
+  #background-sm {
+    display: none;
+  }
 
   
-  #homepage-body {
-    font-size: 34pt;
-    color: white;
-    z-index: 1;
-    transform:translate(0%,-250%);
-    font-family: 'Railway';
-  }
+#homepage-body {
+  font-size: 26pt;
+  color: white;
+  z-index: 1;
+  transform:translate(0%,-200%);
+  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-style: italic;
+}
   #homepage-body img {
     margin: 0 auto;
     height: 50%;
@@ -164,7 +191,7 @@ body {
   
 }
 
-
+/* Customize jumbotron (how-it-works) */
 .jumbotron-custom {
   background-color:white;
   color:black;
@@ -174,13 +201,12 @@ body {
   margin-bottom:0px;
 }
 
-#row-title .col-lg-4 {
-  font-size:20pt;
-  font-weight:bold;
+.jumbotron-custom div p {
+  font-size:16pt;
+  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  padding: 2%;
 }
-.col-lg-4 {
-  font-size: 16pt;
-}
+
 
 .col-lg-4 img {
   width: 50%;
@@ -188,7 +214,7 @@ body {
 }
 
 .col-lg-12 {
-  padding: 0% 0% 10% 0%;
+  padding: 0% 0% 5% 0%;
   margin: 10 10 10 10;
 }
 
@@ -196,14 +222,6 @@ body {
   padding: 0%;
 }
 
-#homepage-body {
-  font-size: 26pt;
-  color: white;
-  z-index: 1;
-  transform:translate(0%,-200%);
-  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-style: italic;
-}
 
 
 .homepage-background {
@@ -232,12 +250,8 @@ body {
   background-color: #36453B;
   padding-left: 0px;
   padding-right: 0px;
+  margin-bottom:0;
 }
-
-.col-lg-12 {
-  padding: 0% 0 5% 0;
-}
-
 
 .container-fluid-custom::before {
   display:block;
