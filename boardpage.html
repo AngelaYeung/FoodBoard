@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <Title>"Board"</Title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+</head>
+
+<body>
+  <!-- Contains contents of the board-->
+  <div id="board">
+    <p>This is the location of the board</p>
+  </div>
+
+  <!-- Contains all the divs related to adding a new food item-->
+  <div class="container">
+    <!-- Button to open modal (hopefully)-->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#itemModal">
+      Add new item
+    </button>
+
+    <!-- This is the modal that will allow users to enter item info-->
+    <div class="modal fade" id="itemModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header-->
+          <div class="modal-header">
+            <h2 class="modal-title">New Food to Share</h2>
+          </div>
+
+          <!-- Modal Body-->
+          <div class="modal-body">
+            <!--Sets up the form when the modal is opened-->
+            <form action="">
+
+              <input id="name" type="text" class="form-control" placeholder="Enter food name" name="name">
+              
+              <input id="description" type="text" class="form-control" placeholder="Enter food description" name="description">
+              
+            </form>
+            <button id="submit" type="submit" class="btn btn-primary" >Post Contents (hopefully)</button>
+          </div>
+
+          <!--<div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Button</button>
+          </div>-->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /*<![CDATA[*/
+    //Event handler for when the submit button is clicked.
+    //Should post the contents of the form onto the board.
+    $("#submit").click(function() {
+      var nameContent = $("#name").val();
+      var descriptionContent = $("#description").val();
+      
+      addNewItem();
+
+      }
+    );
+
+    //Function for posting the user input onto the board
+    function addNewItem() {
+        
+        var cardDiv = document.createElement("div");
+        var foodName = document.createElement("h2");
+        // grabs the name from the form so that it will be appended to cardDiv
+        foodName.innerHTML = $("#name").val();
+
+        //takes the contents of the description 
+        var foodDescription = document.createElement("p");
+        foodDescription.innerHTML = $("#description").val();
+        
+        cardDiv.appendChild(foodName);
+        cardDiv.appendChild(foodDescription);
+
+        $("#board").append(cardDiv);
+    }
+    /*]]>*/
+  </script>
+
+</body>
+
+</html>
