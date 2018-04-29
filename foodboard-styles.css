@@ -258,6 +258,7 @@ body {
   width: 100%;
 }
 
+/* Customize 'Get Started' Button */
 #homepage-body button {
   background-color:rgba(78, 178, 101, 0.555);
   font-size: 16pt;
@@ -265,6 +266,12 @@ body {
   font-style: normal;
   border-color: black;
   border-radius: 20px;
+  color:white;
+}
+
+#homepage-body a {
+  text-decoration:none;
+  color:white;
 }
 
 
