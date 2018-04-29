@@ -53,9 +53,11 @@
             <a href="#how-it-works" class="nav-link" id="how-link">VALUES</a>
           </li>
           <li class="nav-item">
+            <a href="#our-team" class="nav-link" id="team-link">OUR TEAM</a>
+          </li>
+          <li class="nav-item">
             <a href="" class="nav-link" id="login-link">LOGIN</a>
           </li>
-
         </ul>
       </nav>
     </div>
@@ -84,33 +86,86 @@
   <div class="container-fluid container-fluid-custom" id="how-it-works">
     <div class="jumbotron jumbotron-custom">
       <div class="row">
-        <div class="col-lg-12 text-center"><b>VALUES</b></div>
+        <div class="col-lg-12 text-center">
+          <b>VALUES</b>
+        </div>
       </div>
       <div class="row">
         <div class="col-lg-4 text-center">
           <img src="./Pictures/sustain.png">
           <div>
-            <h2><b>Sustain</b></h2>
-            <p>Reduce the amount of perishable foods in your community.</p> 
+            <h2>
+              <b>Sustain</b>
+            </h2>
+            <p>Reduce the amount of perishable foods in your community.</p>
           </div>
         </div>
         <div class="col-lg-4 text-center">
           <img src="./Pictures/groceries.png">
           <div>
-            <h2><b>Share</b></h2>
+            <h2>
+              <b>Share</b>
+            </h2>
             <p>Post and claim items with the click of a button.</p>
           </div>
         </div>
         <div class="col-lg-4 text-center">
           <img src="./Pictures/grow.png">
           <div>
-            <h2><b>Grow</b></h2>
+            <h2>
+              <b>Grow</b>
+            </h2>
             <p>Create a sustainable community within your neighborhood.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
+  </br>
+  </br>
+  </br>
+  </br>
+  </br>
+  </br>
+
+
+  <div class="container-fluid text-center" id="our-team">
+    <div class="row">
+      <div class="col-lg-12 text-center" id="our-team-title">
+        <b>OUR TEAM</b>
+      </div>
+    </div>
+    <div class="row">
+      <div class ="col-lg-1"></div>
+      <div class="col-lg-2 text-center">
+        <img class="img-circle" src="./Pictures/HeadShots/Angela.JPG" alt="Angela Yeung">
+        <h3>Angela Yeung</h3>
+        <p>Front-End Developer</p>
+      </div>
+      <div class="col-lg-2 text-center">
+        <img class="img-circle" src="./Pictures/HeadShots/Derek.JPG" alt="Derek Lee">
+        <h3>Derek Lee</h3>
+        <p>Operations Officer, Lead Test</p>
+      </div>
+      <div class="col-lg-2 text-center">
+        <img class="img-circle" src="./Pictures/HeadShots/James.JPG" alt="James Nguyen">
+        <h3>James Nguyen</h3>
+        <p>Creative Officer</p>
+      </div>
+      <div class="col-lg-2 text-center">
+        <img class="img-circle" src="./Pictures/HeadShots/Michael.JPG" alt="Michael Yu">
+        <h3>Michael Yu</h3>
+        <p>Back-End Developer</p>
+      </div>
+      <div class="col-lg-2 text-center">
+        <img class="img-circle" src="./Pictures/HeadShots/Robert.JPG" alt="Robert Ozdoba">
+        <h3>Robert Ozdoba</h3>
+        <p>Back-End Developer</p>
+      </div>
+      <div class ="col-lg-1"></div>
+    </div>
+  </div>
+
   <!-- FAQ Section-->
   <!-- <div class="container-fluid" id="faq">
     <div class="row">
@@ -140,6 +195,13 @@
       $("#how-link").click(function () {
         $('html, body').animate({
           scrollTop: $("#how-it-works").offset().top
+        }, 500);
+      });
+
+      // add scrollspy onto body of the page for our-team link
+      $("#team-link").click(function () {
+        $('html, body').animate({
+          scrollTop: $("#our-team").offset().top
         }, 500);
       });
 

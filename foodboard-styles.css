@@ -45,9 +45,8 @@
     color: white;
     z-index: 1;
     transform:translate(0%, -175%);
-    font-family: 'Railway';
+    font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   }
-<<<<<<< HEAD
   #homepage-body img {
     width: 50%;
     margin: 0 auto;
@@ -58,9 +57,7 @@
     border:none;
   }
 
-=======
   
->>>>>>> db54d895edd54a7a94742708ec6fdf0309d748af
 }
 
 @media screen and (min-width: 481px) {
@@ -104,7 +101,8 @@
 }
 
 body {
-  position:relative;
+  position:relative;  
+  height:auto;
 }
 .navbar {
   min-height:30px;
@@ -207,7 +205,10 @@ body {
   padding: 2%;
 }
 
-
+.row {
+  margin-right:0;
+  margin-left:0;
+}
 .col-lg-4 img {
   width: 50%;
   margin: 5%;
@@ -216,6 +217,29 @@ body {
 .col-lg-12 {
   padding: 0% 0% 5% 0%;
   margin: 10 10 10 10;
+  font-family: "HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 40pt;
+  color: black;
+}
+
+/* Customize "About Us" */
+.col-lg-2 > img {
+  width: 200px;
+}
+
+.col-lg-2 > p {
+  font-size: 12pt;
+}
+
+
+#our-team {
+  background-color: #596869 ;
+  padding: 8% 0% 8% 0%;
+  color:white;
+}
+
+#our-team-title {
+  color:white;
 }
 
 #homepage-body-container {
@@ -243,15 +267,6 @@ body {
   border-radius: 20px;
 }
 
-#how-it-works {
-  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-size: 40pt;
-  color:white;
-  background-color: #36453B;
-  padding-left: 0px;
-  padding-right: 0px;
-  margin-bottom:0;
-}
 
 .container-fluid-custom::before {
   display:block;
