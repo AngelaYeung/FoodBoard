@@ -11,6 +11,12 @@
 </head>
 
 <body>
+  <!-- Contains contents of the board-->
+  <div id="board">
+    <p>This is the location of the board</p>
+  </div>
+
+  <!-- Contains all the divs related to adding a new food item-->
   <div class="container">
     <!-- Button to open modal (hopefully)-->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#itemModal">
@@ -31,14 +37,12 @@
             <!--Sets up the form when the modal is opened-->
             <form action="">
 
-              <label for="name">Name:</label>
               <input id="name" type="text" class="form-control" placeholder="Enter food name" name="name">
               
-              <label for="description">Description:</label>
               <input id="description" type="text" class="form-control" placeholder="Enter food description" name="description">
               
-              <button id="submit" type="submit" class="btn btn-primary">Post Contents (hopefully)</button>
             </form>
+            <button id="submit" type="submit" class="btn btn-primary" >Post Contents (hopefully)</button>
           </div>
 
           <!--<div class="modal-footer">
@@ -52,8 +56,34 @@
 
   <script>
     /*<![CDATA[*/
-    //$("#submit").click()
+    //Event handler for when the submit button is clicked.
+    //Should post the contents of the form onto the board.
+    $("#submit").click(function() {
+      var nameContent = $("#name").val();
+      var descriptionContent = $("#description").val();
+      
+      addNewItem();
 
+      }
+    );
+
+    //Function for posting the user input onto the board
+    function addNewItem() {
+        
+        var cardDiv = document.createElement("div");
+        var foodName = document.createElement("h2");
+        // grabs the name from the form so that it will be appended to cardDiv
+        foodName.innerHTML = $("#name").val();
+
+        //takes the contents of the description 
+        var foodDescription = document.createElement("p");
+        foodDescription.innerHTML = $("#description").val();
+        
+        cardDiv.appendChild(foodName);
+        cardDiv.appendChild(foodDescription);
+
+        $("#board").append(cardDiv);
+    }
     /*]]>*/
   </script>
 
