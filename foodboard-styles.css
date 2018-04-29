@@ -224,7 +224,8 @@ body {
 
 /* Customize "About Us" */
 .col-lg-2 > img {
-  width: 200px;
+  width: 175px;
+  border: solid 1px ;
 }
 
 .col-lg-2 > p {
