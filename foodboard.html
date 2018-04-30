@@ -91,7 +91,7 @@
           <img src="./Pictures/sustain.png">
           <div>
             <h2><b>Sustain</b></h2>
-            <p>Reduce the amount of perishable foods in your community.</p> 
+            <p>Reduce the amount of perishable foods in your community.</p>
           </div>
         </div>
         <div class="col-lg-4 text-center">
@@ -114,7 +114,7 @@
 
   <!-- Modal: Login/Register Forms -->
   <div class="modal fade" id="logreg-modal" tabindex="1" role="dialog">
-    <div class="modal-dialog cascading-modal" role="document">
+    <div class="modal-dialog tabbed-modal" role="document">
       <!-- Content-->
       <div class="modal-content">
           <!-- Navigation tabs: login/register-->
@@ -133,6 +133,9 @@
             <div class="tab-pane fade in show active" id="login-panel" role="tabpanel">
               <!-- Body of Login Panel -->
               <div class="modal-body1">
+                <div>
+                  <p class="modal-text">Welcome back to FoodBoard!</p>
+                </div>
                   <form class="form-horizontal" action="user_login_info.php" method="POST">
                     <!-- Login form email input -->
                     <div class="form-group">
@@ -152,13 +155,16 @@
                 </div>
                 <!-- Login Panel Footer -->
                 <div class="modal-footer">
-                  <button type="submit" class="btn btn-default" value="Login">Login</button>
+                  <button type="submit" class="btn btn-success center-block" value="Login">Login</button>
                 </div>
             </div>
             <!-- Register Panel -->
             <div class="tab-pane fade" id="register-panel" role="tabpanel">
               <!-- Body of Register Panel -->
               <div class="modal-body2">
+                <div>
+                  <p class="modal-text">Register for FoodBoard</p>
+                </div>
                 <form class="form-horizontal" action="user_registration_info.php" method="POST">
                   <!-- Registration form username input -->
                   <div class="form-group">
@@ -182,16 +188,16 @@
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="control-label col-sm-2" for="suite-number">Suite Number:</label>
+                      <label class="control-label col-sm-2" for="suite-number">Suite #:</label>
                       <div class="col-sm-10">
-                        <input class="form-control" type="text" placeholder="Enter Suite Number" name="suite-number" required>
+                        <input class="form-control" type="text" placeholder="Enter Apartment Suite Number" name="suite-number" required>
                       </div>
                     </div>
                 </form>
               </div>
               <!-- Register Panel Footer -->
               <div class="modal-footer">
-                <button type="submit" class="btn btn-default" value="Register">Register</button>
+                <button type="submit" class="btn btn-success center-block" value="Register">Register</button>
               </div>
             </div>
           </div>
@@ -219,7 +225,7 @@
 
 
   </script>
- 
+
 </body>
 
 <footer>
