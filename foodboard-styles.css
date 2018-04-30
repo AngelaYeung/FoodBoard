@@ -47,7 +47,6 @@
     transform:translate(0%, -175%);
     font-family: 'Railway';
   }
-<<<<<<< HEAD
   #homepage-body img {
     width: 50%;
     margin: 0 auto;
@@ -58,9 +57,6 @@
     border:none;
   }
 
-=======
-  
->>>>>>> db54d895edd54a7a94742708ec6fdf0309d748af
 }
 
 @media screen and (min-width: 481px) {
@@ -265,20 +261,20 @@ body {
 .green {
   background-color: #4EB266; }
 
-.modal-dialog.cascading-modal .nav-tabs {
+.modal-dialog.tabbed-modal .nav-tabs {
     display: -webkit-box;
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex; 
 }
 
-.modal-dialog.cascading-modal .nav-tabs li {
+.modal-dialog.tabbed-modal .nav-tabs li {
     -webkit-flex: 1;
     -ms-flex: 1;
     flex: 1; 
 }
 
-.modal-dialog.cascading-modal .nav-tabs li a {
+.modal-dialog.tabbed-modal .nav-tabs li a {
     text-align: center; 
 }
 
@@ -288,6 +284,15 @@ body {
 
 .tab-content > .active {
   display: block !important;
+}
+
+.modal-text {
+  font-size: 14pt;
+  font-weight: bold;
+  text-align: center;
+  font-family: "HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 /* End Tabbed Modal */
