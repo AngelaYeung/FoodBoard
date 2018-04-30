@@ -283,3 +283,38 @@ body {
   height:20px;
   background: white;
 }
+
+/* Tabbed Modal */
+.green {
+  background-color: #4EB266; }
+
+.modal-dialog.cascading-modal .nav-tabs {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex; 
+}
+
+.modal-dialog.cascading-modal .nav-tabs li {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1; 
+}
+
+.modal-dialog.cascading-modal .nav-tabs li a {
+    text-align: center; 
+}
+
+.tab-content > .tab-pane {
+  display: none !important;
+}
+
+.tab-content > .active {
+  display: block !important;
+}
+
+/* End Tabbed Modal */
+
+.z-depth-1,.btn, .btn.disabled:active, .btn.disabled:focus, .btn.disabled:hover, .btn:disabled:active, .btn:disabled:focus, .btn:disabled:hover, .card, .pagination .page-item.active .page-link, .badge, .modal-dialog.cascading-modal .modal-c-tabs .nav-tabs, .modal-dialog.modal-notify .modal-header, .media .media-left img {
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); }
