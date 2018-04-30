@@ -321,11 +321,12 @@ body {
   margin-bottom: 15px;
 }
 
-.glyphicon {
+.input-addon .glyphicon {
   padding-left: 30px;
   font-size: 25px;
   color: #4EB266;
 }
+
 #logo-above-modal img {
   display: block;
   width: 15%;
