@@ -295,6 +295,20 @@ body {
   margin-bottom: 15px;
 }
 
+.glyphicon {
+  padding-left: 30px;
+  font-size: 25px;
+  color: #4EB266;
+}
+#logo-above-modal img {
+  display: block;
+  width: 15%;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 150px;
+  margin-bottom: 50px;
+}
+
 /* End Tabbed Modal */
 
 .z-depth-1, .jumbotron, .btn, .btn.disabled:active, .btn.disabled:focus, .btn.disabled:hover, .btn:disabled:active, .btn:disabled:focus, .btn:disabled:hover, .card, .navbar, .pagination .page-item.active .page-link, .badge, .modal-dialog.cascading-modal .modal-c-tabs .nav-tabs, .modal-dialog.modal-notify .modal-header, .media .media-left img {
