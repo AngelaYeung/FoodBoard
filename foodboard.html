@@ -40,7 +40,7 @@
                 <a href="#how-it-works" class="nav-link">VALUES</a>
               </li>
               <li class="nav-item text-center">
-                <a href="#" class="nav-link">LOGIN</a>
+                <a href="#" class="nav-link" data-toggle="modal" data-target="#logreg-modal">LOGIN</a>
               </li>
             </ul>
           </div>
@@ -114,7 +114,10 @@
 
   <!-- Modal: Login/Register Forms -->
   <div class="modal fade" id="logreg-modal" tabindex="1" role="dialog">
-    <div class="modal-dialog tabbed-modal" role="document">
+    <div class="modal-dialog modal-dialog-centered tabbed-modal" role="document">
+      <div id="logo-above-modal">
+          <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
+      </div>
       <!-- Content-->
       <div class="modal-content">
           <!-- Navigation tabs: login/register-->
@@ -132,36 +135,45 @@
             <!-- Login Panel -->
             <div class="tab-pane fade in show active" id="login-panel" role="tabpanel">
               <!-- Body of Login Panel -->
-              <div class="modal-body1">
+              <div class="modal-body">
                 <div>
                   <p class="modal-text">Welcome back to FoodBoard!</p>
                 </div>
                   <form class="form-horizontal" action="user_login_info.php" method="POST">
                     <!-- Login form email input -->
                     <div class="form-group">
-                      <label class="control-label col-sm-2" for="email">Email:</label>
-                      <div class="col-sm-10">
-                        <input class="form-control" type="email" placeholder="Enter Email Address" name="email" required>
+                      <!-- <label class="control-label col-sm-2" for="email">Email:</label> -->
+                      <div class="col-sm-2 input-addon">
+                        <span class="glyphicon glyphicon-envelope"></span>
+                      </div>
+                      <div class="col-sm-9">
+                        <input class="form-control" type="email" placeholder="Enter Email Address" name="login-email" required>
                       </div>
                     </div>
                     <!-- Login form password input -->
                     <div class="form-group">
-                      <label class="control-label col-sm-2" for="password">Password:</label>
-                      <div class="col-sm-10">
-                        <input class="form-control" type="password" placeholder="Enter Password" name="confirm" required>
+                      <!-- <label class="control-label col-sm-2" for="password">Password:</label> -->
+                      <div class="col-sm-2 input-addon">
+                        <span class="glyphicon glyphicon-lock"></span>
                       </div>
+                      <div class="col-sm-9">
+                        <input class="form-control" type="password" placeholder="Enter Password" name="login-pwd" required>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-success center-block" value="Login">Login</button>
                     </div>
                   </form>
                 </div>
                 <!-- Login Panel Footer -->
-                <div class="modal-footer">
+                <!-- <div class="modal-footer">
                   <button type="submit" class="btn btn-success center-block" value="Login">Login</button>
-                </div>
+                </div> -->
             </div>
             <!-- Register Panel -->
             <div class="tab-pane fade" id="register-panel" role="tabpanel">
               <!-- Body of Register Panel -->
-              <div class="modal-body2">
+              <div class="modal-body">
                 <div>
                   <p class="modal-text">Register for FoodBoard</p>
                 </div>
@@ -169,36 +181,39 @@
                   <!-- Registration form username input -->
                   <div class="form-group">
                       <label class="control-label col-sm-2" for="email">Email:</label>
-                      <div class="col-sm-10">
-                        <input class="form-control" type="email" placeholder="Enter Email Address" name="email" required>
+                      <div class="col-sm-9">
+                        <input class="form-control" type="email" placeholder="Enter Email Address" name="register-email" required>
                       </div>
                     </div>
                     <!-- Register form password input -->
                     <div class="form-group">
                       <label class="control-label col-sm-2" for="password">Password:</label>
-                      <div class="col-sm-10">
-                        <input class="form-control" type="password" placeholder="Enter Password" name="pwd-confirm" required>
+                      <div class="col-sm-9">
+                        <input class="form-control" type="password" placeholder="Enter Password" name="register-pwd" required>
                       </div>
                     </div>
                     <!-- Register form password confirm input -->
                     <div class="form-group">
                       <label class="control-label col-sm-2" for="password">Confirm:</label>
-                      <div class="col-sm-10">
-                        <input class="form-control" type="password" placeholder="Confirm Password" name="pwd-confirm" required>
+                      <div class="col-sm-9">
+                        <input class="form-control" type="password" placeholder="Confirm Password" name="register-pwd-confirm" required>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="control-label col-sm-2" for="suite-number">Suite #:</label>
-                      <div class="col-sm-10">
-                        <input class="form-control" type="text" placeholder="Enter Apartment Suite Number" name="suite-number" required>
+                      <div class="col-sm-9">
+                        <input class="form-control" type="text" placeholder="Enter Apartment Suite Number" name="register-suite-number" required>
                       </div>
+                    </div>
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-success center-block" value="Register">Register</button>
                     </div>
                 </form>
               </div>
               <!-- Register Panel Footer -->
-              <div class="modal-footer">
+              <!-- <div class="modal-footer">
                 <button type="submit" class="btn btn-success center-block" value="Register">Register</button>
-              </div>
+              </div> -->
             </div>
           </div>
       </div>
