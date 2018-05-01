@@ -85,7 +85,14 @@
     display: none;
   }
 
-  
+html{
+  overflow-y: scroll;
+}
+
+body#page-top.modal-open{
+  padding-right: 0!important;
+}
+
 #homepage-body {
   font-size: 26pt;
   color: white;
