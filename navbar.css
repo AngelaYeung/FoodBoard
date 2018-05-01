@@ -1,0 +1,31 @@
+/* Header -> NavBar */
+@media screen and (max-width: 480px) {
+  .navbar-right-custom {
+    display: none;
+  }
+  .navbar-brand {
+    display: none;
+  }
+  .navbar-brand-sm {
+    padding: 3%;
+    background-color: #4EB266;
+  }
+  .navbar-brand-sm .dropdown {
+    margin-top: -30px;
+  }
+  .navbar-brand-sm img {
+    width: 10%;
+    
+  }
+
+}
+
+
+.dropdown .btn-primary {
+    background-color: transparent;
+    border-style: none;
+    padding: 0;
+  }
+  .dropdown-menu {
+    width: 100%;
+  }
