@@ -16,26 +16,51 @@
   }
   .navbar-brand-sm img {
     width: 10%;
+    
   }
-  .homepage-background img {
+
+  #background-sm {
+    overflow: hidden;
+    background-color: darkslategray;
+  }
+
+  .homepage-background-sm img {
     filter: blur(5px);
     opacity: 0.7;
-    width: 100%;
+    height: 850px;
+  }
+
+  #background-lg {
+    display: none;
+  }
+  .home-background img{
+    display:none;
   }
 
   .col-lg-12 {
     display:none;
   }
+
+  #homepage-body img {
+    width: 50%;
+    margin: 0 auto;
+  }
+
   #homepage-body {
     font-size: 16pt;
     color: white;
     z-index: 1;
-    transform:translate(0%,-100%);
-    font-family: 'Railway';
+    transform:translate(0%, -375%);
+    font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   }
   #homepage-body img {
     width: 50%;
     margin: 0 auto;
+  }
+
+  .container-fluid-custom::before {
+    display:none;
+    border:none;
   }
 
 }
@@ -56,15 +81,26 @@
     width: 12%;
     margin-top: -15px;
   }
-
-  
-  #homepage-body {
-    font-size: 34pt;
-    color: white;
-    z-index: 1;
-    transform:translate(0%,-250%);
-    font-family: 'Railway';
+  #background-sm {
+    display: none;
   }
+
+html{
+  overflow-y: scroll;
+}
+
+body#page-top.modal-open{
+  padding-right: 0!important;
+}
+
+#homepage-body {
+  font-size: 26pt;
+  color: white;
+  z-index: 1;
+  transform:translate(0%,-200%);
+  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-style: italic;
+}
   #homepage-body img {
     margin: 0 auto;
     height: 50%;
@@ -77,7 +113,8 @@
 }
 
 body {
-  position:relative;
+  position:relative;  
+  height:auto;
 }
 .navbar {
   min-height:30px;
@@ -164,7 +201,7 @@ body {
   
 }
 
-
+/* Customize jumbotron (how-it-works) */
 .jumbotron-custom {
   background-color:white;
   color:black;
@@ -174,36 +211,54 @@ body {
   margin-bottom:0px;
 }
 
-#row-title .col-lg-4 {
-  font-size:20pt;
-  font-weight:bold;
-}
-.col-lg-4 {
-  font-size: 16pt;
+.jumbotron-custom div p {
+  font-size:16pt;
+  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  padding: 2%;
 }
 
+.row {
+  margin-right:0;
+  margin-left:0;
+}
 .col-lg-4 img {
   width: 50%;
   margin: 5%;
 }
 
 .col-lg-12 {
-  padding: 0% 0% 10% 0%;
+  padding: 0% 0% 5% 0%;
   margin: 10 10 10 10;
+  font-family: "HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 40pt;
+  color: black;
+}
+
+/* Customize "About Us" */
+.col-lg-2 > img {
+  width: 175px;
+  border: solid 1px ;
+}
+
+.col-lg-2 > p {
+  font-size: 12pt;
+}
+
+
+#our-team {
+  background-color: #596869 ;
+  padding: 8% 0% 8% 0%;
+  color:white;
+}
+
+#our-team-title {
+  color:white;
 }
 
 #homepage-body-container {
   padding: 0%;
 }
 
-#homepage-body {
-  font-size: 26pt;
-  color: white;
-  z-index: 1;
-  transform:translate(0%,-200%);
-  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-style: italic;
-}
 
 
 .homepage-background {
@@ -216,6 +271,7 @@ body {
   width: 100%;
 }
 
+/* Customize 'Get Started' Button */
 #homepage-body button {
   background-color:rgba(78, 178, 101, 0.555);
   font-size: 16pt;
@@ -223,19 +279,12 @@ body {
   font-style: normal;
   border-color: black;
   border-radius: 20px;
-}
-
-#how-it-works {
-  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-size: 40pt;
   color:white;
-  background-color: #36453B;
-  padding-left: 0px;
-  padding-right: 0px;
 }
 
-.col-lg-12 {
-  padding: 0% 0 5% 0;
+#homepage-body a {
+  text-decoration:none;
+  color:white;
 }
 
 
@@ -246,3 +295,62 @@ body {
   height:20px;
   background: white;
 }
+
+/* Tabbed Modal */
+.green {
+  background-color: #4EB266; }
+
+.modal-dialog.tabbed-modal .nav-tabs {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex; 
+}
+
+.modal-dialog.tabbed-modal .nav-tabs li {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1; 
+}
+
+.modal-dialog.tabbed-modal .nav-tabs li a {
+    text-align: center; 
+}
+
+.tab-content > .tab-pane {
+  display: none !important;
+}
+
+.tab-content > .active {
+  display: block !important;
+}
+
+.modal-text {
+  font-size: 14pt;
+  font-weight: bold;
+  text-align: center;
+  font-family: "HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.input-addon .glyphicon {
+  padding-left: 30px;
+  font-size: 25px;
+  color: #4EB266;
+}
+
+#logo-above-modal img {
+  display: block;
+  width: 15%;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 150px;
+  margin-bottom: 50px;
+}
+
+/* End Tabbed Modal */
+
+.z-depth-1,.btn, .btn.disabled:active, .btn.disabled:focus, .btn.disabled:hover, .btn:disabled:active, .btn:disabled:focus, .btn:disabled:hover, .card, .pagination .page-item.active .page-link, .badge, .modal-dialog.cascading-modal .modal-c-tabs .nav-tabs, .modal-dialog.modal-notify .modal-header, .media .media-left img {
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); }
