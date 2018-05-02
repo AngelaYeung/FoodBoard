@@ -17,4 +17,22 @@ body {
 
 .cardContainer {
   background-color: white;
+  width: 90%;
+  margin: auto;
+  box-shadow: 2px 3px 20px grey;
+  
+}
+
+.collapse-button {
+  background-color: grey;
+  position: relative;
+  float: right;
+  right: 20px;
+}
+.food-img {
+  height: 150px;
+  width: 100%;
+}
+.header-Div {
+  height: 50px;
 }
