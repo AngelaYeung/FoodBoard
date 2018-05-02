@@ -157,7 +157,7 @@ body {
   position:relative;
 }
 
-.nav>li>a:before {
+.navbar-right-custom>li>a:before {
   content: "";
   position: absolute;
   width: 100%;
@@ -171,7 +171,7 @@ body {
   -webkit-transition: all 0.4s ease-in-out 0s;
   transition: all 0.4s ease-in-out 0s;
 }
-.nav>li>a:hover:before {
+.navbar-right-custom>li>a:hover:before {
   visibility: visible;
   -webkit-transform: scaleX(1);
   transform: scaleX(1);
@@ -266,7 +266,7 @@ body {
 
 /* Customize 'Get Started' Button */
 #homepage-body button {
-  background-color:rgba(78, 178, 101, 0.555);
+  background-color:rgba(78, 178, 101);
   font-size: 16pt;
   font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-style: normal;
