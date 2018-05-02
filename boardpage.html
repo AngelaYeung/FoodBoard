@@ -71,7 +71,7 @@
             <form id="postForm" action="./boardpage.html">
 
               <div class="form-group">
-                <input id="name" type="text" class="form-control" placeholder="Enter food name" name="name">
+                <input id="name" type="text" required class="form-control" placeholder="Enter food name" name="name">
               </div>
 
               <div class="form-group">
@@ -88,19 +88,19 @@
               <div class="form-group">
                 <div class="radio">
                   <label>
-                    <input type="radio" name="produceOpt">Produce</label>
+                    <input type="radio" name="foodOption">Produce</label>
                   <label>
-                    <input type="radio" name="meat">Meat</label>
+                    <input type="radio" name="foodOption">Meat</label>
                   <label>
-                    <input type="radio" name="packaged">Packaged</label>
+                    <input type="radio" name="foodOption">Packaged</label>
                   <label>
-                    <input type="radio" name="cannedGoods">Canned Goods</label>
+                    <input type="radio" name="foodOption">Canned Goods</label>
                 </div>
               </div>
 
               <div class="form-group">
                 <input id="file-input" type="file" accept="image/*">
-                <output id="file-output"></output>
+                <p id="output"></p>
               </div>
               
 
