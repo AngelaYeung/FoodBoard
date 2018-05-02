@@ -164,7 +164,7 @@ body {
   position:relative;
 }
 
-.nav>li>a:before {
+.navbar-right-custom>li>a:before {
   content: "";
   position: absolute;
   width: 100%;
@@ -296,60 +296,6 @@ body {
   background: white;
 }
 
-/* Tabbed Modal */
-.green {
-  background-color: #4EB266; }
-
-.modal-dialog.tabbed-modal .nav-tabs {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex; 
-}
-
-.modal-dialog.tabbed-modal .nav-tabs li {
-    -webkit-flex: 1;
-    -ms-flex: 1;
-    flex: 1; 
-}
-
-.modal-dialog.tabbed-modal .nav-tabs li a {
-    text-align: center; 
-}
-
-.tab-content > .tab-pane {
-  display: none !important;
-}
-
-.tab-content > .active {
-  display: block !important;
-}
-
-.modal-text {
-  font-size: 14pt;
-  font-weight: bold;
-  text-align: center;
-  font-family: "HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
-
-.input-addon .glyphicon {
-  padding-left: 30px;
-  font-size: 25px;
-  color: #4EB266;
-}
-
-#logo-above-modal img {
-  display: block;
-  width: 15%;
-  margin-right: auto;
-  margin-left: auto;
-  margin-top: 150px;
-  margin-bottom: 50px;
-}
-
-/* End Tabbed Modal */
 
 .z-depth-1,.btn, .btn.disabled:active, .btn.disabled:focus, .btn.disabled:hover, .btn:disabled:active, .btn:disabled:focus, .btn:disabled:hover, .card, .pagination .page-item.active .page-link, .badge, .modal-dialog.cascading-modal .modal-c-tabs .nav-tabs, .modal-dialog.modal-notify .modal-header, .media .media-left img {
   -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
