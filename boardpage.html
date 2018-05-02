@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,13 +10,13 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="./boardpage.css">
   <link rel="stylesheet" href="./navbar.css">
-  
+
 </head>
 
 <body>
   <header>
-     <!-- navbar logo for mobile-->
-  <div class="nav navbar-brand-sm">
+    <!-- navbar logo for mobile-->
+    <div class="nav navbar-brand-sm">
       <div class="text-center">
 
         <a class="navbar-foodboard" href="#page-top">
@@ -41,11 +42,9 @@
       </div>
     </div>
   </header>
- 
+
   <!-- Contains contents of the board-->
   <div id="board">
-    <p>Location of the board</p>
-
 
     <!-- Button to open modal-->
     <a class="btn additem" data-toggle="modal" data-target="#itemModal">
@@ -55,26 +54,57 @@
 
   <!-- Contains all the divs related to adding a new food item-->
   <div class="container">
-    
+
     <!-- This is the modal that will allow users to enter item info-->
     <div class="modal fade" id="itemModal">
       <div class="modal-dialog">
         <div class="modal-content">
+
           <!-- Modal Header-->
           <div class="modal-header">
-            <h2 class="modal-title">New Food to Share</h2>
+            <h3 class="modal-title">New Food to Share</h3>
           </div>
 
           <!-- Modal Body-->
           <div class="modal-body">
             <!--Sets up the form when the modal is opened-->
-            <form action="">
+            <form id="postForm" action="./boardpage.html">
 
-              <input id="name" type="text" class="form-control" placeholder="Enter food name" name="name">
+              <div class="form-group">
+                <input id="name" type="text" class="form-control" placeholder="Enter food name" name="name">
+              </div>
+
+              <div class="form-group">
+                <input id="description" type="text" class="form-control" placeholder="Enter food description" name="description">
+              </div>
+
+              <div class="form-group">
+                <div class="input-group">
+                  <input id="datetimepicker" class="form-control " type="datetime-local">
+                </div>
+              </div>
+
+              <!-- Radio button for food categories-->
+              <div class="form-group">
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="produceOpt">Produce</label>
+                  <label>
+                    <input type="radio" name="meat">Meat</label>
+                  <label>
+                    <input type="radio" name="packaged">Packaged</label>
+                  <label>
+                    <input type="radio" name="cannedGoods">Canned Goods</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <input id="file-input" type="file" accept="image/*">
+                <output id="file-output"></output>
+              </div>
               
-              <input id="description" type="text" class="form-control" placeholder="Enter food description" name="description">
-              
-              <button id="submit" type="submit" class="btn btn-primary" data-dismiss="modal">Post</button>
+
+              <input id="submit" type="submit" class="btn btn-primary" data-dismiss="modal" value="Post">
             </form>
           </div>
 
@@ -88,7 +118,6 @@
   </div>
 
   <script src="boardpage.js">
-
   </script>
 
 </body>

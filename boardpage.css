@@ -14,3 +14,7 @@ body {
   bottom: 0;
   
 }
+
+.cardContainer {
+  background-color: white;
+}
