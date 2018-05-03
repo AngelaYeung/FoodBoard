@@ -1,2 +1,4 @@
+#ignore for node_modules
 node_modules/
+
 *.txt
