@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+/**
+ * Creates new card
+ */
+function addNewItem(id, name, description, foodGroup, dateTime, img) {
+=======
 // Creates a thumbnail when an image has been uploaded
 function handleFileSelect(evt) {
     var files = evt.target.files; // FileList object
@@ -36,6 +42,7 @@ $("#submit").click(function () {
 
 //Function for posting the user input onto the board
 function addNewItem() {
+>>>>>>> develop
 
     var cardDiv = document.createElement("div");
     cardDiv.setAttribute("id", "card");
@@ -52,14 +59,32 @@ function addNewItem() {
     textDiv.setAttribute("class", "col-xs-10");
     
     var foodName = document.createElement("h4");
+<<<<<<< HEAD
+
+    // grabs the name from the form so that it will be appended to cardDiv
+    foodName.innerHTML = name;
+=======
     // grabs the name from the form so that it will be appended to cardDiv
     foodName.innerHTML = $("#name").val();
+>>>>>>> develop
 
     var buttonDiv = document.createElement("div");
     buttonDiv.setAttribute("class", "col-xs-2");
     
     var toggleButton = document.createElement("button");
     toggleButton.setAttribute("data-toggle", "collapse");
+<<<<<<< HEAD
+    toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
+    toggleButton.setAttribute("class", "collapse-button");
+
+    var toggleDiv = document.createElement("div");
+    toggleDiv.setAttribute("id", `collapseDiv${id}`);
+    toggleDiv.setAttribute("class", "collapse");
+
+    //takes the contents of the description 
+    var foodDescription = document.createElement("p");
+    foodDescription.innerHTML = description;
+=======
     toggleButton.setAttribute("data-target", "#collapseDiv");
     toggleButton.setAttribute("class", "collapse-button");
 
@@ -69,17 +94,22 @@ function addNewItem() {
     //takes the contents of the description 
     var foodDescription = document.createElement("p");
     foodDescription.innerHTML = $("#description").val();
+>>>>>>> develop
     
     var imageDiv = document.createElement("div");
     imageDiv.setAttribute("class","imgDiv");
 
     var foodImg = document.createElement("img");
     foodImg.setAttribute("class", "food-img");
+<<<<<<< HEAD
+    foodImg.src = `/images/${img}`;
+=======
     foodImg.src = "./Pictures/hero-image-flat.jpg";
 
     var claimButton = document.createElement("button");
     claimButton.setAttribute("class", "claim");
     
+>>>>>>> develop
 
     //$("#datetimepicker").datetimepicker();
     //cardDiv.appendChild(foodImg);
@@ -97,6 +127,18 @@ function addNewItem() {
     textDiv.appendChild(foodName);
 
     toggleDiv.appendChild(foodDescription);
+<<<<<<< HEAD
+    $("#card-list").append(cardDiv);
+
+    /** Clearing Forms */
+    $('#postForm').trigger('reset');
+
+    /** Hides Modal */
+    if($('#itemModal').hasClass('show')) {
+        $('#itemModal').modal('toggle');
+    }
+}
+=======
     $("#board").append(cardDiv);
 }
 
@@ -111,3 +153,4 @@ function addNewItem() {
 // function createFoodObject() {
 
 // }
+>>>>>>> develop
