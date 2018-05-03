@@ -5,11 +5,68 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <Title>"Board"</Title>
+
+  <!-- BootStrap CSS CDN -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="./boardpage.css">
   <link rel="stylesheet" href="./navbar.css">
+
+
+  <!-- Form Page Appears -->
+  <script src="boardpage.js"></script>
+
+  <!-- socket.io -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- socketio-file-upload -->
+  <script src="/siofu/client.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      var socket = io();
+      /**temporarily take the emitted socket on load to receive all the information from the
+      foodposting DB table and appnoend it to a div within the body.*/
+      socket.on('connection', function () {
+        console.log("testtest\n\n\n" + rows);
+        document.getElementByID("testinsert").innerHTML = "Connected Socket.";
+      });
+      socket.on('showrows', function (rows) {
+        console.log(rows);
+      })
+
+      const uploader = new SocketIOFileUpload(socket);
+      var image_name;
+
+      /** Uploads the image in form to server, and grabs its name */
+      uploader.listenOnSubmit(document.getElementById('submit'), document.getElementById('file-input'));
+      uploader.addEventListener('start', (event) => {
+        image_name = event.file.name;
+      });
+
+      /** Sends data from post-form to server.js */
+      $('#submit').click(function () {
+        console.log('Submit triggered!');
+
+        socket.emit('post item', {
+          name: $('#name').val(),
+          description: $('#description').val(),
+          dateTime: $('#datetimepicker').val(),
+          foodgrouping: $('input[name=foodgrouping]:checked').val(),
+          image: image_name
+        });
+        return false;
+      });
+
+      socket.on('post item return', (item) => {
+        addNewItem(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
+      });
+
+
+    });
+  </script>
+
 
 </head>
 
@@ -45,9 +102,9 @@
 
   <!-- Contains contents of the board-->
   <div id="board">
-
+    <div id='card-list'></div>
     <!-- Button to open modal-->
-    <a class="btn additem" data-toggle="modal" data-target="#itemModal">
+    <a id='add-item-button' class="btn additem" data-toggle="modal" data-target="#itemModal">
       <img id="add-icon" src="./Pictures/add-icon.png">
     </a>
   </div>
@@ -68,10 +125,10 @@
           <!-- Modal Body-->
           <div class="modal-body">
             <!--Sets up the form when the modal is opened-->
-            <form id="postForm" action="./boardpage.html">
+            <form id="postForm" action="javascript:void(0);">
 
               <div class="form-group">
-                <input id="name" type="text" required class="form-control" placeholder="Enter food name" name="name">
+                <input id="name" type="text" class="form-control" placeholder="Enter food name" name="name">
               </div>
 
               <div class="form-group">
@@ -88,36 +145,32 @@
               <div class="form-group">
                 <div class="radio">
                   <label>
-                    <input type="radio" name="foodOption">Produce</label>
+                    <input type="radio" name="foodgrouping" value="Produce">Produce</label>
                   <label>
-                    <input type="radio" name="foodOption">Meat</label>
+                    <input type="radio" name="foodgrouping" value="Meat">Meat</label>
                   <label>
-                    <input type="radio" name="foodOption">Packaged</label>
+                    <input type="radio" name="foodgrouping" value="Packaged">Packaged</label>
                   <label>
-                    <input type="radio" name="foodOption">Canned Goods</label>
+                    <input type="radio" name="foodgrouping" value="Canned Goods">Canned Goods</label>
                 </div>
               </div>
 
               <div class="form-group">
                 <input id="file-input" type="file" accept="image/*">
-                <p id="output"></p>
+                <output id="file-output"></output>
               </div>
-              
 
-              <input id="submit" type="submit" class="btn btn-primary" data-dismiss="modal" value="Post">
+
+              <input id="submit" type="submit" class="btn btn-primary" value="Submit">
             </form>
           </div>
 
-          <!--<div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Button</button>
-          </div>-->
+
         </div>
       </div>
 
     </div>
   </div>
-
-  <script src="boardpage.js">
   </script>
 
 </body>
