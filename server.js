@@ -139,7 +139,7 @@ io.on('connection', (socket) => {
       }
     });
 
-    uploader.on('complete', () => {
+    uploader.once('complete', () => {
       console.log('File Transfer Completed...');
       io.emit('post item return', {
         id: id,

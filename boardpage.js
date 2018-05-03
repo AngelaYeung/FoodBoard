@@ -1,10 +1,39 @@
+// Creates a thumbnail when an image has been uploaded
+function handleFileSelect(evt) {
+    var files = evt.target.files; // FileList object
+
+    // Only process image files.
+  if (files[0].type.match('image.*')) {
+
+
+        var reader = new FileReader();
+
+       // Closure to capture the file information.
+        reader.onload = (function (theFile) {
+            return function (e) {
+                // Render thumbnail.
+                var span = document.createElement('span');
+                span.innerHTML = ['<img class="thumb" src="', e.target.result,
+                    '" title="', escape(theFile.name), '"/>'].join('');
+                document.getElementById("output").appendChild(span);
+            };
+        })(files[0]);
+
+       // Read in the image file as a data URL.
+       reader.readAsDataURL(files[0]);
+    }
+}
+
+document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
+
+
 /**
- * Creates new card
+ * Creates new card based on the parameters passed into the function.
  */
-function addNewItem(id, name, description, foodGroup, dateTime, img) {
+function addNewItem(id, name, description, dateTime, foodGroup, img) {
 
     var cardDiv = document.createElement("div");
-    cardDiv.setAttribute("id", "card");
+    cardDiv.setAttribute("id", `card${id}`);
     cardDiv.setAttribute("class", "cardContainer");
     
     var contentDiv = document.createElement("div");
@@ -17,23 +46,32 @@ function addNewItem(id, name, description, foodGroup, dateTime, img) {
     var textDiv = document.createElement("div");
     textDiv.setAttribute("class", "col-xs-10");
     
-    var foodName = document.createElement("h4");
-
+    var foodName = document.createElement("h2");
     // grabs the name from the form so that it will be appended to cardDiv
     foodName.innerHTML = name;
 
     var buttonDiv = document.createElement("div");
     buttonDiv.setAttribute("class", "col-xs-2");
     
-    var toggleButton = document.createElement("button");
+    // var toggleButton = document.createElement("button");
+    // toggleButton.setAttribute("data-toggle", "collapse");
+    // toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
+    // toggleButton.setAttribute("class", "collapse-button");
+
+    var toggleButton = document.createElement("anchor");
     toggleButton.setAttribute("data-toggle", "collapse");
     toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
     toggleButton.setAttribute("class", "collapse-button");
+
+    var toggleImg = document.createElement("img");
+    toggleImg.src = "./Pictures/chevron-down.png";
 
     var toggleDiv = document.createElement("div");
     toggleDiv.setAttribute("id", `collapseDiv${id}`);
     toggleDiv.setAttribute("class", "collapse");
 
+    var foodCategory = document.createElement("p");
+    foodCategory.innerHTML = foodGroup;
     //takes the contents of the description 
     var foodDescription = document.createElement("p");
     foodDescription.innerHTML = description;
@@ -45,29 +83,43 @@ function addNewItem(id, name, description, foodGroup, dateTime, img) {
     foodImg.setAttribute("class", "food-img");
     foodImg.src = `/images/${img}`;
 
-    //$("#datetimepicker").datetimepicker();
-    //cardDiv.appendChild(foodImg);
+    var claimForm = document.createElement("form");
+    var claimButton = document.createElement("input");
+    claimButton.setAttribute("id", `claimButton${id}`);
+    claimButton.setAttribute("class", "claim-button");
+    claimButton.setAttribute("type", "Submit");
+    claimButton.setAttribute("value", "Claim");
+
     cardDiv.appendChild(imageDiv);
     imageDiv.appendChild(foodImg);
     cardDiv.appendChild(headerDiv);
     cardDiv.appendChild(contentDiv);
 
-    //contentDiv.appendChild(headerDiv);
     contentDiv.appendChild(toggleDiv);
 
     headerDiv.appendChild(textDiv);
     headerDiv.appendChild(buttonDiv);
     buttonDiv.appendChild(toggleButton);
+    toggleButton.appendChild(toggleImg);
     textDiv.appendChild(foodName);
 
+    toggleDiv.appendChild(foodCategory);
     toggleDiv.appendChild(foodDescription);
+    toggleDiv.appendChild(claimForm);
+
+    claimForm.appendChild(claimButton);
     $("#card-list").append(cardDiv);
 
     /** Clearing Forms */
     $('#postForm').trigger('reset');
 
-    /** Hides Modal */
-    if($('#itemModal').hasClass('show')) {
+     /** Hides Modal */
+     if ($('#itemModal').is(':visible')) {
         $('#itemModal').modal('toggle');
     }
+}
+
+function formatDate(dateString) {
+    var date;
+    return date = new Date(dateString);
 }
