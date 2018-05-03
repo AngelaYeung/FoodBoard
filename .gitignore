@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#ignore for node_modules
-node_modules/
-
-=======
 # ignore node modules
 node_modules/
->>>>>>> 42c382b261d636a70685eeb47448780c925c158d
 *.txt
