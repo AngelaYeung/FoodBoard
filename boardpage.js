@@ -31,13 +31,8 @@ document.getElementById('file-input').addEventListener('change', handleFileSelec
 //Event handler for when the submit button is clicked.
 //Should post the contents of the form onto the board.
 $("#submit").click(function () {
-    var nameContent = $("#name").val();
-    var descriptionContent = $("#description").val();
-
-    //createFoodObject();
     addNewItem();
-}
-);
+});
 
 //Function for posting the user input onto the board
 function addNewItem() {
@@ -81,6 +76,10 @@ function addNewItem() {
     var foodImg = document.createElement("img");
     foodImg.setAttribute("class", "food-img");
     foodImg.src = "./Pictures/hero-image-flat.jpg";
+
+    var claimButton = document.createElement("button");
+    claimButton.setAttribute("class", "claim");
+    
 
     //$("#datetimepicker").datetimepicker();
     //cardDiv.appendChild(foodImg);
