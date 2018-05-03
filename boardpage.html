@@ -5,14 +5,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <Title>"Board"</Title>
+<<<<<<< HEAD
 
   <!-- BootStrap CSS CDN -->
+=======
+>>>>>>> develop
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="./boardpage.css">
   <link rel="stylesheet" href="./navbar.css">
 
+<<<<<<< HEAD
 
   <!-- Form Page Appears -->
   <script src="boardpage.js"></script>
@@ -68,6 +72,8 @@
   </script>
 
 
+=======
+>>>>>>> develop
 </head>
 
 <body>
@@ -99,6 +105,12 @@
       </div>
     </div>
   </header>
+<<<<<<< HEAD
+=======
+
+  <!-- Contains contents of the board-->
+  <div id="board">
+>>>>>>> develop
 
   <!-- Contains contents of the board-->
   <div id="board">
@@ -125,6 +137,7 @@
           <!-- Modal Body-->
           <div class="modal-body">
             <!--Sets up the form when the modal is opened-->
+<<<<<<< HEAD
             <form id="postForm" action="javascript:void(0);">
 
               <div class="form-group">
@@ -132,6 +145,15 @@
               </div>
 
               <div class="form-group">
+=======
+            <form id="postForm" action="./boardpage.html">
+
+              <div class="form-group">
+                <input id="name" type="text" required class="form-control" placeholder="Enter food name" name="name">
+              </div>
+
+              <div class="form-group">
+>>>>>>> develop
                 <input id="description" type="text" class="form-control" placeholder="Enter food description" name="description">
               </div>
 
@@ -145,6 +167,7 @@
               <div class="form-group">
                 <div class="radio">
                   <label>
+<<<<<<< HEAD
                     <input type="radio" name="foodgrouping" value="Produce">Produce</label>
                   <label>
                     <input type="radio" name="foodgrouping" value="Meat">Meat</label>
@@ -152,16 +175,33 @@
                     <input type="radio" name="foodgrouping" value="Packaged">Packaged</label>
                   <label>
                     <input type="radio" name="foodgrouping" value="Canned Goods">Canned Goods</label>
+=======
+                    <input type="radio" name="foodOption">Produce</label>
+                  <label>
+                    <input type="radio" name="foodOption">Meat</label>
+                  <label>
+                    <input type="radio" name="foodOption">Packaged</label>
+                  <label>
+                    <input type="radio" name="foodOption">Canned Goods</label>
+>>>>>>> develop
                 </div>
               </div>
 
               <div class="form-group">
                 <input id="file-input" type="file" accept="image/*">
+<<<<<<< HEAD
                 <output id="file-output"></output>
               </div>
 
 
               <input id="submit" type="submit" class="btn btn-primary" value="Submit">
+=======
+                <p id="output"></p>
+              </div>
+              
+
+              <input id="submit" type="submit" class="btn btn-primary" data-dismiss="modal" value="Post">
+>>>>>>> develop
             </form>
           </div>
 
@@ -171,6 +211,11 @@
 
     </div>
   </div>
+<<<<<<< HEAD
+=======
+
+  <script src="boardpage.js">
+>>>>>>> develop
   </script>
 
 </body>
