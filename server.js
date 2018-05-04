@@ -95,6 +95,36 @@ io.on('connection', (socket) => {
   uploader.listen(socket); // listens for image uploads
 
 
+  /*************************************************************************
+   * 
+   *         FOOD BOARD LOAD FEATURE - SERVER SIDE
+   * 
+   * Fired as soon as user is connected to server
+   * 
+   *************************************************************************/
+
+  /** Grab All Food Items from DB */
+  var foodboardItems = "SELECT * FROM fooditem";
+  connection.query(foodboardItems, (error, rows, fields) => {
+    if (error) {
+      console.log("Error grabbing food items");
+    } else {
+      console.log("Successfully grabbed food items.");
+      console.log('Rows:', rows);
+
+      /* Sends list of food items to the client to print to browser */
+      socket.emit('load foodboard', rows);
+    }
+  });
+
+
+
+/*************************************************************************
+   * 
+   *         FOOD BOARD POST FEATURE - SERVER SIDE
+   * 
+   *************************************************************************/
+
   /** Handles 'post item' event that is fired from the index.html.  */
   socket.on('post item', (item) => {
     console.log(item);
@@ -106,7 +136,7 @@ io.on('connection', (socket) => {
     let foodImage = item.image;
     let id;
 
-
+    /** Inserts data into database */
     var foodItem = "INSERT INTO fooditem (FoodName, foodDescription, FoodGroup,  FoodExpiryTime, foodImage) VALUES (?, ?, ?, ?, ?)";
     connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage], (error, rows, field) => {
       if (error) {
@@ -120,25 +150,8 @@ io.on('connection', (socket) => {
       }
     });
 
-    var newPostingID;
-    // Create a posting for the FoodBoard Table.
-    var selectNewPosting = "SELECT itemid FROM fooditem ORDER BY itemid DESC LIMIT 1;"
-    connection.query(selectNewPosting, (error, result,field) => {
-      console.log("posting id: " + result);
-      newPostingID = result;
-    })
-    var createBoardPosting = "INSERT INTO foodboardboard(Posting_PostID) VALUES (?)";
-    connection.query(createBoardPosting, [newPostingID], (error, rows, field) => {
-      if (error) {
-        // return error if insertion fail
-        console.log("Error inserting new board post." + error);
-        console.log(error);
-      } else {
-        // else return the updated table
-        console.log("Successful insertion into board.");
-      }
-    });
 
+    /* Once image transfer has complete, tell client to create it's card */
     uploader.once('complete', () => {
       console.log('File Transfer Completed...');
       io.emit('post item return', {
@@ -150,8 +163,8 @@ io.on('connection', (socket) => {
         image: foodImage
       });
     });
-
   });
+
 });
 
 /** socket io to handle the connection event, and grabbing the table of all the foodboard
