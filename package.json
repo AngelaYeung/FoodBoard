@@ -1,8 +1,9 @@
 {
-  "name": "nodejs",
-  "version": "1.0.0",
-  "description": "",
+  "name": "FoodBoard",
+  "version": "0.0.2",
+  "description": "Foodsharing application",
   "main": "server.js",
+  "homepage": "http://foodboard.ca",
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
@@ -15,6 +16,32 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "",
+  "contributors": [
+    {
+      "name": "Angela Yeung",
+      "email": "angelayeung168@gmail.com",
+      "web": ""
+    },
+    {
+      "name": "Derek Lee",
+      "email": "derek.lee8526@gmail.com",
+      "web": ""
+    },
+    {
+      "name": "James Nguyen",
+      "email": "duyanh.j6@gmail.com",
+      "web": ""
+    },
+    {
+      "name": "Michael Yu",
+      "email": "michaelmhyu@gmail.com",
+      "web": ""
+    },
+    {
+      "name": "Robert Ozdoba",
+      "email": "rozzy1993@gmail.com",
+      "web": ""
+    }
+  ],
   "license": "ISC"
 }
