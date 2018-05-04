@@ -111,6 +111,8 @@ io.on('connection', (socket) => {
   connection.query(foodboardItems, (error, rows, fields) => {
     if (error) {
       console.log("Error grabbing food items");
+    } else if (!rows.length) {
+      console.log("Database is empty.");
     } else {
       console.log("Successfully grabbed food items.");
       console.log('Rows:', rows);
