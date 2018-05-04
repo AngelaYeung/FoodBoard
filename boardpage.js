@@ -83,7 +83,9 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     foodImg.setAttribute("class", "food-img");
     foodImg.src = `/images/${img}`;
 
+    
     var claimForm = document.createElement("form");
+    claimForm.setAttribute("class", "claim-form");
     var claimButton = document.createElement("input");
     claimButton.setAttribute("id", `claimButton${id}`);
     claimButton.setAttribute("class", "claim-button");
@@ -108,7 +110,7 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     toggleDiv.appendChild(claimForm);
 
     claimForm.appendChild(claimButton);
-    $("#card-list").append(cardDiv);
+    $("#card-list").prepend(cardDiv);
 
     /** Clearing Forms */
     $('#postForm').trigger('reset');

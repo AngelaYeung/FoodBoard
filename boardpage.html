@@ -65,11 +65,34 @@
        *         FOOD BOARD LOAD FEATURE - CLIENT SIDE
        * 
        *************************************************************************/
+
+      /**
+       * When the window is loaded, trigger websocket event for server to fetch foodboard posts
+       * from the data base. 
+       */
+      $(window).on('load', () => {
+        console.log('Client: page loaded');
+        socket.emit('page loaded'); 
+      });
+
+
       socket.on('load foodboard', (items) => {
-          for (var i = 0; i < items.length; i++) {
-            addNewItem(items[i].ID, items[i].FoodName, items[i].foodDescription, items[i].FoodGroup, items[i].FoodExpiryTime,
-              items[i].foodImage);
-          }
+        for (var i = 0; i < items.length; i++) {
+          addNewItem(items[i].ID, items[i].FoodName, items[i].foodDescription, items[i].FoodGroup, items[i].FoodExpiryTime,
+            items[i].foodImage);
+        }
+      });;
+
+
+      /*************************************************************************
+       * 
+       *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
+       * 
+       *************************************************************************/
+
+      $('_claim-form').on('submit', (e) => {
+        e.preventDefault();
+        console.log(this.id);
       });
 
     });

@@ -7,6 +7,7 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const siofu = require('socketio-file-upload'); // for image uploading
 
+const port = 8080;
 
 var app = express().use(siofu.router); // adds siofu as a router, middleware
 
@@ -23,6 +24,10 @@ app.use(bodyParser.urlencoded({
 
 // sets root directory to current one
 app.use(express.static(__dirname + '/'));
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + "/" + 'home.html');
+})
 
 /**
  * Link to the boardpage on click of 'Board' button.
@@ -87,8 +92,10 @@ connection.connect((error) => {
 
 
 
-
-// io handles the connection event to insert food item
+/**
+ * Socketio detects that connection has been made to the server.
+ * The connection event is fired, whenever anyone goes to foodboard.ca.
+ */
 io.on('connection', (socket) => {
   console.log('user connected');
 
@@ -106,18 +113,27 @@ io.on('connection', (socket) => {
    * 
    *************************************************************************/
 
-  /** Grab All Food Items from DB */
-  var foodboardItems = "SELECT * FROM fooditem";
-  connection.query(foodboardItems, (error, rows, fields) => {
-    if (error) {
-      console.log("Error grabbing food items");
-    } else {
-      console.log("Successfully grabbed food items.");
-      console.log('Rows:', rows);
 
-      /* Sends list of food items to the client to print to browser */
-      socket.emit('load foodboard', rows);
-    }
+   /**
+    * When the user has ac omplete loaded page, fetch data from db to print posts
+    * to screen. 
+    */
+  socket.on('page loaded', () => {
+    console.log('Server: page loaded')
+    /** Grab All Food Items from DB */
+    var foodboardItems = "SELECT * FROM FoodItem";
+
+    connection.query(foodboardItems, (error, rows, fields) => {
+      if (error) {
+        console.log("Error grabbing food items");
+      } else {
+        console.log("Successfully grabbed food items.");
+        console.log('Rows:', rows);
+  
+        /* Sends list of food items to the client to print to browser */
+        socket.emit('load foodboard', rows);
+      }
+    });
   });
 
 
@@ -140,7 +156,7 @@ io.on('connection', (socket) => {
     let id;
 
     /** Inserts data into database */
-    var foodItem = "INSERT INTO fooditem (FoodName, foodDescription, FoodGroup,  FoodExpiryTime, foodImage) VALUES (?, ?, ?, ?, ?)";
+    var foodItem = "INSERT INTO FoodItem (foodName, foodDescription, foodGroup,  foodExpiryTime, foodImage) VALUES (?, ?, ?, ?, ?)";
     connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage], (error, rows, field) => {
       if (error) {
         // return error if insertion fail
@@ -237,6 +253,6 @@ io.on('connection', (socket) => {
 
 
 // The port we are listening on
-server.listen(8080, () => {
-  console.log('We are on port 8000');
+server.listen(port, () => {
+  console.log(`We are on port ${port}`);
 })
