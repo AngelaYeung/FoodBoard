@@ -114,22 +114,23 @@ io.on('connection', (socket) => {
    *************************************************************************/
 
 
-   /**
-    * When the user has ac omplete loaded page, fetch data from db to print posts
-    * to screen. 
-    */
+  /**
+   * When the user has ac omplete loaded page, fetch data from db to print posts
+   * to screen. 
+   */
   socket.on('page loaded', () => {
     console.log('Server: page loaded')
     /** Grab All Food Items from DB */
-    var foodboardItems = "SELECT * FROM FoodItem";
-
+    var foodboardItems = "SELECT * FROM fooditem";
     connection.query(foodboardItems, (error, rows, fields) => {
       if (error) {
         console.log("Error grabbing food items");
+      } else if (!rows.length) {
+        console.log("Database is empty.");
       } else {
         console.log("Successfully grabbed food items.");
         console.log('Rows:', rows);
-  
+
         /* Sends list of food items to the client to print to browser */
         socket.emit('load foodboard', rows);
       }
@@ -138,7 +139,7 @@ io.on('connection', (socket) => {
 
 
 
-/*************************************************************************
+  /*************************************************************************
    * 
    *         FOOD BOARD POST FEATURE - SERVER SIDE
    * 
