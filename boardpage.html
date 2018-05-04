@@ -30,11 +30,11 @@
       var image_name;
 
 
-/*************************************************************************
-* 
-*         FOOD BOARD POST FEATURE - CLIENT SIDE
-* 
-*************************************************************************/
+      /*************************************************************************
+       * 
+       *         FOOD BOARD POST FEATURE - CLIENT SIDE
+       * 
+       *************************************************************************/
       /** Uploads the image in form to server, and grabs its name */
       uploader.listenOnSubmit(document.getElementById('submit'), document.getElementById('file-input'));
       uploader.addEventListener('start', (event) => {
@@ -60,15 +60,18 @@
       });
 
 
-/*************************************************************************
-* 
-*         FOOD BOARD LOAD FEATURE - CLIENT SIDE
-* 
-*************************************************************************/
+      /*************************************************************************
+       * 
+       *         FOOD BOARD LOAD FEATURE - CLIENT SIDE
+       * 
+       *************************************************************************/
       socket.on('load foodboard', (items) => {
-        for (var i = 0; i < items.length; i++) {}
-          addNewItem(items[i].ID, items[i].FoodName, items[i].foodDescription, items[i].FoodGroup, items[i].FoodExpiryTime, items[i].foodImage);
-        });
+          for (var i = 0; i < items.length; i++) {
+            addNewItem(items[i].ID, items[i].FoodName, items[i].foodDescription, items[i].FoodGroup, items[i].FoodExpiryTime,
+              items[i].foodImage);
+          }
+      });
+
     });
   </script>
 

@@ -24,7 +24,7 @@ function handleFileSelect(evt) {
     }
 }
 
-document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
+// document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
 
 
 /**
