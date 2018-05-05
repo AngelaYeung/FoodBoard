@@ -1,5 +1,5 @@
 {
-  "name": "Food board",
+  "name": "foodboard",
   "version": "0.0.2",
   "description": "Foodsharing application",
   "main": "server.js",
