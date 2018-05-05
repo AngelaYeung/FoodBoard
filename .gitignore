@@ -7,3 +7,4 @@ node_modules/
 # prevent output messages from displaying
 *.out
 *.txt
+*.swp

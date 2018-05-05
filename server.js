@@ -121,7 +121,7 @@ io.on('connection', (socket) => {
   socket.on('page loaded', () => {
     console.log('Server: page loaded')
     /** Grab All Food Items from DB */
-    var foodboardItems = "SELECT * FROM fooditem";
+    var foodboardItems = "SELECT * FROM FoodItem";
     connection.query(foodboardItems, (error, rows, fields) => {
       if (error) {
         console.log("Error grabbing food items");
