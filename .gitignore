@@ -1,3 +1,9 @@
 # ignore node modules
 node_modules/
+
+# no shell commands
+*.sh
+
+# prevent output messages from displaying
+*.out
 *.txt
