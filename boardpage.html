@@ -78,7 +78,7 @@
 
       socket.on('load foodboard', (items) => {
         for (var i = 0; i < items.length; i++) {
-          addNewItem(items[i].ID, items[i].FoodName, items[i].foodDescription, items[i].FoodGroup, items[i].FoodExpiryTime,
+          addNewItem(items[i].itemID, items[i].foodName, items[i].foodDescription, items[i].foodGroup, items[i].foodExpiryTime,
             items[i].foodImage);
         }
       });;
