@@ -72,6 +72,7 @@
   .glyphicon{
     padding-left:0!important;
   }
+
 }
 
 @media screen and (min-width: 481px) {
@@ -140,6 +141,7 @@ body {
   background-color: transparent;
   border-style: none;
   padding: 0;
+  box-shadow: none;
 }
 .dropdown-menu {
   width: 100%;

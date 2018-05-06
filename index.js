@@ -8,14 +8,14 @@ $(document).ready(function () {
       });
 
       // add scrollspy onto body of the page for how it works link
-      $("#how-link").click(function () {
+      $(".nav-link-value").click(function () {
         $('html, body').animate({
           scrollTop: $("#how-it-works").offset().top
         }, 500);
       });
 
       // add scrollspy onto body of the page for our-team link
-      $("#team-link").click(function () {
+      $(".nav-link-team").click(function () {
         $('html, body').animate({
           scrollTop: $("#our-team").offset().top
         }, 500);
