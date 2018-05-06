@@ -239,14 +239,14 @@
                 <div>
                   <p class="modal-text">Register for FoodBoard</p>
                 </div>
-                <form class="form-horizontal" action="user_registration_info" method="POST">
+                <form class="form-horizontal">
                   <!-- Registration form username input -->
                   <div class="form-group">
                     <div class="col-sm-2 input-addon">
                       <span class="glyphicon glyphicon-user"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="text" placeholder="First Name" name="register_first_name" required>
+                      <input id="register-firstName" class="form-control" type="text" placeholder="First Name" required>
                     </div>
                   </div>
                   <!-- Registration form username input -->
@@ -255,7 +255,7 @@
                       <span class="glyphicon glyphicon-user"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="text" placeholder="Last Name" name="register_last_name" required>
+                      <input id="register-lastName" class="form-control" type="text" placeholder="Last Name" required>
                     </div>
                   </div>
                   <!-- Registration form username input -->
@@ -264,7 +264,7 @@
                       <span class="glyphicon glyphicon-envelope"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="email" placeholder="Email Address" name="register_email" required>
+                      <input id="register-email" class="form-control" type="email" placeholder="Email Address" required>
                     </div>
                   </div>
                   <!-- Register form password input -->
@@ -273,7 +273,7 @@
                       <span class="glyphicon glyphicon-lock"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="password" placeholder="Enter Password" name="register_pwd" required>
+                      <input id="register-pwd" class="form-control" type="password" placeholder="Enter Password" required>
                     </div>
                   </div>
                   <!-- Register form password confirm input -->
@@ -282,7 +282,7 @@
                       <span class="glyphicon glyphicon-ok-circle"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="password" placeholder="Confirm Password" name="register_pwd_confirm" required>
+                      <input id="register-pwdConfirm" class="form-control" type="password" placeholder="Confirm Password" required>
                     </div>
                   </div>
                   <!-- Register form suite number input -->
@@ -291,19 +291,15 @@
                       <span class="glyphicon glyphicon-home"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="text" placeholder="Apartment Suite Number" name="register_suite_number" required>
+                      <input id="register-suiteNumber"class="form-control" type="text" placeholder="Apartment Suite Number" required>
                     </div>
                   </div>
                   <!-- Register form submit button -->
                   <div class="form-group">
-                    <input type="submit" class="btn btn-success center-block" value="Register"></input>
+                    <input id="register-submit" type="submit" class="btn btn-success center-block" value="Register"></input>
                   </div>
                 </form>
               </div>
-              <!-- Register Panel Footer -->
-              <!-- <div class="modal-footer">
-                <button type="submit" class="btn btn-success center-block" value="Register">Register</button>
-              </div> -->
             </div>
           </div>
         </div>

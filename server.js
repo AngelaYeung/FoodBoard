@@ -107,6 +107,54 @@ io.on('connection', (socket) => {
 
   /*************************************************************************
    * 
+   *         FOOD BOARD REGISTRATION FEATURE - SERVER SIDE
+   * 
+   *************************************************************************/
+
+
+  /** Handles 'post item' event that is fired from the home.html.  */
+  socket.on('register', (user) => {
+    console.log(user);
+
+    // Stores user's registration info into variables
+    let firstName = user.firstName;
+    let lastName = user.lastName;
+    let email = user.email;
+    let suiteNumber = user.suiteNumber;
+    let password = user.password;
+
+    // checks if user has already registered with provided email
+    var checkRegistration = "SELECT * FROM User WHERE exists (select * from user where email = ?)";
+    connection.query(checkRegistration, [email], (error, result) => {
+      if (error) {
+        //return error if error in query
+        console.log("Registration error occured: " + error);
+      } else if (result.length > 0) {
+        //result returns number greater than 0 if already user registered with provided email
+        console.log("Registration unsuccessful, user already registered with this email: " + result);
+        socket.emit('register return', result);
+      } else {
+        
+        //result returned 0 meaning there were no users registered with the provided email
+        var registerUser = "INSERT INTO user (firstName, lastName, email, suiteNumber, password) VALUES (?, ?, ?, ?, ?)";
+        connection.query(registerUser, [firstName, lastName, email, suiteNumber, password], (error, success) => {
+          if (error) {
+            //return error if insertion fail
+            console.log("Registration unsuccessful: " + error);
+          } else {
+            //else return the updated table
+            console.log("Registration successful!: " + success);
+            const destination = './boardpage.html';
+            socket.emit('navigate board', destination);
+          }
+        });
+      }
+    });
+  });
+
+  
+  /*************************************************************************
+   * 
    *         FOOD BOARD LOAD FEATURE - SERVER SIDE
    * 
    * Fired as soon as user is connected to server

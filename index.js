@@ -1,4 +1,6 @@
 $(document).ready(function () {
+      
+      var socket = io();
 
       // add scrollspy onto body of the page for about link
       $("#about-link").click(function () {
@@ -49,4 +51,43 @@ $(document).ready(function () {
         }
       });
     });
+
+    /*************************************************************************
+       * 
+       *         FOOD BOARD REGISTER FEATURE - CLIENT SIDE
+       * 
+       *************************************************************************/
+
+
+      /** Sends data from post-form to server.js */
+      $('#register-submit').click(function () {
+        console.log('Register triggered!');
+
+        if ($('#register-pwd').val() == $('#register-pwdConfirm').val()) {
+          console.log('Password is a match');
+          socket.emit('register', {
+            firstName: $('#register-firstName').val(),
+            lastName: $('#register-lastName').val(),
+            email: $('#register-email').val(),
+            password: $('#register-pwd').val(),
+            suiteNumber: $('#register-suiteNumber').val()
+          });
+        } else {
+          console.log("Password does not match.");
+        }
+
+        return false;
+      });
+
+      socket.on('register return', (register) => {
+        if (register.length > 0) {
+          console.log("Registration unsuccessful, this email address has already been registered.");
+        }
+      });
+      
+      socket.on('navigate board', (destination) => {
+        console.log("Successful registration!" + destination);
+        window.location.href = destination;
+      });
+
 });
