@@ -5,6 +5,10 @@
   margin: 15px auto;
   box-shadow: 2px 3px 20px grey;
   }
+
+  img{
+      width: 80%; 
+  }
 }
 
 @media screen and (min-width: 481px) {
@@ -33,7 +37,7 @@ body {
 /* sets the position of the add icon */
 .additem {
   position: fixed;
-  right: 5px;
+  right: -7px;
   bottom: 5px;
   
 }

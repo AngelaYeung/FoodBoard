@@ -2,136 +2,137 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <Title>FoodBoard</Title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="./index.css">
-  <link rel="stylesheet" href="./login-register.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <Title>FoodBoard</Title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./login-register.css">
 
-  <script src="/socket.io/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 
 </head>
 
 <body id="page-top">
-  <header>
-    <header id="header">
-      <div class="container-fluid">
-        <nav class="navbar navbar-expand-sm navbar-fixed-top navbar-custom">
-          <div class="nav navbar-brand">
-            <a class="navbar-foodboard" href="./index.html">
-              <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
-            </a>
-          </div>
+    <header>
+        <header id="header">
+            <div class="container-fluid">
+                <nav class="navbar navbar-expand-sm navbar-fixed-top navbar-custom">
+                    <div class="nav navbar-brand">
+                        <a class="navbar-foodboard" href="./index.html">
+                            <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
+                        </a>
+                    </div>
 
-          <!-- navbar logo for mobile-->
-          <div class="nav navbar-brand-sm">
-            <div class="text-center">
+                    <!-- navbar logo for mobile-->
+                    <div class="nav navbar-brand-sm">
+                        <div class="text-center">
 
-              <a class="navbar-foodboard" href="#page-top">
-                <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
-              </a>
+                            <a class="navbar-foodboard" href="#page-top">
+                                <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
+                            </a>
+                        </div>
+                        <div class="navbar-right dropdown">
+                            <a class="btn btn-primary btn-lg dropdown-toggle glyphicon glyphicon-menu-hamburger" data-toggle="dropdown"></a>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item text-center">
+                                    <form action="/board">
+                                        <input type="submit" class="linkButton" value="BOARD" />
+                                    </form>
+                                </li>
+                                <li class="nav-item text-center">
+                                    <a href="#our-team" class="nav-link-team">OUR TEAM</a>
+                                </li>
+                                <li class="nav-item text-center">
+                                    <a href="#how-it-works" class="nav-link-value">VALUES</a>
+                                </li>
+                                <li class="nav-item text-center">
+                                    <a href="#" class="nav-link" data-toggle="modal" data-target="#logreg-modal">LOGIN</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--Nav bar for Desktop-->
+                    <ul class="nav navbar-nav navbar-right navbar-right-custom">
+                        <li class="nav-item text-center">
+                            <form action="/board">
+                                <input type="submit" class="linkButton" value="BOARD" />
+                            </form>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#how-it-works" class="nav-link" class="nav-link-value">VALUES</a>
+                        </li>
+                        <li class="nav-item text-center">
+                            <a href="#our-team" class="nav-link" class="nav-link-team">OUR TEAM</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="" class="nav-link" data-toggle="modal" data-target="#logreg-modal">LOGIN</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
-            <div class="navbar-right dropdown">
-              <a class="btn btn-primary btn-lg dropdown-toggle glyphicon glyphicon-menu-hamburger menu-button" data-toggle="dropdown"></a>
-              <ul class="dropdown-menu">
-                <li class="nav-item text-center">
-                  <form action="/board">
-                    <input type="submit" class="linkButton" value="BOARD" />
-                  </form>
-                </li>
-                <li class="nav-item text-center">
-                  <a href="#our-team" class="nav-link-team">OUR TEAM</a>
-                </li>
-                <li class="nav-item text-center">
-                  <a href="#how-it-works" class="nav-link-value">VALUES</a>
-                </li>
-                <li class="nav-item text-center">
-                  <a href="#" class="nav-link" data-toggle="modal" data-target="#logreg-modal">LOGIN</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <!--Nav bar for Desktop-->
-          <ul class="nav navbar-nav navbar-right navbar-right-custom">
-            <li class="nav-item text-center">
-              <form action="/board">
-                <input type="submit" class="linkButton" value="BOARD" />
-              </form>
-            </li>
-            <li class="nav-item">
-              <a href="#how-it-works" class="nav-link" class="nav-link-value">VALUES</a>
-            </li>
-            <li class="nav-item text-center">
-              <a href="#our-team" class="nav-link" class="nav-link-team">OUR TEAM</a>
-            </li>
-            <li class="nav-item">
-              <a href="" class="nav-link" data-toggle="modal" data-target="#logreg-modal">LOGIN</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
+        </header>
     </header>
 
     <!-- Homepage-->
     <div id="homepage-body-container" class="container-fluid">
-      <div id="background-lg" class="container-fluid-custom homepage-background">
+        <div id="background-lg" class="container-fluid-custom homepage-background">
 
-        <img class="background" src="./Pictures/hero-image-flat.jpg" alt="background">
+            <img class="background" src="./Pictures/hero-image-flat.jpg" alt="background">
 
-      </div>
-      <!-- background image for mobile -->
-      <div id="background-sm" class="container-fluid-custom homepage-background-sm">
-        <img class="background" src="./Pictures/hero-image.jpg" alt="background">
-      </div>
+        </div>
+        <!-- background image for mobile -->
+        <div id="background-sm" class="container-fluid-custom homepage-background-sm">
+            <img class="background" src="./Pictures/hero-image.jpg" alt="background">
+        </div>
 
-      <div id="homepage-body" class="text-center">
-        <img class="img-responsive" src="./Pictures/largelogo-text-transparent.png" alt="FoodBoard logo">
-        <p>Share More, Waste Less</p>
-        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#logreg-modal">Get Started!</button>
-      </div>
+        <div id="homepage-body" class="text-center">
+            <img class="img-responsive" src="./Pictures/largelogo-text-transparent.png" alt="FoodBoard logo">
+            <p>Share More, Waste Less</p>
+            <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#logreg-modal">Get Started!</button>
+        </div>
     </div>
 
     <!-- How it works section-->
     <div class="container-fluid container-fluid-custom" id="how-it-works">
-      <div class="jumbotron jumbotron-custom">
-        <div class="row">
-          <div class="col-lg-12 text-center">
-            <b>VALUES</b>
-          </div>
+        <div class="jumbotron jumbotron-custom">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <b>VALUES</b>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 text-center">
+                    <img src="./Pictures/sustain.png" alt="Sustain">
+                    <div>
+                        <h2>
+                            <b>Sustain</b>
+                        </h2>
+                        <p>Reduce the amount of perishable foods in your community.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <img src="./Pictures/groceries.png" alt="Share">
+                    <div>
+                        <h2>
+                            <b>Share</b>
+                        </h2>
+                        <p>Post and claim items with the click of a button.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <img src="./Pictures/grow.png" alt="Grow">
+                    <div>
+                        <h2>
+                            <b>Grow</b>
+                        </h2>
+                        <p>Create a sustainable community within your neighborhood.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row">
-          <div class="col-lg-4 text-center">
-            <img src="./Pictures/sustain.png" alt="Sustain">
-            <div>
-              <h2>
-                <b>Sustain</b>
-              </h2>
-              <p>Reduce the amount of perishable foods in your community.</p>
-            </div>
-          </div>
-          <div class="col-lg-4 text-center">
-            <img src="./Pictures/groceries.png" alt="Share">
-            <div>
-              <h2>
-                <b>Share</b>
-              </h2>
-              <p>Post and claim items with the click of a button.</p>
-            </div>
-          </div>
-          <div class="col-lg-4 text-center">
-            <img src="./Pictures/grow.png" alt="Grow">
-            <div>
-              <h2>
-                <b>Grow</b>
-              </h2>
-              <p>Create a sustainable community within your neighborhood.</p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
     </br>
     </br>
@@ -143,171 +144,171 @@
 
     <!-- OUR TEAM -->
     <div class="container-fluid text-center" id="our-team">
-      <div class="row">
-        <div class="col-lg-12 text-center" id="our-team-title">
-          <b>OUR TEAM</b>
+        <div class="row">
+            <div class="col-lg-12 text-center" id="our-team-title">
+                <b>OUR TEAM</b>
+            </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-lg-1"></div>
-        <div class="col-lg-2 text-center">
-          <img class="img-circle" src="./Pictures/HeadShots/Angela.gif" alt="Angela Yeung">
-          <h3>Angela Yeung</h3>
-          <p>Front-End Developer</p>
+        <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-2 text-center">
+                <img class="img-circle" src="./Pictures/HeadShots/Angela.gif" alt="Angela Yeung">
+                <h3>Angela Yeung</h3>
+                <p>Front-End Developer</p>
+            </div>
+            <div class="col-lg-2 text-center">
+                <img class="img-circle" src="./Pictures/HeadShots/Derek.gif" alt="Derek Lee">
+                <h3>Derek Lee</h3>
+                <p>Operations Officer, Lead Test</p>
+            </div>
+            <div class="col-lg-2 text-center">
+                <img class="img-circle" src="./Pictures/HeadShots/James.gif" alt="James Nguyen">
+                <h3>James Nguyen</h3>
+                <p>Creative Officer</p>
+            </div>
+            <div class="col-lg-2 text-center">
+                <img class="img-circle" src="./Pictures/HeadShots/Michael.gif" alt="Michael Yu">
+                <h3>Michael Yu</h3>
+                <p>Back-End Developer</p>
+            </div>
+            <div class="col-lg-2 text-center">
+                <img class="img-circle" src="./Pictures/HeadShots/Robert.gif" alt="Robert Ozdoba">
+                <h3>Robert Ozdoba</h3>
+                <p>Back-End Developer</p>
+            </div>
+            <div class="col-lg-1"></div>
         </div>
-        <div class="col-lg-2 text-center">
-          <img class="img-circle" src="./Pictures/HeadShots/Derek.gif" alt="Derek Lee">
-          <h3>Derek Lee</h3>
-          <p>Operations Officer, Lead Test</p>
-        </div>
-        <div class="col-lg-2 text-center">
-          <img class="img-circle" src="./Pictures/HeadShots/James.gif" alt="James Nguyen">
-          <h3>James Nguyen</h3>
-          <p>Creative Officer</p>
-        </div>
-        <div class="col-lg-2 text-center">
-          <img class="img-circle" src="./Pictures/HeadShots/Michael.gif" alt="Michael Yu">
-          <h3>Michael Yu</h3>
-          <p>Back-End Developer</p>
-        </div>
-        <div class="col-lg-2 text-center">
-          <img class="img-circle" src="./Pictures/HeadShots/Robert.gif" alt="Robert Ozdoba">
-          <h3>Robert Ozdoba</h3>
-          <p>Back-End Developer</p>
-        </div>
-        <div class="col-lg-1"></div>
-      </div>
     </div>
 
 
     <!-- Modal: Login/Register Forms -->
     <div class="modal fade" id="logreg-modal" tabindex="1" role="dialog">
-      <div class="modal-dialog modal-dialog-centered tabbed-modal" role="document">
-        <div id="logo-above-modal">
-          <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
-        </div>
-        <!-- Content-->
-        <div class="modal-content">
-          <!-- Navigation tabs: login/register-->
-          <ul class="nav nav-tabs tabs-2 green" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active" data-toggle="tab" href="#login-panel" role="tab"> Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" data-toggle="tab" href="#register-panel" role="tab"> Register</a>
-            </li>
-          </ul>
-
-          <!-- Tab Panels -->
-          <div class="tab-content">
-            <!-- Login Panel -->
-            <div class="tab-pane fade in show active" id="login-panel" role="tabpanel">
-              <!-- Body of Login Panel -->
-              <div class="modal-body">
-                <div>
-                  <p class="modal-text">Welcome back to FoodBoard!</p>
-                </div>
-                <form class="form-horizontal" action="user_login_info.php" method="POST">
-                  <!-- Login form email input -->
-                  <div class="form-group">
-                    <div class="col-sm-2 input-addon">
-                      <span class="glyphicon glyphicon-envelope"></span>
-                    </div>
-                    <div class="col-sm-9">
-                      <input class="form-control" type="email" placeholder="Enter Email Address" name="login_email" required>
-                    </div>
-                  </div>
-                  <!-- Login form password input -->
-                  <div class="form-group">
-                    <div class="col-sm-2 input-addon">
-                      <span class="glyphicon glyphicon-lock"></span>
-                    </div>
-                    <div class="col-sm-9">
-                      <input class="form-control" type="password" placeholder="Enter Password" name="login_pwd" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <button type="submit" class="btn btn-success center-block" value="Login">Login</button>
-                  </div>
-                </form>
-              </div>
+        <div class="modal-dialog modal-dialog-centered tabbed-modal" role="document">
+            <div id="logo-above-modal">
+                <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
             </div>
-            <!-- Register Panel -->
-            <div class="tab-pane fade" id="register-panel" role="tabpanel">
-              <!-- Body of Register Panel -->
-              <div class="modal-body">
-                <div>
-                  <p class="modal-text">Register for FoodBoard</p>
-                </div>
-                <form class="form-horizontal" action="user_registration_info" method="POST">
-                  <!-- Registration form username input -->
-                  <div class="form-group">
-                    <div class="col-sm-2 input-addon">
-                      <span class="glyphicon glyphicon-user"></span>
+            <!-- Content-->
+            <div class="modal-content">
+                <!-- Navigation tabs: login/register-->
+                <ul class="nav nav-tabs tabs-2 green" role="tablist">
+                    <li class="nav-item active">
+                        <a class="nav-link" data-toggle="tab" href="#login-panel" role="tab"> Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#register-panel" role="tab"> Register</a>
+                    </li>
+                </ul>
+
+                <!-- Tab Panels -->
+                <div class="tab-content">
+                    <!-- Login Panel -->
+                    <div class="tab-pane fade in show active" id="login-panel" role="tabpanel">
+                        <!-- Body of Login Panel -->
+                        <div class="modal-body">
+                            <div>
+                                <p class="modal-text">Welcome back to FoodBoard!</p>
+                            </div>
+                            <form class="form-horizontal" action="user_login_info.php" method="POST">
+                                <!-- Login form email input -->
+                                <div class="form-group">
+                                    <div class="col-sm-2 input-addon">
+                                        <span class="glyphicon glyphicon-envelope"></span>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="email" placeholder="Enter Email Address" name="login_email" required>
+                                    </div>
+                                </div>
+                                <!-- Login form password input -->
+                                <div class="form-group">
+                                    <div class="col-sm-2 input-addon">
+                                        <span class="glyphicon glyphicon-lock"></span>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="password" placeholder="Enter Password" name="login_pwd" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-success center-block" value="Login">Login</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div class="col-sm-9">
-                      <input class="form-control" type="text" placeholder="First Name" name="register_first_name" required>
-                    </div>
-                  </div>
-                  <!-- Registration form username input -->
-                  <div class="form-group">
-                    <div class="col-sm-2 input-addon">
-                      <span class="glyphicon glyphicon-user"></span>
-                    </div>
-                    <div class="col-sm-9">
-                      <input class="form-control" type="text" placeholder="Last Name" name="register_last_name" required>
-                    </div>
-                  </div>
-                  <!-- Registration form username input -->
-                  <div class="form-group">
-                    <div class="col-sm-2 input-addon">
-                      <span class="glyphicon glyphicon-envelope"></span>
-                    </div>
-                    <div class="col-sm-9">
-                      <input class="form-control" type="email" placeholder="Email Address" name="register_email" required>
-                    </div>
-                  </div>
-                  <!-- Register form password input -->
-                  <div class="form-group">
-                    <div class="col-sm-2 input-addon">
-                      <span class="glyphicon glyphicon-lock"></span>
-                    </div>
-                    <div class="col-sm-9">
-                      <input class="form-control" type="password" placeholder="Enter Password" name="register_pwd" required>
-                    </div>
-                  </div>
-                  <!-- Register form password confirm input -->
-                  <div class="form-group">
-                    <div class="col-sm-2 input-addon">
-                      <span class="glyphicon glyphicon-ok-circle"></span>
-                    </div>
-                    <div class="col-sm-9">
-                      <input class="form-control" type="password" placeholder="Confirm Password" name="register_pwd_confirm" required>
-                    </div>
-                  </div>
-                  <!-- Register form suite number input -->
-                  <div class="form-group">
-                    <div class="col-sm-2 input-addon">
-                      <span class="glyphicon glyphicon-home"></span>
-                    </div>
-                    <div class="col-sm-9">
-                      <input class="form-control" type="text" placeholder="Apartment Suite Number" name="register_suite_number" required>
-                    </div>
-                  </div>
-                  <!-- Register form submit button -->
-                  <div class="form-group">
-                    <input type="submit" class="btn btn-success center-block" value="Register"></input>
-                  </div>
-                </form>
-              </div>
-              <!-- Register Panel Footer -->
-              <!-- <div class="modal-footer">
+                    <!-- Register Panel -->
+                    <div class="tab-pane fade" id="register-panel" role="tabpanel">
+                        <!-- Body of Register Panel -->
+                        <div class="modal-body">
+                            <div>
+                                <p class="modal-text">Register for FoodBoard</p>
+                            </div>
+                            <form class="form-horizontal" action="user_registration_info" method="POST">
+                                <!-- Registration form username input -->
+                                <div class="form-group">
+                                    <div class="col-sm-2 input-addon">
+                                        <span class="glyphicon glyphicon-user"></span>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="text" placeholder="First Name" name="register_first_name" required>
+                                    </div>
+                                </div>
+                                <!-- Registration form username input -->
+                                <div class="form-group">
+                                    <div class="col-sm-2 input-addon">
+                                        <span class="glyphicon glyphicon-user"></span>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="text" placeholder="Last Name" name="register_last_name" required>
+                                    </div>
+                                </div>
+                                <!-- Registration form username input -->
+                                <div class="form-group">
+                                    <div class="col-sm-2 input-addon">
+                                        <span class="glyphicon glyphicon-envelope"></span>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="email" placeholder="Email Address" name="register_email" required>
+                                    </div>
+                                </div>
+                                <!-- Register form password input -->
+                                <div class="form-group">
+                                    <div class="col-sm-2 input-addon">
+                                        <span class="glyphicon glyphicon-lock"></span>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="password" placeholder="Enter Password" name="register_pwd" required>
+                                    </div>
+                                </div>
+                                <!-- Register form password confirm input -->
+                                <div class="form-group">
+                                    <div class="col-sm-2 input-addon">
+                                        <span class="glyphicon glyphicon-ok-circle"></span>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="password" placeholder="Confirm Password" name="register_pwd_confirm" required>
+                                    </div>
+                                </div>
+                                <!-- Register form suite number input -->
+                                <div class="form-group">
+                                    <div class="col-sm-2 input-addon">
+                                        <span class="glyphicon glyphicon-home"></span>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="text" placeholder="Apartment Suite Number" name="register_suite_number" required>
+                                    </div>
+                                </div>
+                                <!-- Register form submit button -->
+                                <div class="form-group">
+                                    <input type="submit" class="btn btn-success center-block" value="Register"></input>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Register Panel Footer -->
+                        <!-- <div class="modal-footer">
                 <button type="submit" class="btn btn-success center-block" value="Register">Register</button>
               </div> -->
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
 
 

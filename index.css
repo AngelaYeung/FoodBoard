@@ -73,6 +73,11 @@
     padding-left:0!important;
   }
 
+  .navbar-foodboard img {
+    width: 9%;
+    margin-top: -8px;
+  }
+
 }
 
 @media screen and (min-width: 481px) {
@@ -88,7 +93,7 @@
     display: none;
   }
   .navbar-foodboard img {
-    width: 12%;
+    width: 9%;
     margin-top: -15px;
   }
   #background-sm {
@@ -155,10 +160,6 @@ body {
 }
 
 
-.navbar-foodboard img {
-  width: 9%;
-  margin-top: -8px;
-}
 
 /* Navbar link properties */
 
@@ -298,7 +299,7 @@ body {
   font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-style: normal;
   border-color: black;
-  border-radius: 20px;
+  border-radius: 20px;  
   color:white;
 }
 

@@ -40,7 +40,7 @@
 
 .navbar-foodboard img {
   width: 9%;
-  margin-top: -15px;
+  margin-top: -8px;
 }
 
 /* Navbar link properties */
@@ -92,5 +92,20 @@
   padding-right: 5%;
   font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size:14pt;
+  
+}
+
+@media screen and (min-width: 481px){
+  .navbar-foodboard img {
+    width: 9%;
+    margin-top: -15px;
+  }
+  .navbar-brand-sm {
+    display:none;
+  }
+
+  .navbar-fixed-top{
+    background-color: #4EB266;
+  }
   
 }
