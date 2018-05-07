@@ -15,6 +15,8 @@ var app = express().use(siofu.router); // adds siofu as a router, middleware
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
+const { check, validationResult } = require('express-validator/check');
+
 /* Parses the content-type that is transfered over HTTP */
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -90,7 +92,84 @@ connection.connect((error) => {
 //   });
 // })();
 
+ /*************************************************************************
+   * 
+   *         FOOD BOARD REGISTRATION FEATURE - SERVER SIDE
+   * 
+   *************************************************************************/
 
+
+  /** Handles 'post item' event that is fired from the home.html.  */
+  app.post('/register', [
+
+    // performs validation on received registration info
+
+    check('pwd').custom((value,{req, location, path}) => {
+      if (value !== req.body.confirmPwd) {
+          // throw error if passwords do not match
+          throw new Error("Passwords don't match");
+      } else {
+          return value;
+      }
+    })
+
+    // check('firstName', "First name must be at least one character long.").isLength({min:1}),
+    // check('lastName', "Last name must be at least one character long.").isLength({min:1}),
+    // check('email').isEmail(),
+    // check('suiteNumber').exists()
+  ], (req, resp) => {
+
+    // create constant to store the validation errors that may have occured
+    var errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      console.log("Validation error occured: " + errors);
+      resp.sendFile(__dirname + "/" + 'home.html');
+      //resp.status(422).json(errors.mapped());
+    } else {
+      
+      //If no validation errors occur, proceed to register user
+      console.log("No validation errors occured.");
+
+      // Stores user's registration info into variables
+      let firstName = req.body.firstName;
+      let lastName = req.body.lastName;
+      let email = req.body.email;
+      let suiteNumber = req.body.suiteNumber;
+      let password = req.body.pwd;
+      let confirmPassword = req.body.confirmPwd;
+
+      // checks if user has already registered with provided email
+      var checkRegistration = "SELECT * FROM User WHERE exists (select * from user where email = ?)";
+      connection.query(checkRegistration, [email], (error, result) => {
+        if (error) {
+          //returns an error if error in query
+          console.log("Registration error occured: " + error);
+        } else if (result.length > 0) {
+          //if registered email already exists, returns to the home.html (how to pass information back to home.html?)
+          console.log("Registration unsuccessful, user already registered with this email: " + result);
+          resp.sendFile(__dirname + "/" + 'home.html');
+        } else {
+          
+          //else there were no users registered with the provided email, insert into User table
+          var registerUser = "INSERT INTO User (firstName, lastName, email, suiteNumber, password) VALUES (?, ?, ?, ?, ?)";
+          connection.query(registerUser, [firstName, lastName, email, suiteNumber, password], (error, success) => {
+            if (error) {
+              //return error if insertion fail
+              console.log("Registration unsuccessful: " + error);
+            } else {
+              //else return the updated table
+              console.log("Registration successful!: " + success);
+              resp.sendFile(__dirname + "/" + 'boardpage.html');
+            }
+          });
+        }
+      });
+    }
+
+    
+  });  
+  
 
 /**
  * Socketio detects that connection has been made to the server.
@@ -103,54 +182,6 @@ io.on('connection', (socket) => {
   const uploader = new siofu();
   uploader.dir = path.join(__dirname, '/images'); // sets the upload directory
   uploader.listen(socket); // listens for image uploads
-
-
-  /*************************************************************************
-   * 
-   *         FOOD BOARD REGISTRATION FEATURE - SERVER SIDE
-   * 
-   *************************************************************************/
-
-
-  /** Handles 'post item' event that is fired from the home.html.  */
-  socket.on('register', (user) => {
-    console.log(user);
-
-    // Stores user's registration info into variables
-    let firstName = user.firstName;
-    let lastName = user.lastName;
-    let email = user.email;
-    let suiteNumber = user.suiteNumber;
-    let password = user.password;
-
-    // checks if user has already registered with provided email
-    var checkRegistration = "SELECT * FROM User WHERE exists (select * from user where email = ?)";
-    connection.query(checkRegistration, [email], (error, result) => {
-      if (error) {
-        //return error if error in query
-        console.log("Registration error occured: " + error);
-      } else if (result.length > 0) {
-        //result returns number greater than 0 if already user registered with provided email
-        console.log("Registration unsuccessful, user already registered with this email: " + result);
-        socket.emit('register return', result);
-      } else {
-        
-        //result returned 0 meaning there were no users registered with the provided email
-        var registerUser = "INSERT INTO user (firstName, lastName, email, suiteNumber, password) VALUES (?, ?, ?, ?, ?)";
-        connection.query(registerUser, [firstName, lastName, email, suiteNumber, password], (error, success) => {
-          if (error) {
-            //return error if insertion fail
-            console.log("Registration unsuccessful: " + error);
-          } else {
-            //else return the updated table
-            console.log("Registration successful!: " + success);
-            const destination = './boardpage.html';
-            socket.emit('navigate board', destination);
-          }
-        });
-      }
-    });
-  });
 
   
   /*************************************************************************

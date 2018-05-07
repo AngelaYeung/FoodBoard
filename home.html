@@ -239,14 +239,14 @@
                 <div>
                   <p class="modal-text">Register for FoodBoard</p>
                 </div>
-                <form class="form-horizontal">
+                <form class="form-horizontal" action="/register" method='POST'>
                   <!-- Registration form username input -->
                   <div class="form-group">
                     <div class="col-sm-2 input-addon">
                       <span class="glyphicon glyphicon-user"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input id="register-firstName" class="form-control" type="text" placeholder="First Name" required>
+                      <input id="register-firstName" class="form-control" type="text" placeholder="First Name" name="firstName" required>
                     </div>
                   </div>
                   <!-- Registration form username input -->
@@ -255,7 +255,7 @@
                       <span class="glyphicon glyphicon-user"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input id="register-lastName" class="form-control" type="text" placeholder="Last Name" required>
+                      <input id="register-lastName" class="form-control" type="text" placeholder="Last Name" name="lastName" required>
                     </div>
                   </div>
                   <!-- Registration form username input -->
@@ -264,7 +264,7 @@
                       <span class="glyphicon glyphicon-envelope"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input id="register-email" class="form-control" type="email" placeholder="Email Address" required>
+                      <input id="register-email" class="form-control" type="email" placeholder="Email Address" name="email" required>
                     </div>
                   </div>
                   <!-- Register form password input -->
@@ -273,7 +273,7 @@
                       <span class="glyphicon glyphicon-lock"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input id="register-pwd" class="form-control" type="password" placeholder="Enter Password" required>
+                      <input id="register-pwd" class="form-control" type="password" placeholder="Enter Password" name="pwd" required>
                     </div>
                   </div>
                   <!-- Register form password confirm input -->
@@ -282,7 +282,7 @@
                       <span class="glyphicon glyphicon-ok-circle"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input id="register-pwdConfirm" class="form-control" type="password" placeholder="Confirm Password" required>
+                      <input id="register-pwdConfirm" class="form-control" type="password" placeholder="Confirm Password" name="confirmPwd" required>
                     </div>
                   </div>
                   <!-- Register form suite number input -->
@@ -291,7 +291,7 @@
                       <span class="glyphicon glyphicon-home"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input id="register-suiteNumber"class="form-control" type="text" placeholder="Apartment Suite Number" required>
+                      <input id="register-suiteNumber"class="form-control" type="text" placeholder="Apartment Suite Number" name="suiteNumber" required>
                     </div>
                   </div>
                   <!-- Register form submit button -->
