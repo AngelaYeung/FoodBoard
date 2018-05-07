@@ -1,0 +1,68 @@
+<!-- Register Panel -->
+<div class="tab-pane fade" id="register-panel" role="tabpanel">
+    <!-- Body of Register Panel -->
+    <div class="modal-body">
+        <div>
+            <p class="modal-text">Register for FoodBoard</p>
+        </div>
+        <form class="form-horizontal" action="user_registration_info" method="POST">
+            <!-- Registration form username input -->
+            <div class="form-group">
+                <div class="col-sm-2 input-addon">
+                    <span class="glyphicon glyphicon-user"></span>
+                </div>
+                <div class="col-sm-9">
+                    <input class="form-control" type="text" placeholder="First Name" name="register_first_name" required>
+                </div>
+            </div>
+            <!-- Registration form username input -->
+            <div class="form-group">
+                <div class="col-sm-2 input-addon">
+                    <span class="glyphicon glyphicon-user"></span>
+                </div>
+                <div class="col-sm-9">
+                    <input class="form-control" type="text" placeholder="Last Name" name="register_last_name" required>
+                </div>
+            </div>
+            <!-- Registration form username input -->
+            <div class="form-group">
+                <div class="col-sm-2 input-addon">
+                    <span class="glyphicon glyphicon-envelope"></span>
+                </div>
+                <div class="col-sm-9">
+                    <input class="form-control" type="email" placeholder="Email Address" name="register_email" required>
+                </div>
+            </div>
+            <!-- Register form password input -->
+            <div class="form-group">
+                <div class="col-sm-2 input-addon">
+                    <span class="glyphicon glyphicon-lock"></span>
+                </div>
+                <div class="col-sm-9">
+                    <input class="form-control" type="password" placeholder="Enter Password" name="register_pwd" required>
+                </div>
+            </div>
+            <!-- Register form password confirm input -->
+            <div class="form-group">
+                <div class="col-sm-2 input-addon">
+                    <span class="glyphicon glyphicon-ok-circle"></span>
+                </div>
+                <div class="col-sm-9">
+                    <input class="form-control" type="password" placeholder="Confirm Password" name="register_pwd_confirm" required>
+                </div>
+            </div>
+            <!-- Register form suite number input -->
+            <div class="form-group">
+                <div class="col-sm-2 input-addon">
+                    <span class="glyphicon glyphicon-home"></span>
+                </div>
+                <div class="col-sm-9">
+                    <input class="form-control" type="text" placeholder="Apartment Suite Number" name="register_suite_number" required>
+                </div>
+            </div>
+            <!-- Register form submit button -->
+            <div class="form-group">
+                <input type="submit" class="btn btn-success center-block" value="Register"></input>
+            </div>
+        </form>
+    </div>
