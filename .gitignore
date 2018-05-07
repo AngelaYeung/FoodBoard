@@ -8,3 +8,6 @@ node_modules/
 *.out
 *.txt
 *.swp
+
+# prevents uploaded images from Images/
+images/*
