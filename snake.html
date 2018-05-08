@@ -1,12 +1,25 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Easter Egg - Snake</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./snake.css">
-</head>
-<body>
-    <canvas id="game-stage" width="600px" height="500px"></canvas>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script src="./snake.js"></script>
+</head>
+
+<body>
+    <div id="game-screen">
+        <canvas id="stage" width="400px" height="500px">Your browser does not support the canvas element</canvas>
+        <img id="egg" src="./Pictures/egg.png">
+    </div>
+    <div id="game-menu">
+
+        <p class="start-menu"> Congratulations! You found the easter egg! Click start to Begin! </p>
+        <button class="start-menu" id="start-btn"> Start</button>
+
+    </div>
 </body>
 
 </html>

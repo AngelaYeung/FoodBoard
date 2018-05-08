@@ -47,13 +47,20 @@
       $('#submit').click(function () {
         console.log('Submit triggered!');
 
-        socket.emit('post item', {
+        //typing ilovefoodboard will trigger the easter egg (snake game)
+        if ($("#name").val() == "ilovefoodboard" || $("#name").val() == "i love foodboard") {
+            console.log("You found the easter egg!");
+            window.location.href = ("./snake.html");
+        } else {
+          socket.emit('post item', {
           name: $('#name').val(),
           description: $('#description').val(),
           dateTime: $('#datetimepicker').val(),
           foodgrouping: $('input[name=foodgrouping]:checked').val(),
           image: image_name
         });
+        }
+        
         return false;
       });
 
