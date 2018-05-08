@@ -12,12 +12,12 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="/public/css/boardpage.css">
   <link rel="stylesheet" href="/public/css/navbar.css">
-  
-  
+
+
   <!-- Form Page Appears -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.js"></script>
   <script src="/public/js/boardpage.js"></script>
-  
+
 
   <!-- socket.io -->
   <script src="/socket.io/socket.io.js"></script>
@@ -41,7 +41,7 @@
        *************************************************************************/
       /** Uploads the image in form to server, and grabs its name */
       uploader.listenOnSubmit(document.getElementById('submit'), document.getElementById('file-input'));
-      
+
       uploader.addEventListener('start', (event) => {
         image_name = event.file.name;
       });
@@ -51,13 +51,18 @@
       $('#submit').click(function () {
         console.log('Submit triggered!');
 
-        socket.emit('post item', {
-          name: $('#name').val(),
-          description: $('#description').val(),
-          dateTime: $('#datetimepicker').val(),
-          foodgrouping: $('input[name=foodgrouping]:checked').val(),
-          image: image_name
-        });
+        if ($('#name').val().toLowerCase() === 'ilovefoodboard') {
+          window.location.href = ('/snake');
+
+        } else {
+          socket.emit('post item', {
+            name: $('#name').val(),
+            description: $('#description').val(),
+            dateTime: $('#datetimepicker').val(),
+            foodgrouping: $('input[name=foodgrouping]:checked').val(),
+            image: image_name
+          });
+        }
         return false;
       });
 
@@ -78,7 +83,7 @@
        */
       $(window).on('load', () => {
         console.log('Client: page loaded');
-        socket.emit('page loaded'); 
+        socket.emit('page loaded');
       });
 
 
@@ -109,15 +114,11 @@
 
 <body>
 
-{{>navbar_success}}
+  {{>navbar_success}}
 
   <!-- Contains contents of the board-->
   <div id="board">
     <div id='card-list'></div>
-    <!-- Button to open modal-->
-    <a id='add-item-button' class="btn additem" data-toggle="modal" data-target="#itemModal">
-      <img id="add-icon" src="./Pictures/add-icon.png">
-    </a>
   </div>
 
   <!-- Contains all the divs related to adding a new food item-->
@@ -143,7 +144,8 @@
               </div>
 
               <div class="form-group">
-                <input id="description" type="text" class="form-control" placeholder="Enter food description" name="description" required>
+                <input id="description" type="text" class="form-control" placeholder="Enter time of availablility and meet-up location. Eg. 7PM at lobby."
+                  name="description" required>
               </div>
 
               <div class="form-group">

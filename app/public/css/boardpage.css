@@ -5,16 +5,56 @@
   margin: 15px auto;
   box-shadow: 2px 3px 20px grey;
   }
+
+  #card-list {
+    padding-top : 10%;
+  }
+  .open >.dropdown-menu{
+    margin-top: 2.5%;
+    border-top: none;
+  }
+
+  .btn-default{
+    float: right;
+    background-color: #4EB266;
+    border-color: #4EB266;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .glyphicon{
+    color:white;
+    top: 6px;  
+  }
+
+  .glyphicon-option-vertical {
+    color:darkslategrey !important;
+    background:transparent;
+    border: none;
+  }
+
+  .collapse-button {
+    height:30px !important;
+    left: 10px !important;
+    font-size:1.4em;
+    margin-top: 25%;
+  }
+
+  .btn-default:focus{
+    color: #4EB266;
+    background-color: #4EB266;
+    border-color: #4EB266;
+  }
 }
 
-@media screen and (min-width: 481px) {
+@media screen and (min-width: 481px){
   #board {
     display: inline-block;
   }
   .cardContainer {
     display: inline-block;
     background-color: white;
-    width: 300px;
+    width: 10%;
     margin: 15px;
     box-shadow: 2px 3px 20px grey;
     }
@@ -30,14 +70,6 @@ body {
   background: #DDE5E5;
 }
 
-/* sets the position of the add icon */
-.additem {
-  position: fixed;
-  right: 5px;
-  bottom: 5px;
-  
-}
-
 
 
 .collapse-button {
@@ -51,7 +83,7 @@ body {
   height: 20px;
 }
 .food-img {
-  height: 150px;
+  height: 300px;
   width: 100%;
 }
 .header-Div {

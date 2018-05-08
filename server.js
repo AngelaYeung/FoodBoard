@@ -2,19 +2,19 @@ const fs = require('fs');
 const path = require('path');
 
 /** Dependencies  */
-const express = require('express');
-const mysql = require('mysql');
-const bodyParser = require('body-parser');
+const express = require('express'); // framework for node to set up web application (sets up the middleware)
+const mysql = require('mysql'); // for connection to mysql
+const bodyParser = require('body-parser'); // for parsing http request data
 const siofu = require('socketio-file-upload'); // for image uploading
-const passport = require('passport');
-const session = require('express-session');
+const passport = require('passport'); // for authentication
+const session = require('express-session'); // for session handling
 const env = require('dotenv').load();
-const exphbs = require('express-handlebars');
+const exphbs = require('express-handlebars'); // for rendering dynamic templates
 
 
 /** Exports made */
-var models = require("./app/models");
-var authRoute = require('./app/routes/auth.js');
+var models = require("./app/models"); // tells the server to require these routes 
+var authRoute = require('./app/routes/auth.js'); 
 
 const port = 8000;
 
@@ -64,6 +64,17 @@ app.get('/', (req, res) => {
   res.render('home.handlebars');
 });
 
+app.get('/snake', (req, res) => {
+  res.render('snake');
+});
+
+app.get('/boardpagero', (req, res) => {
+  res.render('boardpagero');
+});
+
+app.get('/boardpagero_home', (req, res) => {
+  res.render('boardpagero_home');
+});
 
 /*************************************************************************
  * 
@@ -188,7 +199,7 @@ io.on('connection', (socket) => {
       } else {
         // else return the updated table
         console.log("Successful insertion:", rows);
-        id = rows.insertId
+        id = rows.insertId;
       }
     });
 
