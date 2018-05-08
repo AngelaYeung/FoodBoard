@@ -15,8 +15,7 @@
   }
 
   .open >.dropdown-menu{
-    position: absolute;
-    top: 30px;
+    margin-top: 2.1%;
   }
   .additem {
   position: fixed!important;
