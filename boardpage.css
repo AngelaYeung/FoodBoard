@@ -7,8 +7,23 @@
   }
 
   img{
-      width: 80%; 
+      width: 60%; 
   }
+
+  .navbar-fixed-top{
+    z-index: -1;
+  }
+
+  .open >.dropdown-menu{
+    position: absolute;
+    top: 30px;
+  }
+  .additem {
+  position: fixed!important;
+  right: -22px!important;
+  top: -9px!important;
+  
+}
 }
 
 @media screen and (min-width: 481px) {
@@ -36,9 +51,9 @@ body {
 
 /* sets the position of the add icon */
 .additem {
-  position: fixed;
-  right: -7px;
-  bottom: 5px;
+  position: relative;
+  right: -5px;
+  top: -9px;
   
 }
 
