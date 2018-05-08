@@ -9,6 +9,9 @@ $(document).ready(function () {
     var cellWidth = 10;
     var snakeDirection;
     var food;
+    var foodImg = new Image();
+        foodImg.src = './Pictures/pear_resized.png';
+    
     var gameLoop;
     var endgame;
 
@@ -22,6 +25,7 @@ $(document).ready(function () {
         $(".start-menu").remove();
     })
     function startGame() {
+        // loadImages();
         //sets the initial snake direction to right
         snakeDirection = "right";
         createSnake();
@@ -46,7 +50,7 @@ $(document).ready(function () {
             x: Math.floor(Math.random() * (width - cellWidth) / cellWidth),
             y: Math.floor(Math.random() * (width - cellWidth) / cellWidth)
         };
-    }
+    }       
 
     function drawBoard() {
         //Clears the board
@@ -84,7 +88,7 @@ $(document).ready(function () {
         }
         //if the snake is eating food, then just add the new position to the head and create new food
         if (eatFood()) {
-            tail = { x: newX, y: newY };
+            tail = {x: newX, y: newY };
             createFood();
         } else {
             tail = snake.pop(); //removes the tail and sets
@@ -101,16 +105,21 @@ $(document).ready(function () {
         for (var i = 0; i < snake.length; i++) {
             //accesses the x and y coordinates at the specific index
             //paint the cells with the color according to the cellWidth;
-            paint_cell(snake[i].x, snake[i].y, "blue");
+            paintCell(snake[i].x, snake[i].y, "blue");
         }
     }
 
     // returns true if snake head is in the same position as the food
+    // 
     function eatFood() {
-        return (newX == food.x && newY == food.y);
+        return ( (newX >= (food.x-foodImg.width/(2*cellWidth)) && newX <= (food.x + foodImg.width/(2*cellWidth))) 
+            && (newY >= (food.y - foodImg.height/(2*cellWidth)) && newY <= (food.y + foodImg.height/(2*cellWidth))));
     }
     function drawFood() {
-        paint_cell(food.x, food.y, "red");
+        
+        console.log (foodImg.width);
+        ctx.drawImage(foodImg,food.x*cellWidth, (food.y)*cellWidth);
+        //paintCell(food.x, food.y, "red");
     }
     function drawGame() {
         drawBoard();
@@ -137,15 +146,17 @@ $(document).ready(function () {
     /** Takes in the x-coordinate and y-coordinate of the cell to be painted.
      * Paints the cell in the indicated color
      */
-    function paint_cell(x, y, color) {
+    function paintCell(x, y, color) {
         ctx.fillStyle = color;
         ctx.fillRect(x * cellWidth, y * cellWidth, cellWidth, cellWidth);
         ctx.strokeStyle = "white";
         ctx.strokeRect(x * cellWidth, y * cellWidth, cellWidth, cellWidth);
     }
 
+    //
     function gameOver() {
         clearInterval(gameLoop);
+        
     }
     /*changes the snakeDirection of the snake */
     $(document).keydown(function (event) {
@@ -161,6 +172,7 @@ $(document).ready(function () {
             snakeDirection = "down";
         }
     });
+
 })
 
 
