@@ -1,0 +1,96 @@
+/* Header -> NavBar */
+@media screen and (max-width: 480px) {
+  .navbar-right-custom {
+    display: none;
+  }
+  .navbar-brand {
+    display: none;
+  }
+  .navbar-brand-sm {
+    padding: 3%;
+    background-color: #4EB266;
+  }
+  .navbar-brand-sm .dropdown {
+    margin-top: -30px;
+  }
+  .navbar-brand-sm img {
+    width: 10%;
+    
+  }
+
+}
+
+
+.dropdown .btn-primary {
+    background-color: transparent;
+    border-style: none;
+    padding: 0;
+  }
+  .dropdown-menu {
+    width: 100%;
+  }
+
+.navbar-brand .navbar-foodboard {
+  color:white;
+  font-size:50pt;
+  padding-left:5%;
+  font-weight:bold;
+}
+
+
+.navbar-foodboard img {
+  width: 9%;
+  margin-top: -15px;
+}
+
+/* Navbar link properties */
+
+.nav>li>a:focus, .nav>li>a:hover {
+  background-color: transparent;
+  animation-name: underline-animation;
+  animation-duration: 2s;
+  color:white;
+}
+
+.nav>li>a {
+  color:white;
+  text-decoration: none;
+  position:relative;
+}
+
+.navbar-right-custom>li>a:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: 8px;
+  left: 0;
+  background-color: white;
+  visibility: hidden;
+  -webkit-transform: scaleX(0);
+  transform: scaleX(0);
+  -webkit-transition: all 0.4s ease-in-out 0s;
+  transition: all 0.4s ease-in-out 0s;
+}
+.navbar-right-custom>li>a:hover:before {
+  visibility: visible;
+  -webkit-transform: scaleX(1);
+  transform: scaleX(1);
+}
+
+
+
+.nav>li>a:focus, .nav>li>a:hover {
+  background-color: transparent;
+}
+
+.nav>li>a {
+  color:white;
+}
+
+.navbar-right-custom {
+  padding-right: 5%;
+  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size:14pt;
+  
+}
