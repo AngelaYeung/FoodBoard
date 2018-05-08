@@ -55,13 +55,13 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     var buttonDiv = document.createElement("div");
     buttonDiv.setAttribute("class", "col-xs-2");
     
-    var toggleButton = document.createElement("anchor");
+    var toggleButton = document.createElement("button");
     toggleButton.setAttribute("data-toggle", "collapse");
     toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
-    toggleButton.setAttribute("class", "collapse-button");
+    toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
 
-    var toggleImg = document.createElement("img");
-    toggleImg.src = "./Pictures/chevron-down.png";
+    // var toggleImg = document.createElement("img");
+    // toggleImg.src = "./Pictures/chevron-down.png";
 
     var toggleDiv = document.createElement("div");
     toggleDiv.setAttribute("id", `collapseDiv${id}`);
@@ -82,6 +82,7 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
 
     var claimForm = document.createElement("form");
     claimForm.setAttribute("class", "claim-form");
+    
     var claimButton = document.createElement("input");
     claimButton.setAttribute("id", `claimButton${id}`);
     claimButton.setAttribute("class", "claim-button");
@@ -98,7 +99,7 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     headerDiv.appendChild(textDiv);
     headerDiv.appendChild(buttonDiv);
     buttonDiv.appendChild(toggleButton);
-    toggleButton.appendChild(toggleImg);
+    // toggleButton.appendChild(toggleImg);
     textDiv.appendChild(foodName);
     textDiv.appendChild(dateText);
 

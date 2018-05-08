@@ -91,7 +91,7 @@ module.exports = function (passport, user) {
       User.findOne({ where: { email: login_email } }).then((user) => {
 
         if (!user) {
-          return done(null, false, { message: 'Email does not exist' });
+          return done(null, false, { message: 'Email does not exist.' });
         }
 
         if (!isValidPassword(user.password, login_pwd)) {
@@ -109,7 +109,7 @@ module.exports = function (passport, user) {
 
         console.log("Error:", err);
 
-        return done(null, false, { message: 'Something went wrong with your Signin' });
+        return done(null, false, { message: 'Something went wrong with your sign in.' });
 
 
       });
