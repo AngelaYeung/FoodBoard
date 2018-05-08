@@ -5,7 +5,6 @@ function handleFileSelect(evt) {
     // Only process image files.
   if (files[0].type.match('image.*')) {
 
-
         var reader = new FileReader();
 
        // Closure to capture the file information.
@@ -46,18 +45,16 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     var textDiv = document.createElement("div");
     textDiv.setAttribute("class", "col-xs-10");
     
-    var foodName = document.createElement("h2");
+    var foodName = document.createElement("h4");
     // grabs the name from the form so that it will be appended to cardDiv
     foodName.innerHTML = name;
+
+    var dateText = document.createElement("p");
+    dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
 
     var buttonDiv = document.createElement("div");
     buttonDiv.setAttribute("class", "col-xs-2");
     
-    // var toggleButton = document.createElement("button");
-    // toggleButton.setAttribute("data-toggle", "collapse");
-    // toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
-    // toggleButton.setAttribute("class", "collapse-button");
-
     var toggleButton = document.createElement("anchor");
     toggleButton.setAttribute("data-toggle", "collapse");
     toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
@@ -83,7 +80,6 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     foodImg.setAttribute("class", "food-img");
     foodImg.src = `/images/${img}`;
 
-    
     var claimForm = document.createElement("form");
     claimForm.setAttribute("class", "claim-form");
     var claimButton = document.createElement("input");
@@ -104,6 +100,7 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     buttonDiv.appendChild(toggleButton);
     toggleButton.appendChild(toggleImg);
     textDiv.appendChild(foodName);
+    textDiv.appendChild(dateText);
 
     toggleDiv.appendChild(foodCategory);
     toggleDiv.appendChild(foodDescription);
@@ -119,9 +116,4 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
      if ($('#itemModal').is(':visible')) {
         $('#itemModal').modal('toggle');
     }
-}
-
-function formatDate(dateString) {
-    var date;
-    return date = new Date(dateString);
 }

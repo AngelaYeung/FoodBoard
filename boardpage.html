@@ -12,10 +12,12 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="./boardpage.css">
   <link rel="stylesheet" href="./navbar.css">
-
-
+  
+  
   <!-- Form Page Appears -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.js"></script>
   <script src="boardpage.js"></script>
+  
 
   <!-- socket.io -->
   <script src="/socket.io/socket.io.js"></script>
@@ -45,13 +47,20 @@
       $('#submit').click(function () {
         console.log('Submit triggered!');
 
-        socket.emit('post item', {
+        //typing ilovefoodboard will trigger the easter egg (snake game)
+        if ($("#name").val() == "ilovefoodboard" || $("#name").val() == "i love foodboard") {
+            console.log("You found the easter egg!");
+            window.location.href = ("./snake.html");
+        } else {
+          socket.emit('post item', {
           name: $('#name').val(),
           description: $('#description').val(),
           dateTime: $('#datetimepicker').val(),
           foodgrouping: $('input[name=foodgrouping]:checked').val(),
           image: image_name
         });
+        }
+        
         return false;
       });
 
