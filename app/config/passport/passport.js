@@ -34,14 +34,13 @@ module.exports = function (passport, user) {
       passwordField: 'register_pwd',
       passReqToCallback: true // allows us to pass back the entire request to the callback
     },
-
     (req, register_email, register_pwd, done) => {
 
       var generateHash = (password) => {
         return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
       };
 
-      var userSelect = "SELECT Password FROM user WHERE Email = ? LIMIT 1";
+      var userSelect = "SELECT userID FROM users WHERE exists (select * from users where email = ?) LIMIT 1";
       connection.query(userSelect, [register_email], (error, results) => {
         if (error) {
           return done(error);
@@ -58,9 +57,6 @@ module.exports = function (passport, user) {
               lastname: req.body.register_last_name,
               suiteNumber: req.body.register_suite_number
             };
-            console.log(User);
-            console.log(user);
-            console.log(data);
 
             User.create(data).then((newUser, created) => {
             if (!newUser) {
@@ -99,10 +95,11 @@ module.exports = function (passport, user) {
         }
 
         if (!isValidPassword(user.password, login_pwd)) {
-
+          // the call back function can send data back to auth.js
           return done(null, false, { message: 'Incorrect password.' });
 
         }
+
 
         var userinfo = user.get();
 

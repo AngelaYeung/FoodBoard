@@ -18,6 +18,11 @@
 
   <script src="/socket.io/socket.io.js"></script>
 
+  <script type="text/javascript">
+    $(window).on('load', function () {
+      $('#logreg-modal').modal('show');
+    });
+  </script>
 </head>
 
 <body id="page-top">
@@ -130,7 +135,7 @@
 
 
   <!-- Modal: Login/Register Forms -->
-  <div class="modal fade" id="logreg-modal" tabindex="1" role="dialog">
+  <div class="modal" id="logreg-modal" tabindex="1" role="dialog">
     <div class="modal-dialog modal-dialog-centered tabbed-modal" role="document">
       <div id="logo-above-modal">
         <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
@@ -139,10 +144,10 @@
       <div class="modal-content">
         <!-- Navigation tabs: login/register-->
         <ul class="nav nav-tabs tabs-2 green" role="tablist">
-          <li class="nav-item active">
-            <a class="nav-link" data-toggle="tab" href="#login-panel" role="tab"> Login</a>
-          </li>
           <li class="nav-item">
+            <a class="nav-links" data-toggle="tab" href="#login-panel" role="tab"> Login</a>
+          </li>
+          <li class="nav-item active">
             <a class="nav-link" data-toggle="tab" href="#register-panel" role="tab"> Register</a>
           </li>
         </ul>
@@ -150,23 +155,87 @@
         <!-- Tab Panels -->
         <div class="tab-content">
           <!-- Login Panel -->
-          <div class="tab-pane fade in show active" id="login-panel" role="tabpanel">
+          <div class="tab-pane show" id="login-panel" role="tabpanel">
             {{> login}}
 
-            {{> register}}
-            <!-- Register Panel Footer -->
-            <!-- <div class="modal-footer">
-                <button type="submit" class="btn btn-success center-block" value="Register">Register</button>
-              </div> -->
+            <!-- Register Panel -->
+            <div class="tab-pane show active" id="register-panel" role="tabpanel">
+              <!-- Body of Register Panel -->
+              <div class="modal-body">
+                <div>
+                  <p class="modal-text">Register for FoodBoard</p>
+                  <p style="color:red; text-align:center;">Email is already in use.</p>
+                </div>
+                <form name="registration" id="registration" class="form-horizontal" action="/user_registration" method="POST">
+                  <!-- Registration form username input -->
+                  <div class="form-group">
+                    <div class="col-sm-2 input-addon">
+                      <span class="glyphicon glyphicon-user"></span>
+                    </div>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" placeholder="First Name" name="register_first_name" required>
+                    </div>
+                  </div>
+                  <!-- Registration form username input -->
+                  <div class="form-group">
+                    <div class="col-sm-2 input-addon">
+                      <span class="glyphicon glyphicon-user"></span>
+                    </div>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" placeholder="Last Name" name="register_last_name" required>
+                    </div>
+                  </div>
+                  <!-- Registration form username input -->
+                  <div class="form-group">
+                    <div class="col-sm-2 input-addon">
+                      <span class="glyphicon glyphicon-envelope"></span>
+                    </div>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="email" placeholder="Email Address" name="register_email" required>
+                    </div>
+                  </div>
+                  <!-- Register form password input -->
+                  <div class="form-group">
+                    <div class="col-sm-2 input-addon">
+                      <span class="glyphicon glyphicon-lock"></span>
+                    </div>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="password" placeholder="Enter Password" name="register_pwd" required>
+                    </div>
+                  </div>
+                  <!-- Register form password confirm input -->
+                  <div class="form-group">
+                    <div class="col-sm-2 input-addon">
+                      <span class="glyphicon glyphicon-ok-circle"></span>
+                    </div>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="password" placeholder="Confirm Password" name="register_pwd_confirm" required>
+                    </div>
+                  </div>
+                  <!-- Register form suite number input -->
+                  <div class="form-group">
+                    <div class="col-sm-2 input-addon">
+                      <span class="glyphicon glyphicon-home"></span>
+                    </div>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" placeholder="Apartment Suite Number" name="register_suite_number" required>
+                    </div>
+                  </div>
+                  <!-- Register form submit button -->
+                  <div class="form-group">
+                    <input type="submit" class="btn btn-success center-block" value="Register"></input>
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
 
-  <!-- FAQ Section-->
-  <!-- <div class="container-fluid" id="faq">
+    <!-- FAQ Section-->
+    <!-- <div class="container-fluid" id="faq">
     <div class="row">
       <div class="text-center">FAQ</div>
     </div>
