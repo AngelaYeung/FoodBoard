@@ -14,7 +14,7 @@ const exphbs = require('express-handlebars'); // for rendering dynamic templates
 
 /** Exports made */
 var models = require("./app/models"); // tells the server to require these routes 
-var authRoute = require('./app/routes/auth.js'); 
+var authRoute = require('./app/routes/auth.js');
 
 const port = 8000;
 
@@ -98,32 +98,17 @@ models.sequelize.sync().then(() => {
   console.log(err, "Something went wrong with the Database Update!");
 });
 
-/**
- * Link to the boardpage on click of 'Board' button.
- */
-// app.get('/board', (req, res) => {
-//   res.sendFile(__dirname + "/" + 'boardpage.html');
-// });
 
-// app.get('/', function(req, res) {
-//   res.sendFile(path.join(__dirname + '/testindex.html'));
-// });
-
-var connection = mysql.createConnection({
+var db_config = {
   host: "localhost",
   database: "Foodboard",
   user: "root",
   password: "test123"
 });
 
-connection.connect((error) => {
-  //callback function
-  if (error) {
-    console.log('Error');
-  } else {
-    console.log('Connected');
-  }
-});
+var connection;
+
+handleDisconnect();
 
 
 /**
@@ -219,7 +204,36 @@ io.on('connection', (socket) => {
   });
 });
 
+/*************************************************************************
+ * 
+ *     MYSQL HANDLE DISCONNECT
+ * 
+ ***********************************  **************************************/
 
+
+function handleDisconnect() {
+
+
+  connection = mysql.createConnection(db_config); // Recreate the connection, since
+  // the old one cannot be reused.
+
+  connection.connect(function (err) {                 // The server is either down
+    if (err) {                                        // or restarting (takes a while sometimes).
+      console.log('error when connecting to db:', err);
+      setTimeout(handleDisconnect, 2000);             // We introduce a delay before attempting to reconnect,
+    }                                                 // to avoid a hot loop, and to allow our node script to
+  });                                                 // process asynchronous requests in the meantime.
+                                                      // If you're also serving http, display a 503 error.
+
+  connection.on('error', function (err) {
+    console.log('db error', err);
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {    // Connection to the MySQL server is usually
+      handleDisconnect();                             // lost due to either server restart, or a
+    } else {                                          // connnection idle timeout (the wait_timeout
+      throw err;                                      // server variable configures this)
+    }
+  });
+}
 
 // The port we are listening on
 server.listen(port, () => {

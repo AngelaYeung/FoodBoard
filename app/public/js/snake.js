@@ -9,9 +9,11 @@ $(document).ready(function () {
     var cellWidth = 10;
     var snakeDirection;
     var food;
+    var score;
+
+    // sets the image of the snake food
     var foodImg = new Image();
         foodImg.src = './Pictures/pear_resized.png';
-    
     var gameLoop;
     var endgame;
 
@@ -20,14 +22,18 @@ $(document).ready(function () {
     var newX;
     var newY;
 
-    $("#start-btn").click(function() {
+    $("#start-btn").click(function () {
+        //shows the game screen
+        $('canvas').show();
         startGame();
-        $(".start-menu").remove();
+        $(".start-menu").hide();
+        $("#game-controller").show();
     })
     function startGame() {
-        // loadImages();
+        $(".end-menu").hide();
         //sets the initial snake direction to right
         snakeDirection = "right";
+        score = 0;
         createSnake();
         createFood();
         gameLoop = setInterval(drawGame, 60);
@@ -50,17 +56,19 @@ $(document).ready(function () {
             x: Math.floor(Math.random() * (width - cellWidth) / cellWidth),
             y: Math.floor(Math.random() * (width - cellWidth) / cellWidth)
         };
-    }       
+    }
 
     function drawBoard() {
         //Clears the board
         ctx.clearRect(0, 0, width, height);
 
         //draws the game stage
-        ctx.fillStyle = "grey";
+        ctx.fillStyle = "#4EB266";
         ctx.fillRect(0, 0, width, height);
         ctx.strokeStyle = "black";
         ctx.strokeRect(0, 0, width, height);
+
+        $("#score").text("Score: " + score);
     }
 
     /**
@@ -72,6 +80,7 @@ $(document).ready(function () {
         newX = snake[0].x;
         newY = snake[0].y;
 
+        //increments or decrements the x and y position of the snake based on the snake's current direction
         switch (snakeDirection) {
             case "right":
                 newX++;
@@ -88,7 +97,8 @@ $(document).ready(function () {
         }
         //if the snake is eating food, then just add the new position to the head and create new food
         if (eatFood()) {
-            tail = {x: newX, y: newY };
+            tail = { x: newX, y: newY };
+            score++;
             createFood();
         } else {
             tail = snake.pop(); //removes the tail and sets
@@ -105,33 +115,30 @@ $(document).ready(function () {
         for (var i = 0; i < snake.length; i++) {
             //accesses the x and y coordinates at the specific index
             //paint the cells with the color according to the cellWidth;
-            paintCell(snake[i].x, snake[i].y, "blue");
+            paintCell(snake[i].x, snake[i].y, "white");
         }
     }
 
     // returns true if snake head is in the same position as the food
-    // 
+    // the position of the food is offset by the image width and height divided by the cellWidth
     function eatFood() {
-        return ( (newX >= (food.x-foodImg.width/(2*cellWidth)) && newX <= (food.x + foodImg.width/(2*cellWidth))) 
-            && (newY >= (food.y - foodImg.height/(2*cellWidth)) && newY <= (food.y + foodImg.height/(2*cellWidth))));
+        return ((newX >= (food.x - foodImg.width / (2 * cellWidth)) && newX <= (food.x + foodImg.width / (2 * cellWidth)))
+            && (newY >= (food.y - foodImg.height / (2 * cellWidth)) && newY <= (food.y + foodImg.height / (2 * cellWidth))));
     }
     function drawFood() {
-        
-        console.log (foodImg.width);
-        ctx.drawImage(foodImg,food.x*cellWidth, (food.y)*cellWidth);
-        //paintCell(food.x, food.y, "red");
+        ctx.drawImage(foodImg, food.x * cellWidth, (food.y) * cellWidth);
     }
     function drawGame() {
         drawBoard();
         moveSnake();
         drawFood();
-        
+
     }
     /**
      * Returns true if the snake head is out of the screen
      */
-    function outOfBounds(x,y) {
-        return (newX < 0 || newY < 0 || newX >= width/cellWidth || newY >= height/cellWidth);
+    function outOfBounds(x, y) {
+        return (newX < 0 || newY < 0 || newX >= width / cellWidth || newY >= height / cellWidth);
     }
 
     /**Checks if the snake has collided with its own body */
@@ -156,9 +163,12 @@ $(document).ready(function () {
     //
     function gameOver() {
         clearInterval(gameLoop);
+        $(".end-menu").show();
+        $("#end-score").text("Final score: " + score);
         
+
     }
-    /*changes the snakeDirection of the snake */
+    /*changes the snakeDirection of the snake  using a keyboard*/
     $(document).keydown(function (event) {
         var key = event.which;
         //We will add another clause to prevent reverse gear
@@ -167,12 +177,37 @@ $(document).ready(function () {
         } else if (key == "38" && snakeDirection != "down") {
             snakeDirection = "up";
         } else if (key == "39" && snakeDirection != "left") {
-            snakeDirection = "right"; 
+            snakeDirection = "right";
         } else if (key == "40" && snakeDirection != "up") {
             snakeDirection = "down";
         }
     });
 
+    //Controls for a touch screen
+    $("#up").click(function () {
+        if (snakeDirection != "down") {
+            snakeDirection = "up";
+        }
+    });
+    $("#down").click(function () {
+        if (snakeDirection != "up") {
+            snakeDirection = "down";
+        }
+    });
+    $("#left").click(function () {
+        if (snakeDirection != "right") {
+            snakeDirection = "left";
+        }
+    });
+    $("#right").click(function () {
+        if (snakeDirection != "left") {
+            snakeDirection = "right";
+        }
+    });
+
+    $("#restart-btn").click(function() {
+        startGame();
+    })
 })
 
 
