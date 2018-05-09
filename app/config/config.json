@@ -2,8 +2,8 @@
   "development": {
 
     "username": "root",
-    "password": null,
-    "database": "foodboard",
+    "password": "test123",
+    "database": "Foodboard",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },

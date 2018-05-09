@@ -111,9 +111,9 @@ models.sequelize.sync().then(() => {
 
 var connection = mysql.createConnection({
   host: "localhost",
-  database: "foodboard",
+  database: "Foodboard",
   user: "root",
-  password: ""
+  password: "test123"
 });
 
 connection.connect((error) => {
@@ -217,7 +217,6 @@ io.on('connection', (socket) => {
       });
     });
   });
-
 });
 
 
