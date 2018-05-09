@@ -4,6 +4,13 @@
   width: 90%;
   margin: 15px auto;
   box-shadow: 2px 3px 20px grey;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 2px;
+  }
+
+  .navbar-foodboard > img {
+    padding-top:2%;
+    padding-bottom:1%;
   }
 
   #card-list {
@@ -19,8 +26,26 @@
     background-color: #4EB266;
     border-color: #4EB266;
     padding: 0;
-    margin: 0;
+    margin-top: -0.7%;
   }
+  /* Style the 'add item' button */
+.btn-default:focus{
+  color: #4EB266;
+  background-color: #4EB266;
+  border-color: #4EB266;
+  text-decoration:none;
+}
+.btn-default:hover {
+  background-color:#4EB266;
+  border-color: #4EB266;
+}
+
+.btn-default:active {
+  color: #4EB266;
+  background-color: #4EB266;
+  border-color: #4EB266;
+  text-decoration:none;
+}
   
   .glyphicon{
     color:white;
@@ -37,15 +62,13 @@
     height:30px !important;
     left: 10px !important;
     font-size:1.4em;
-    margin-top: 25%;
-  }
-
-  .btn-default:focus{
-    color: #4EB266;
-    background-color: #4EB266;
-    border-color: #4EB266;
+    margin-top: 25%;  
   }
 }
+
+
+
+
 
 @media screen and (min-width: 481px){
   #board {
