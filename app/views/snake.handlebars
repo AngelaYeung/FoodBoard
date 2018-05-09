@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Snake Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/public/css/snake.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="/public/js/snake.js"></script>
+</head>
+
+<body>
+    <div class="game-container">
+        <div id="game-screen">
+            <canvas id="stage" width="400px" height="500px">Your browser does not support the canvas element</canvas>
+            <p id="score"></p>
+        </div>
+        <div id="game-menu">
+
+            <div class="start-menu">
+                <p> Congratulations! </p>
+                <p> You found the hidden game! </p>
+                <p> Click
+                    <button class="start-menu" id="start-btn"> Start</button> to Begin! </p>
+                <img id="egg" src="./Pictures/egg.png">
+            </div>
+
+            <div class="end-menu">
+                <p>Game over!</p>
+                <p id="end-score"></p>
+                <p>
+                    <button id="restart-btn">Restart</button>
+                </p>
+            </div>
+
+        </div>
+
+        <div id="game-controller">
+            <table>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button id="up">
+                            <span class="glyphicon glyphicon-triangle-top" aria-hidden="true">
+
+                            </span>
+                        </button>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <button id="left" class="text-center">
+                            <span class="glyphicon glyphicon-triangle-left" aria-hidden="true">
+
+                            </span>
+                        </button>
+                    </td>
+                    <td>
+                        <img id="icon" src="./Pictures/pear-colored.png">
+
+                    </td>
+                    <td>
+                        <button id="right">
+                            <span class="glyphicon glyphicon-triangle-right" aria-hidden="true">
+
+                            </span>
+                        </button>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button id="down">
+                            <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true">
+
+                            </span>
+                        </button>
+
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</body>
+
+</html>
