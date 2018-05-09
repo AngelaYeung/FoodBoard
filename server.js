@@ -101,10 +101,10 @@ models.sequelize.sync().then(() => {
 
 var db_config = {
   host: "localhost",
-  database: "foodboard",
+  database: "Foodboard",
   user: "root",
-  password: ""
-};
+  password: "test123"
+});
 
 var connection;
 
@@ -202,7 +202,6 @@ io.on('connection', (socket) => {
       });
     });
   });
-
 });
 
 /*************************************************************************

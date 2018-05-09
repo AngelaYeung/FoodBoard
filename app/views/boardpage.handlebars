@@ -1,191 +1,105 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<Title>"Board"</Title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <Title>"Board"</Title>
 
-	<!-- BootStrap CSS CDN -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="/public/css/boardpage.css">
-	<link rel="stylesheet" href="/public/css/navbar.css">
-
-
-	<!-- Form Page Appears -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.js"></script>
-	<script src="/public/js/boardpage.js"></script>
+  <!-- BootStrap CSS CDN -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="/public/css/boardpage.css">
+  <link rel="stylesheet" href="/public/css/navbar.css">
 
 
-	<!-- socket.io -->
-	<script src="/socket.io/socket.io.js"></script>
-
-	<!-- socketio-file-upload -->
-	<script src="/siofu/client.js"></script>
-
-	<script>
-		$(document).ready(function () {
-			var socket = io();
-			console.log(socket);
-			const uploader = new SocketIOFileUpload(socket);
-			console.log(uploader);
-			var image_name;
+  <!-- Form Page Appears -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.js"></script>
+  <script src="/public/js/boardpage.js"></script>
 
 
-      /*************************************************************************
-       * 
-       *         FOOD BOARD POST FEATURE - CLIENT SIDE
-       * 
-       *************************************************************************/
-			/** Uploads the image in form to server, and grabs its name */
-			uploader.listenOnSubmit(document.getElementById('submit'), document.getElementById('file-input'));
+  <!-- socket.io -->
+  <script src="/socket.io/socket.io.js"></script>
 
-			uploader.addEventListener('start', (event) => {
-				image_name = event.file.name;
-			});
-
-
-			/** Sends data from post-form to server.js */
-			$('#submit').click(function () {
-				console.log('Submit triggered!');
-
-				if ($('#name').val().toLowerCase() === 'ilovefoodboard') {
-					window.location.href = ('/snake');
-
-				} else {
-					socket.emit('post item', {
-						name: $('#name').val(),
-						description: $('#description').val(),
-						dateTime: $('#datetimepicker').val(),
-						foodgrouping: $('input[name=foodgrouping]:checked').val(),
-						image: image_name
-					});
-				}
-				return false;
-			});
-
-			socket.on('post item return', (item) => {
-				addNewItem(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
-			});
-
-
-      /*************************************************************************
-       * 
-       *         FOOD BOARD LOAD FEATURE - CLIENT SIDE
-       * 
-       *************************************************************************/
-
-      /**
-       * When the window is loaded, trigger websocket event for server to fetch foodboard posts
-       * from the data base. 
-       */
-			$(window).on('load', () => {
-				console.log('Client: page loaded');
-				socket.emit('page loaded');
-			});
-
-
-			socket.on('load foodboard', (items) => {
-				for (var i = 0; i < items.length; i++) {
-					addNewItem(items[i].itemID, items[i].foodName, items[i].foodDescription, items[i].foodGroup, items[i].foodExpiryTime,
-						items[i].foodImage);
-				}
-			});;
-
-
-      /*************************************************************************
-       * 
-       *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
-       * 
-       *************************************************************************/
-
-			$('_claim-form').on('submit', (e) => {
-				e.preventDefault();
-				console.log(this.id);
-			});
-
-		});
-	</script>
-
-
+  <!-- socketio-file-upload -->
+  <script src="/siofu/client.js"></script>
 </head>
 
 <body>
 
-	{{>navbar_success}}
+  {{>navbar_success}}
 
-	<!-- Contains contents of the board-->
-	<div id="board">
-		<div id='card-list'></div>
-	</div>
+  <!-- Contains contents of the board-->
+  <div id="board">
+    <div id='card-list'></div>
+  </div>
 
-	<!-- Contains all the divs related to adding a new food item-->
-	<div class="container">
+  <!-- Contains all the divs related to adding a new food item-->
+  <div class="container">
 
-		<!-- This is the modal that will allow users to enter item info-->
-		<div class="modal fade" id="itemModal">
-			<div class="modal-dialog">
-				<div class="modal-content">
+    <!-- This is the modal that will allow users to enter item info-->
+    <div class="modal fade" id="itemModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
 
-					<!-- Modal Header-->
-					<div class="modal-header">
-						<h3 class="modal-title">New Food to Share</h3>
-					</div>
+          <!-- Modal Header-->
+          <div class="modal-header">
+            <h3 class="modal-title">New Food to Share</h3>
+          </div>
 
-					<!-- Modal Body-->
-					<div class="modal-body">
-						<!--Sets up the form when the modal is opened-->
-						<form id="postForm" action="javascript:void(0);">
+          <!-- Modal Body-->
+          <div class="modal-body">
+            <!--Sets up the form when the modal is opened-->
+            <form id="postForm" action="javascript:void(0);">
 
-							<div class="form-group">
-								<input id="name" type="text" class="form-control" placeholder="Enter food name" name="name">
-							</div>
+              <div class="form-group">
+                <input id="name" type="text" class="form-control" placeholder="Enter food name" name="name">
+              </div>
 
-							<div class="form-group">
-								<input id="description" type="text" class="form-control" placeholder="Enter time of availablility and meet-up location. Eg. 7PM at lobby."
-								 name="description" required>
-							</div>
+              <div class="form-group">
+                <input id="description" type="text" class="form-control" placeholder="Enter time of availablility and meet-up location. Eg. 7PM at lobby."
+                  name="description" required>
+              </div>
 
-							<div class="form-group">
-								<div class="input-group">
-									<input id="datetimepicker" class="form-control " type="datetime-local" required>
-								</div>
-							</div>
+              <div class="form-group">
+                <div class="input-group">
+                  <input id="datetimepicker" class="form-control " type="datetime-local" required>
+                </div>
+              </div>
 
-							<!-- Radio button for food categories-->
-							<div class="form-group">
-								<div class="radio">
-									<label>
-										<input type="radio" name="foodgrouping" value="Produce">Produce</label>
-									<label>
-										<input type="radio" name="foodgrouping" value="Meat">Meat</label>
-									<label>
-										<input type="radio" name="foodgrouping" value="Packaged">Packaged</label>
-									<label>
-										<input type="radio" name="foodgrouping" value="Canned Goods">Canned Goods</label>
-								</div>
-							</div>
+              <!-- Radio button for food categories-->
+              <div class="form-group">
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="foodgrouping" value="Produce">Produce</label>
+                  <label>
+                    <input type="radio" name="foodgrouping" value="Meat">Meat</label>
+                  <label>
+                    <input type="radio" name="foodgrouping" value="Packaged">Packaged</label>
+                  <label>
+                    <input type="radio" name="foodgrouping" value="Canned Goods">Canned Goods</label>
+                </div>
+              </div>
 
-							<div class="form-group">
-								<input id="submit" type="submit" class="btn btn-primary" value="Submit">
-								<input id="file-input" type="file" accept="image/*">
-								<output id="file-output"></output>
-							</div>
-
-
-						</form>
-					</div>
+              <div class="form-group">
+                <input id="file-input" type="file" accept="image/*">
+                <output id="file-output"></output>
+              </div>
 
 
-				</div>
-			</div>
+              <input id="submit" type="submit" class="btn btn-primary" value="Submit">
+            </form>
+          </div>
 
-		</div>
-	</div>
-	</script>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </script>
 
 </body>
-
 </html>
