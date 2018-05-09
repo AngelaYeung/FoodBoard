@@ -101,7 +101,7 @@ models.sequelize.sync().then(() => {
 
 var db_config = {
   host: "localhost",
-  database: "foodboard",
+  database: "Foodboard",
   user: "root",
   password: ""
 };
