@@ -103,8 +103,8 @@ var db_config = {
   host: "localhost",
   database: "Foodboard",
   user: "root",
-  password: ""
-};
+  password: "test123"
+});
 
 var connection;
 
@@ -202,7 +202,6 @@ io.on('connection', (socket) => {
       });
     });
   });
-
 });
 
 /*************************************************************************
