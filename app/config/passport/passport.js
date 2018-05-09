@@ -53,8 +53,8 @@ module.exports = function (passport, user) {
             {
               email: register_email,
               password: userPassword,
-              firstname: req.body.register_first_name,
-              lastname: req.body.register_last_name,
+              firstName: req.body.register_first_name,
+              lastName: req.body.register_last_name,
               suiteNumber: req.body.register_suite_number
             };
 
