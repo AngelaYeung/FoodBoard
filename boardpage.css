@@ -10,20 +10,30 @@
       width: 60%; 
   }
 
-  .navbar-fixed-top{
-    z-index: -1;
-  }
 
   .open >.dropdown-menu{
-    position: absolute;
-    top: 30px;
+    margin-top: 2.5%;
+    border-top: none;
   }
-  .additem {
-  position: fixed!important;
-  right: -22px!important;
-  top: -9px!important;
+
+  .btn-default{
+    float: right;
+    background-color: #4EB266;
+    border-color: #4EB266;
+    padding: 0;
+    margin: 0;
+  }
   
-}
+  .glyphicon{
+    color:white;
+    top: 6px;  
+  }
+
+  .btn-default:focus{
+    color: #4EB266;
+    background-color: #4EB266;
+    border-color: #4EB266;
+  }
 }
 
 @media screen and (min-width: 481px) {
@@ -50,12 +60,7 @@ body {
 }
 
 /* sets the position of the add icon */
-.additem {
-  position: relative;
-  right: -5px;
-  top: -9px;
-  
-}
+
 
 
 

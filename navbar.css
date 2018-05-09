@@ -18,7 +18,6 @@
     
   }
 
-
 }
 
 
@@ -27,10 +26,13 @@
     border-style: none;
     padding: 0;
     position: relative;
-    top: 5px;
+    top: 3px;
   }
   .dropdown-menu {
-    width: 100%;
+    width: 107%;
+    left: -13px;
+    border-radius: 0;
+    background-color: #4EB266
   }
 
 .navbar-brand .navbar-foodboard {
