@@ -1,29 +1,84 @@
-// Creates a thumbnail when an image has been uploaded
-function handleFileSelect(evt) {
-    var files = evt.target.files; // FileList object
+$(document).ready(function () {
+    var socket = io();
+    console.log(socket);
+    const uploader = new SocketIOFileUpload(socket);
+    console.log(uploader);
+    var image_name;
 
-    // Only process image files.
-  if (files[0].type.match('image.*')) {
 
-        var reader = new FileReader();
+    /*************************************************************************
+     * 
+     *         FOOD BOARD POST FEATURE - CLIENT SIDE
+     * 
+     *************************************************************************/
+    /** Uploads the image in form to server, and grabs its name */
+    uploader.listenOnSubmit(document.getElementById('submit'), document.getElementById('file-input'));
 
-       // Closure to capture the file information.
-        reader.onload = (function (theFile) {
-            return function (e) {
-                // Render thumbnail.
-                var span = document.createElement('span');
-                span.innerHTML = ['<img class="thumb" src="', e.target.result,
-                    '" title="', escape(theFile.name), '"/>'].join('');
-                document.getElementById("output").appendChild(span);
-            };
-        })(files[0]);
+    uploader.addEventListener('start', (event) => {
+      image_name = event.file.name;
+    });
 
-       // Read in the image file as a data URL.
-       reader.readAsDataURL(files[0]);
-    }
-}
 
-// document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
+    /** Sends data from post-form to server.js */
+    $('#submit').click(function () {
+      console.log('Submit triggered!');
+
+      if ($('#name').val().toLowerCase() === 'ilovefoodboard') {
+        window.location.href = ('/snake');
+
+      } else {
+        socket.emit('post item', {
+          name: $('#name').val(),
+          description: $('#description').val(),
+          dateTime: $('#datetimepicker').val(),
+          foodgrouping: $('input[name=foodgrouping]:checked').val(),
+          image: image_name
+        });
+      }
+      return false;
+    });
+
+    socket.on('post item return', (item) => {
+      addNewItem(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
+    });
+
+
+    /*************************************************************************
+     * 
+     *         FOOD BOARD LOAD FEATURE - CLIENT SIDE
+     * 
+     *************************************************************************/
+
+    /**
+     * When the window is loaded, trigger websocket event for server to fetch foodboard posts
+     * from the data base. 
+     */
+    $(window).on('load', () => {
+      console.log('Client: page loaded');
+      socket.emit('page loaded');
+    });
+
+
+    socket.on('load foodboard', (items) => {
+      for (var i = 0; i < items.length; i++) {
+        addNewItem(items[i].itemID, items[i].foodName, items[i].foodDescription, items[i].foodGroup, items[i].foodExpiryTime,
+          items[i].foodImage);
+      }
+    });;
+
+
+    /*************************************************************************
+     * 
+     *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
+     * 
+     *************************************************************************/
+
+    $('_claim-form').on('submit', (e) => {
+      e.preventDefault();
+      console.log(this.id);
+    });
+
+  });
 
 
 /**
@@ -118,3 +173,30 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
         $('#itemModal').modal('toggle');
     }
 }
+
+
+// Creates a thumbnail when an image has been uploaded
+// function handleFileSelect(evt) {
+//     var files = evt.target.files; // FileList object
+
+//     // Only process image files.
+//   if (files[0].type.match('image.*')) {
+
+//         var reader = new FileReader();
+
+//        // Closure to capture the file information.
+//         reader.onload = (function (theFile) {
+//             return function (e) {
+//                 // Render thumbnail.
+//                 var span = document.createElement('span');
+//                 span.innerHTML = ['<img class="thumb" src="', e.target.result,
+//                     '" title="', escape(theFile.name), '"/>'].join('');
+//                 document.getElementById("output").appendChild(span);
+//             };
+//         })(files[0]);
+
+//        // Read in the image file as a data URL.
+//        reader.readAsDataURL(files[0]);
+//     }
+// }
+// document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
