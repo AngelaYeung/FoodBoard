@@ -1,0 +1,65 @@
+/* Tabbed Modal */
+.green {
+  background-color: #4EB266; }
+
+.modal-dialog.tabbed-modal .nav-tabs {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex; 
+}
+
+.modal-dialog.tabbed-modal .nav-tabs li {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1; 
+}
+
+.modal-dialog.tabbed-modal .nav-tabs li a {
+    text-align: center; 
+    margin: 0;
+
+}
+
+.modal-content{
+  border-radius: 0;
+}
+
+.nav-tabs> li > a{
+  border-radius: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+}
+
+.tab-content > .tab-pane {
+  display: none !important;
+}
+
+.tab-content > .active {
+  display: block !important;
+}
+
+.modal-text {
+  font-size: 14pt;
+  font-weight: bold;
+  text-align: center;
+  font-family: "HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.input-addon .glyphicon {
+  padding-left: 30px;
+  font-size: 25px;
+  color: #4EB266;
+}
+
+#logo-above-modal img {
+  display: block;
+  width: 15%;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 150px;
+  margin-bottom: 50px;
+}
+/* End Tabbed Modal */
