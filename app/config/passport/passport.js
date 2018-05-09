@@ -58,7 +58,7 @@ module.exports = function (passport, user) {
               suiteNumber: req.body.register_suite_number
             };
 
-            User.create(data).then((newUser, created) => {
+          User.create(data).then((newUser, created) => {
             if (!newUser) {
               return done(null, false);
             }
@@ -84,7 +84,7 @@ module.exports = function (passport, user) {
 
       var User = user;
 
-      var isValidPassword = (userpass,password) => {
+      var isValidPassword = (userpass, password) => {
         return bCrypt.compareSync(password, userpass);
       }
 
