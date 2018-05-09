@@ -1,6 +1,79 @@
 body {
     text-align: center;
-    font: helvetica; 
+  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
-#game-stage {
+#game-menu {
+    display: inline-block;
+} 
+#game-screen {
+    z-index: -1;
+}
+
+.start-menu {
+    position: relative;
+    font-size: 16pt;
+    top: 50%;
+}
+#stage {
+    display: none;
+    z-index: -1;
+}
+.end-menu {
+    display: none;
+    position: absolute;
+    margin: 0 auto;
+    top: 150px;
+    font-size: 16pt;
+    border: 2px white solid;
+    padding: 10px;
+    color: white; 
+    left: 130px; 
+    
+    
+}
+#score {
+    position: absolute;
+    margin: 0 auto;
+}
+
+#egg {
+    margin: 10px auto;
+}
+
+#game-controller {
+    display:none;
+    position: relative;
+    z-index: 99;
+}
+#game-controller button {
+    background: #4EB266;
+    border: none;
+    color: white;
+    border-radius: 2px;
+
+}
+#game-controller table {
+    margin: 0 auto;
+    padding: 0;
+    font-size: 2.5em;
+    align-content: center;
+    justify-content: center;
+    border-collapse: collapse;
+}
+
+
+#restart-btn {
+    background: transparent;
+    border: 2px solid white;
+    padding: 5px;
+    margin: 0 auto;
+    font-size: 14pt;
+    color: white;
+    left: 20px;
+    
+}
+
+#start-btn {
+    background: transparent;
+    border: 2px solid #4EB266;
 }
