@@ -106,7 +106,7 @@ var db_config = {
   database: "foodboard",
   user: "root",
   password: ""
-};
+}
 
 var connection;
 

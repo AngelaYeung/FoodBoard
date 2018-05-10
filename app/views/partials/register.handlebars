@@ -5,7 +5,7 @@
                 <div>
                   <p class="modal-text">Register for FoodBoard</p>
                 </div>
-                <form name="registration" id="registration" class="form-horizontal" action="/user_registration" method="POST">
+                <form  id= "registration_form" role="form" name="registration" class="form-horizontal" action="/user_registration" method="POST">
                   <!-- Registration form username input -->
                   <div class="form-group">
                     <div class="col-sm-2 input-addon">
@@ -39,7 +39,7 @@
                       <span class="glyphicon glyphicon-lock"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="password" placeholder="Enter Password" name="register_pwd" required>
+                      <input class="form-control" type="password" placeholder="Enter Password" id="register_pwd" required>
                     </div>
                   </div>
                   <!-- Register form password confirm input -->
@@ -48,7 +48,7 @@
                       <span class="glyphicon glyphicon-ok-circle"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="password" placeholder="Confirm Password" name="register_pwd_confirm" required>
+                      <input class="form-control" type="password" placeholder="Confirm Password" id="register_pwd_confirm" required>
                     </div>
                   </div>
                   <!-- Register form suite number input -->
