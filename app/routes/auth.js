@@ -1,4 +1,8 @@
+var mysql = require('mysql');
+
 var authController = require('../controllers/authcontroller.js');
+var dbconfig = require('../public/js/dbconfig.js');
+var connection = mysql.createConnection(dbconfig);
 
 var validate = (app, passport) => {
 
@@ -14,11 +18,13 @@ var validate = (app, passport) => {
                 console.log('Err: ', err);
                 console.log('Info: ', info);
                 console.log('User: ', user);
-                return res.render('home_wrong_registration', { 
-                    email: req.body.login_email });
-                }
+                return res.render('home_wrong_registration', {
+                    email: req.body.login_email
+                });
+            }
             req.logIn(user, function (err) {
                 if (err) { return next(err); }
+                insertSessionDB(req.sessionID, user.userID);
                 return res.redirect('boardpage');
             });
         })(req, res, next);
@@ -33,14 +39,13 @@ var validate = (app, passport) => {
         passport.authenticate('local-signin', (err, user, info) => {
             if (err) { return next(err); }
             if (!user) {
-                console.log('Err: ', err);
-                console.log('Info: ', info);
-                console.log('User: ', user);
-                return res.render('home_wrong_pw', { 
-                    email: req.body.login_email });
-                }
+                return res.render('home_wrong_pw', {
+                    email: req.body.login_email
+                });
+            }
             req.logIn(user, function (err) {
                 if (err) { return next(err); }
+                insertSessionDB(req.sessionID, user.userID);
                 return res.redirect('boardpage');
             });
         })(req, res, next);
@@ -57,6 +62,12 @@ var validate = (app, passport) => {
 
 };
 
+function insertSessionDB(sessionID, userID) {
+    connection.query("INSERT INTO sessions(sessionID, Users_userID) VALUES (?,?)", [sessionID, userID], (error, rows, fields) => {
+        if (error) console.log(error);
+        console.log(rows);
+    });
+};
 
 module.exports = {
     validate: validate

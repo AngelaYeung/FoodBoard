@@ -15,6 +15,7 @@ const exphbs = require('express-handlebars'); // for rendering dynamic templates
 /** Exports made */
 var models = require("./app/models"); // tells the server to require these routes 
 var authRoute = require('./app/routes/auth.js');
+var dbconfig = require('./app/public/js/dbconfig.js');
 
 const port = 8000;
 
@@ -32,9 +33,12 @@ app.use(bodyParser.urlencoded({
 
 // For Passport
 app.use(session({
-  secret: 'keyboard cat',
+  secret: 'foodboard kitten',
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: false,
+  }
 })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
@@ -98,14 +102,6 @@ models.sequelize.sync().then(() => {
   console.log(err, "Something went wrong with the Database Update!");
 });
 
-
-var db_config = {
-  host: "localhost",
-  database: "Foodboard",
-  user: "root",
-  password: "test123"
-}
-
 var connection;
 
 handleDisconnect();
@@ -165,44 +161,55 @@ io.on('connection', (socket) => {
 
   /** Handles 'post item' event that is fired from the index.html.  */
   socket.on('post item', (item) => {
-    console.log(item);
-
-    let foodName = item.name;
-    let foodDescription = item.description;
-    let foodGroup = item.foodgrouping;
-    let dateLocalTime = item.dateTime;
-    let foodImage = item.image;
-    let id;
-
-    /** Inserts data into database */
-    var foodItem = "INSERT INTO FoodItem (foodName, foodDescription, foodGroup,  foodExpiryTime, foodImage) VALUES (?, ?, ?, ?, ?)";
-    connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage], (error, rows, field) => {
+    var query = `SELECT sessionID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${item.sessionID}') LIMIT 1`;
+    connection.query(query, (error, rows, fields) => {
       if (error) {
-        // return error if insertion fail
-        console.log("Error inserting" + error);
         console.log(error);
-      } else {
-        // else return the updated table
-        console.log("Successful insertion:", rows);
-        id = rows.insertId;
       }
-    });
+      console.log("this is length of rows:", rows.length);
+      if (rows.length) {
+        console.log("fired");
+        let foodName = item.name;
+        let foodDescription = item.description;
+        let foodGroup = item.foodgrouping;
+        let dateLocalTime = item.dateTime;
+        let foodImage = item.image;
+        let id;
+
+        /** Inserts data into database */
+        var foodItem = "INSERT INTO FoodItem (foodName, foodDescription, foodGroup,  foodExpiryTime, foodImage) VALUES (?, ?, ?, ?, ?)";
+        connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage], (error, rows, field) => {
+          if (error) {
+            // return error if insertion fail
+            console.log("Error inserting" + error);
+            console.log(error);
+          } else {
+            // else return the updated table
+            console.log("Successful insertion:", rows);
+            id = rows.insertId;
+          }
+        });
 
 
-    /* Once image transfer has complete, tell client to create it's card */
-    uploader.once('complete', () => {
-      console.log('File Transfer Completed...');
-      io.emit('post item return', {
-        id: id,
-        name: foodName,
-        description: foodDescription,
-        dateTime: dateLocalTime,
-        foodgrouping: foodGroup,
-        image: foodImage
-      });
+        /* Once image transfer has complete, tell client to create it's card */
+        uploader.once('complete', () => {
+          console.log('File Transfer Completed...');
+          io.emit('post item return', {
+            id: id,
+            name: foodName,
+            description: foodDescription,
+            dateTime: dateLocalTime,
+            foodgrouping: foodGroup,
+            image: foodImage
+          });
+        });
+      } else {
+        app.post('/nicetrybud');
+      }
     });
   });
 });
+
 
 /*************************************************************************
  * 
@@ -214,7 +221,7 @@ io.on('connection', (socket) => {
 function handleDisconnect() {
 
 
-  connection = mysql.createConnection(db_config); // Recreate the connection, since
+  connection = mysql.createConnection(dbconfig); // Recreate the connection, since
   // the old one cannot be reused.
 
   connection.connect(function (err) {                 // The server is either down
@@ -223,7 +230,7 @@ function handleDisconnect() {
       setTimeout(handleDisconnect, 2000);             // We introduce a delay before attempting to reconnect,
     }                                                 // to avoid a hot loop, and to allow our node script to
   });                                                 // process asynchronous requests in the meantime.
-                                                      // If you're also serving http, display a 503 error.
+  // If you're also serving http, display a 503 error.
 
   connection.on('error', function (err) {
     console.log('db error', err);
@@ -233,9 +240,9 @@ function handleDisconnect() {
       throw err;                                      // server variable configures this)
     }
   });
-}
+};
 
 // The port we are listening on
 server.listen(port, () => {
   console.log(`We are on port ${port}`);
-})
+});
