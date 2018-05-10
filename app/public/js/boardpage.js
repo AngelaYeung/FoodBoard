@@ -299,7 +299,7 @@ $(document).ready(function () {
 
 
   function setPostImage(foodCategory, imgName) {
-    if (imgName != "undefined.png") {
+    if (imgName !== "undefined.png") {
       return `/images/${imgName}`;
     } else {
       switch (foodCategory) {
