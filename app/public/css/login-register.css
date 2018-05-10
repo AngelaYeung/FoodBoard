@@ -17,6 +17,18 @@
 
 .modal-dialog.tabbed-modal .nav-tabs li a {
     text-align: center; 
+    margin: 0;
+
+}
+
+.modal-content{
+  border-radius: 0;
+}
+
+.nav-tabs> li > a{
+  border-radius: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
 }
 
 .tab-content > .tab-pane {

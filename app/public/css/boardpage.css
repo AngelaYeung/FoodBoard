@@ -87,6 +87,8 @@
 #submit {
   float: right;
   background: #4EB266;
+  position: relative;
+  top: 17px;
 }
 
 body {

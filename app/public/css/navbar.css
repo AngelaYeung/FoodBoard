@@ -14,7 +14,7 @@
     margin-top: -30px;
   }
   .navbar-brand-sm img {
-    width: 10%;
+    width: 70%;
     
   }
   .dropdown .btn-primary {
@@ -43,7 +43,18 @@
     background-color: transparent;
     border-style: none;
     padding: 0;
+    position: relative;
+    top: 3px;
   }
+<<<<<<< HEAD:navbar.css
+  .dropdown-menu {
+    width: 107%;
+    left: -13px;
+    border-radius: 0;
+    background-color: #4EB266
+  }
+=======
+>>>>>>> 0569d5a5d670c0e52c01446d50be987d5399f491:app/public/css/navbar.css
 
 .navbar-brand .navbar-foodboard {
   color:white;
@@ -55,7 +66,7 @@
 
 .navbar-foodboard img {
   width: 9%;
-  margin-top: -15px;
+  margin-top: -8px;
 }
 
 /* Navbar link properties */
@@ -107,5 +118,21 @@
   padding-right: 5%;
   font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size:14pt;
+  
+}
+
+
+@media screen and (min-width: 481px){
+  .navbar-foodboard img {
+    width: 9%;
+    margin-top: -15px;
+  }
+  .navbar-brand-sm {
+    display:none;
+  }
+
+  .navbar-fixed-top{
+    background-color: #4EB266;
+  }
   
 }
