@@ -167,12 +167,6 @@ $(document).ready(function () {
     addNewItem(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
   });
 
-  function claimItem(id) {
-    console.log(id);
-
-    console.log('yes');
-    itemClaimed(id);
-  };
   /*************************************************************************
    * 
    *         FOOD BOARD LOAD FEATURE - CLIENT SIDE
@@ -208,7 +202,16 @@ $(document).ready(function () {
     console.log(this.id);
   });
 
+  /*************************************************************************
+   * 
+   *         FOOD BOARD CLAIM FEATURE - CLIENT SIDE
+   * 
+   *************************************************************************/
 
+  socket.on('claim return', (itemID) => {
+    itemClaimed(itemID); //.remove() generates error
+  });
+  
   /**
    * Creates new card based on the parameters passed into the function.
    */
@@ -259,6 +262,10 @@ $(document).ready(function () {
     var foodImg = document.createElement("img");
     foodImg.setAttribute("class", "food-img");
     foodImg.src = setPostImage(foodGroup, `${img}`);
+
+    console.log("date:" + dateTime);
+    console.log("food category" + foodGroup);
+    console.log(img);
 
     var claimForm = document.createElement("form");
     claimForm.setAttribute("class", "claim-form");
@@ -314,10 +321,10 @@ $(document).ready(function () {
 
 
 });
-
 function itemClaimed(id) {
   $(`#card${id}`).remove();
 }
+
 
 // Creates a thumbnail when an image has been uploaded
 // function handleFileSelect(evt) {
