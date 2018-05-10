@@ -26,14 +26,6 @@ $(document).ready(function () {
    *         FOOD BOARD POST FEATURE - CLIENT SIDE
    * 
    *************************************************************************/
-<<<<<<< HEAD
-  /** Uploads the image in form to server, and grabs its name */
-  uploader.listenOnSubmit(document.getElementById('submit'), document.getElementById('file-input'));
-
-  uploader.addEventListener('start', (event) => {
-    image_name = event.file.name;
-  });
-=======
 
   // Checks file image submitted in form for correct type when inputted.
   if (window.File && window.FileReader && window.FormData) {
@@ -147,7 +139,6 @@ $(document).ready(function () {
   //   image_name = "test.png";
   // });
 
->>>>>>> 266bd120df042cb231d7033cb093d655ad8dacc0
 
   /** Sends data from post-form to server.js */
   $('#submit').click(function () {
@@ -157,20 +148,12 @@ $(document).ready(function () {
       window.location.href = ('/snake');
 
     } else {
-<<<<<<< HEAD
-=======
-
->>>>>>> 266bd120df042cb231d7033cb093d655ad8dacc0
       socket.emit('post item', {
         name: $('#name').val(),
         description: $('#description').val(),
         dateTime: $('#datetimepicker').val(),
         foodgrouping: $('input[name=foodgrouping]:checked').val(),
-<<<<<<< HEAD
-        image: image_name
-=======
         image: `${image_name}.png`
->>>>>>> 266bd120df042cb231d7033cb093d655ad8dacc0
       });
     }
     return false;
@@ -203,7 +186,6 @@ $(document).ready(function () {
         items[i].foodImage);
     }
   });;
-<<<<<<< HEAD
 
 
   /*************************************************************************
@@ -212,46 +194,20 @@ $(document).ready(function () {
    * 
    *************************************************************************/
 
-=======
-
-
-  /*************************************************************************
-   * 
-   *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
-   * 
-   *************************************************************************/
-
->>>>>>> 266bd120df042cb231d7033cb093d655ad8dacc0
   $('_claim-form').on('submit', (e) => {
     e.preventDefault();
     console.log(this.id);
   });
 
-<<<<<<< HEAD
   socket.on('claim return', (itemID) => {
     $(`#card${itemID}`).remove(); //.remove() generates error
   });
-=======
-});
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> 266bd120df042cb231d7033cb093d655ad8dacc0
 
   /**
    * Creates new card based on the parameters passed into the function.
    */
   function addNewItem(id, name, description, dateTime, foodGroup, img) {
 
-<<<<<<< HEAD
     var cardDiv = document.createElement("div");
     cardDiv.setAttribute("id", `card${id}`);
     cardDiv.setAttribute("class", "cardContainer");
@@ -369,92 +325,3 @@ $(document).ready(function () {
 //     }
 // }
 // document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
-=======
-  var cardDiv = document.createElement("div");
-  cardDiv.setAttribute("id", `card${id}`);
-  cardDiv.setAttribute("class", "cardContainer");
-
-  var contentDiv = document.createElement("div");
-  contentDiv.setAttribute("class", "contentDiv");
-
-  var headerDiv = document.createElement("div");
-  headerDiv.setAttribute("class", "header-Div");
-  //headerDiv.innerHTML = "i am headerdiv";
-
-  var textDiv = document.createElement("div");
-  textDiv.setAttribute("class", "col-xs-10");
-
-  var foodName = document.createElement("h4");
-  // grabs the name from the form so that it will be appended to cardDiv
-  foodName.innerHTML = name;
-
-  var dateText = document.createElement("p");
-  dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
-
-  var buttonDiv = document.createElement("div");
-  buttonDiv.setAttribute("class", "col-xs-2");
-
-  var toggleButton = document.createElement("button");
-  toggleButton.setAttribute("data-toggle", "collapse");
-  toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
-  toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
-
-  // var toggleImg = document.createElement("img");
-  // toggleImg.src = "./Pictures/chevron-down.png";
-
-  var toggleDiv = document.createElement("div");
-  toggleDiv.setAttribute("id", `collapseDiv${id}`);
-  toggleDiv.setAttribute("class", "collapse");
-
-  var foodCategory = document.createElement("p");
-  foodCategory.innerHTML = foodGroup;
-  //takes the contents of the description 
-  var foodDescription = document.createElement("p");
-  foodDescription.innerHTML = description;
-
-  var imageDiv = document.createElement("div");
-  imageDiv.setAttribute("class", "imgDiv");
-
-  var foodImg = document.createElement("img");
-  foodImg.setAttribute("class", "food-img");
-  foodImg.src = `/images/${img}`;
-
-  var claimForm = document.createElement("form");
-  claimForm.setAttribute("class", "claim-form");
-
-  var claimButton = document.createElement("input");
-  claimButton.setAttribute("id", `claimButton${id}`);
-  claimButton.setAttribute("class", "claim-button");
-  claimButton.setAttribute("type", "Submit");
-  claimButton.setAttribute("value", "Claim");
-
-  cardDiv.appendChild(imageDiv);
-  imageDiv.appendChild(foodImg);
-  cardDiv.appendChild(headerDiv);
-  cardDiv.appendChild(contentDiv);
-
-  contentDiv.appendChild(toggleDiv);
-
-  headerDiv.appendChild(textDiv);
-  headerDiv.appendChild(buttonDiv);
-  buttonDiv.appendChild(toggleButton);
-  // toggleButton.appendChild(toggleImg);
-  textDiv.appendChild(foodName);
-  textDiv.appendChild(dateText);
-
-  toggleDiv.appendChild(foodCategory);
-  toggleDiv.appendChild(foodDescription);
-  toggleDiv.appendChild(claimForm);
-
-  claimForm.appendChild(claimButton);
-  $("#card-list").prepend(cardDiv);
-
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
-
-  /** Hides Modal */
-  if ($('#itemModal').is(':visible')) {
-    $('#itemModal').modal('toggle');
-  }
-}
->>>>>>> 266bd120df042cb231d7033cb093d655ad8dacc0

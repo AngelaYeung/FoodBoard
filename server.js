@@ -25,6 +25,8 @@ var app = express().use(siofu.router); // adds siofu as a router, middleware
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
+const { check, validationResult } = require('express-validator/check');
+
 /* Parses the content-type that is transfered over HTTP */
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -104,17 +106,18 @@ var db_config = {
   host: "localhost",
   database: "foodboard",
   user: "root",
-<<<<<<< HEAD
   password: ""
 };
-=======
-  password: "test123"
-}
->>>>>>> 266bd120df042cb231d7033cb093d655ad8dacc0
 
 var connection;
 
+
 handleDisconnect();
+
+
+ /*************************************************************************
+   * 
+   *         FOOD BOARD REGISTRATION FEATURE - SERVER SIDE
 
 
 /**
@@ -129,6 +132,7 @@ io.on('connection', (socket) => {
   uploader.dir = path.join(__dirname, '/app/images'); // sets the upload directory
   uploader.listen(socket); // listens for image uploads
 
+  
   /*************************************************************************
    * 
    *         FOOD BOARD LOAD FEATURE - SERVER SIDE
@@ -286,8 +290,7 @@ io.on('connection', (socket) => {
                 // posterSuiteNumber = row[0].suiteNumber;
               }
 
-              sendClaimEmailToPoster(posterEmail, posterFirstName); //may also include: claimerEmail, claimerFirstName, claimerSuiteNumber 
-              //sendClaimEmailToClaimer(claimerEmail, posterFirstName, posterSuiteNumber, Description);
+              //sendClaimEmailToPoster(posterEmail, posterFirstName); //may also include: claimerEmail, claimerFirstName, claimerSuiteNumber 
 
               console.log(itemID);
               io.emit('claim return', (itemID));
