@@ -103,7 +103,7 @@ var db_config = {
   host: "localhost",
   database: "Foodboard",
   user: "root",
-  password: "test123"
+  password: ""
 }
 
 var connection;

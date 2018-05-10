@@ -5,7 +5,7 @@ var connection = mysql.createConnection({
   host: "localhost",
   database: "Foodboard",
   user: "root",
-  password: "test123"
+  password: ""
 });
 connection.connect((error) => {
   if (error) throw error;
@@ -57,6 +57,7 @@ module.exports = function (passport, user) {
               lastName: req.body.register_last_name,
               suiteNumber: req.body.register_suite_number
             };
+            console.log(data);
 
           User.create(data).then((newUser, created) => {
             if (!newUser) {
