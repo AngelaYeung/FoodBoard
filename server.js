@@ -25,7 +25,6 @@ var app = express().use(siofu.router); // adds siofu as a router, middleware
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-const { check, validationResult } = require('express-validator/check');
 
 /* Parses the content-type that is transfered over HTTP */
 app.use(bodyParser.json());
