@@ -144,6 +144,10 @@ $(document).ready(function () {
   $('#submit').click(function () {
     console.log('Submit triggered!');
 
+    if ($('#itemModal').is(':visible')) {
+      $('#itemModal').modal('toggle');
+    }
+
     if ($('#name').val().toLowerCase() === 'ilovefoodboard') {
       window.location.href = ('/snake');
 
@@ -163,7 +167,6 @@ $(document).ready(function () {
     addNewItem(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
   });
 
-
   /*************************************************************************
    * 
    *         FOOD BOARD LOAD FEATURE - CLIENT SIDE
@@ -182,8 +185,8 @@ $(document).ready(function () {
 
   socket.on('load foodboard', (items) => {
     for (var i = 0; i < items.length; i++) {
-      addNewItem(items[i].itemID, items[i].foodName, items[i].foodDescription, items[i].foodGroup, items[i].foodExpiryTime,
-        items[i].foodImage);
+      addNewItem(items[i].itemID, items[i].foodName, items[i].foodDescription, items[i].foodExpiryTime,
+        items[i].foodGroup, items[i].foodImage);
     }
   });;
 
@@ -199,10 +202,16 @@ $(document).ready(function () {
     console.log(this.id);
   });
 
-  socket.on('claim return', (itemID) => {
-    $(`#card${itemID}`).remove(); //.remove() generates error
-  });
+  /*************************************************************************
+   * 
+   *         FOOD BOARD CLAIM FEATURE - CLIENT SIDE
+   * 
+   *************************************************************************/
 
+  socket.on('claim return', (itemID) => {
+    itemClaimed(itemID); //.remove() generates error
+  });
+  
   /**
    * Creates new card based on the parameters passed into the function.
    */
@@ -237,9 +246,6 @@ $(document).ready(function () {
     toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
     toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
 
-    // var toggleImg = document.createElement("img");
-    // toggleImg.src = "./Pictures/chevron-down.png";
-
     var toggleDiv = document.createElement("div");
     toggleDiv.setAttribute("id", `collapseDiv${id}`);
     toggleDiv.setAttribute("class", "collapse");
@@ -255,49 +261,69 @@ $(document).ready(function () {
 
     var foodImg = document.createElement("img");
     foodImg.setAttribute("class", "food-img");
-    foodImg.src = `/images/${img}`;
+    foodImg.src = setPostImage(foodGroup, `${img}`);
+
+    console.log("date:" + dateTime);
+    console.log("food category" + foodGroup);
+    console.log(img);
 
     var claimForm = document.createElement("form");
     claimForm.setAttribute("class", "claim-form");
-    claimForm.setAttribute("action", "javascript:void(0);"); //disables page refresh upon button click
+    claimForm.setAttribute("action", "javascript:void(0);")
 
     var claimButton = document.createElement("input");
-    claimButton.setAttribute('onclick', `claimItem(${id})`);
-    claimButton.setAttribute("class", "btn btn-primary");
-    claimButton.setAttribute("type", "submit");
+    claimButton.setAttribute("id", `${id}`);
+    claimButton.setAttribute("class", "claim-button");
+    claimButton.setAttribute("type", "button");
     claimButton.setAttribute("value", "Claim");
+    claimButton.setAttribute("onclick", "claimItem(this.id)");
 
-    cardDiv.appendChild(imageDiv);
+    $(cardDiv).append(imageDiv, headerDiv, contentDiv);
     imageDiv.appendChild(foodImg);
-    cardDiv.appendChild(headerDiv);
-    cardDiv.appendChild(contentDiv);
 
-    contentDiv.appendChild(toggleDiv);
+    $(contentDiv).append(toggleDiv);
+    $(headerDiv).append(textDiv, buttonDiv);
+    $(toggleDiv).append(foodCategory, foodDescription, claimForm);
 
-    headerDiv.appendChild(textDiv);
-    headerDiv.appendChild(buttonDiv);
     buttonDiv.appendChild(toggleButton);
-    // toggleButton.appendChild(toggleImg);
     textDiv.appendChild(foodName);
     textDiv.appendChild(dateText);
 
-    toggleDiv.appendChild(foodCategory);
-    toggleDiv.appendChild(foodDescription);
-    toggleDiv.appendChild(claimButton);
-
+    claimForm.appendChild(claimButton);
     $("#card-list").prepend(cardDiv);
 
     /** Clearing Forms */
     $('#postForm').trigger('reset');
 
-    /** Hides Modal */
-    if ($('#itemModal').is(':visible')) {
-      $('#itemModal').modal('toggle');
+  }
+
+
+  function setPostImage(foodCategory, imgName) {
+    if (imgName !== "undefined.png") {
+      return `/images/${imgName}`;
+    } else {
+      switch (foodCategory) {
+        case "Produce":
+          return "../../Pictures/default_produce.png";
+          break;
+        case "Meat":
+          return "../../Pictures/default_meat.png";
+          break;
+        case "Canned Goods":
+          return "../../Pictures/default_food.png";
+          break;
+        case "Packaged":
+          return "../../Pictures/default_packaged.png";
+          break;
+      }
     }
   }
 
-});
 
+});
+function itemClaimed(id) {
+  $(`#card${id}`).remove();
+}
 
 
 // Creates a thumbnail when an image has been uploaded
