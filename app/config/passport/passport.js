@@ -5,7 +5,7 @@ var connection = mysql.createConnection({
   host: "localhost",
   database: "Foodboard",
   user: "root",
-  password: ""
+  password: "test123"
 });
 connection.connect((error) => {
   if (error) throw error;
