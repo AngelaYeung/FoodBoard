@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 
@@ -101,4 +102,109 @@
 
 </body>
 
+=======
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <Title>"Board"</Title>
+
+  <!-- BootStrap CSS CDN -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="/public/css/boardpage.css">
+  <link rel="stylesheet" href="/public/css/navbar.css">
+
+
+  <!-- Form Page Appears -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.js"></script>
+  <script src="/public/js/boardpage.js"></script>
+
+
+  <!-- socket.io -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- socketio-file-upload -->
+  <script src="/siofu/client.js"></script>
+</head>
+
+<body>
+
+  {{>navbar_success}}
+
+  <!-- Contains contents of the board-->
+  <div id="board">
+    <div id='card-list'></div>
+  </div>
+
+  <!-- Contains all the divs related to adding a new food item-->
+  <div class="container">
+
+    <!-- This is the modal that will allow users to enter item info-->
+    <div class="modal fade" id="itemModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <!-- Modal Header-->
+          <div class="modal-header">
+            <h3 class="modal-title">New Food to Share</h3>
+          </div>
+
+          <!-- Modal Body-->
+          <div class="modal-body">
+            <!--Sets up the form when the modal is opened-->
+            <form id="postForm" action="javascript:void(0);">
+
+              <div class="form-group">
+                <input id="name" type="text" class="form-control" placeholder="Enter food name" name="name">
+              </div>
+
+              <div class="form-group">
+                <input id="description" type="text" class="form-control" placeholder="Enter time of availablility and meet-up location. Eg. 7PM at lobby."
+                  name="description" required>
+              </div>
+
+              <div class="form-group">
+                <div class="input-group">
+                  <input id="datetimepicker" class="form-control " type="datetime-local" required>
+                </div>
+              </div>
+
+              <!-- Radio button for food categories-->
+              <div class="form-group">
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="foodgrouping" value="Produce">Produce</label>
+                  <label>
+                    <input type="radio" name="foodgrouping" value="Meat">Meat</label>
+                  <label>
+                    <input type="radio" name="foodgrouping" value="Packaged">Packaged</label>
+                  <label>
+                    <input type="radio" name="foodgrouping" value="Canned Goods">Canned Goods</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <input id="file-input" type="file" accept="image/*">
+                <output id="file-output"></output>
+              </div>
+
+
+              <input id="submit" type="submit" class="btn btn-primary" value="Submit">
+            </form>
+          </div>
+
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </script>
+
+</body>
+>>>>>>> 266bd120df042cb231d7033cb093d655ad8dacc0
 </html>

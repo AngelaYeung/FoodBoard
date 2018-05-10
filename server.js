@@ -104,8 +104,13 @@ var db_config = {
   host: "localhost",
   database: "foodboard",
   user: "root",
+<<<<<<< HEAD
   password: ""
 };
+=======
+  password: "test123"
+}
+>>>>>>> 266bd120df042cb231d7033cb093d655ad8dacc0
 
 var connection;
 
