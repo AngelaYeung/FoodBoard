@@ -49,10 +49,15 @@ $(document).ready(function () {
         $nav.css("transition", "background-color 300ms linear");
       }
     });
+
+    //closes modal when clicking back button
+    // $(window).on("popstate", this.handleBackpress);
+    // document.addEventListener("backbutton", this.handleBackpress, false);
+
   });
 
 
-
+  //Change password field red if password is incorrect
   $("#register_pwd_confirm").on('change', (e) => {
     console.log("change");
     if (validatePassword()) {
@@ -63,7 +68,7 @@ $(document).ready(function () {
       document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
     }
   });
-
+  //Change password field red if password is incorrect
   $("#register_pwd").on('change', (e) => {
     console.log("change");
     if (validatePassword()) {
@@ -77,6 +82,7 @@ $(document).ready(function () {
 
 });
 
+//validate the password
 function validatePassword() {
   var pass1 = document.getElementById("register_pwd").value;
   var pass2 = document.getElementById("register_pwd_confirm").value;
@@ -87,3 +93,12 @@ function validatePassword() {
     return true;
   }
 }
+
+// //closes modal when clicking back button
+// function handleBackpress(e) {
+//   e.preventDefault();
+//   e.stopPropagation();
+
+//   $(".modal").modal("hide");
+//   $(".modal-backdrop").remove();
+// }

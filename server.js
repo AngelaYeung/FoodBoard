@@ -10,6 +10,7 @@ const passport = require('passport'); // for authentication
 const session = require('express-session'); // for session handling
 const env = require('dotenv').load();
 const exphbs = require('express-handlebars'); // for rendering dynamic templates
+const nodemailer = require('nodemailer'); // for sending automated emails
 
 
 /** Exports made */
@@ -23,6 +24,7 @@ var app = express().use(siofu.router); // adds siofu as a router, middleware
 // links express app the server; then links socketio to server
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+
 
 /* Parses the content-type that is transfered over HTTP */
 app.use(bodyParser.json());
@@ -101,14 +103,20 @@ models.sequelize.sync().then(() => {
 
 var db_config = {
   host: "localhost",
-  database: "Foodboard",
+  database: "foodboard",
   user: "root",
   password: ""
 }
 
 var connection;
 
+
 handleDisconnect();
+
+
+ /*************************************************************************
+   * 
+   *         FOOD BOARD REGISTRATION FEATURE - SERVER SIDE
 
 
 /**
@@ -123,6 +131,7 @@ io.on('connection', (socket) => {
   uploader.dir = path.join(__dirname, '/app/images'); // sets the upload directory
   uploader.listen(socket); // listens for image uploads
 
+  
   /*************************************************************************
    * 
    *         FOOD BOARD LOAD FEATURE - SERVER SIDE
@@ -139,6 +148,10 @@ io.on('connection', (socket) => {
   socket.on('page loaded', () => {
     console.log('Server: page loaded')
     /** Grab All Food Items from DB */
+
+    //delete claimed items from FoodItem table before loading foodboard
+    //deleteClaimedFoodItems();
+
     var foodboardItems = "SELECT * FROM FoodItem";
     connection.query(foodboardItems, (error, rows, fields) => {
       if (error) {
@@ -172,28 +185,30 @@ io.on('connection', (socket) => {
     let foodGroup = item.foodgrouping;
     let dateLocalTime = item.dateTime;
     let foodImage = item.image;
-    let id;
+    let itemID;
 
     /** Inserts data into database */
     var foodItem = "INSERT INTO FoodItem (foodName, foodDescription, foodGroup,  foodExpiryTime, foodImage) VALUES (?, ?, ?, ?, ?)";
     connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage], (error, rows, field) => {
       if (error) {
         // return error if insertion fail
-        console.log("Error inserting" + error);
+        console.log("Error inserting into FoodItem Table", error);
         console.log(error);
       } else {
         // else return the updated table
-        console.log("Successful insertion:", rows);
-        id = rows.insertId;
+        console.log("Successful insertion into FoodItem Table.", rows);
+        itemID = rows.insertId;
       }
     });
 
+    /* Inserts data into Posting Table */
+    //insertIntoPostingTable(itemID, userID);
 
     /* Once image transfer has complete, tell client to create it's card */
     uploader.once('complete', () => {
       console.log('File Transfer Completed...');
       io.emit('post item return', {
-        id: id,
+        id: itemID,
         name: foodName,
         description: foodDescription,
         dateTime: dateLocalTime,
@@ -202,13 +217,191 @@ io.on('connection', (socket) => {
       });
     });
   });
+
+  /*************************************************************************
+   * 
+   *         FOOD BOARD CLAIM FEATURE - SERVER SIDE
+   * 
+   *************************************************************************/
+
+
+  socket.on('claim item', (claim) => {
+    console.log("Claim entered.");
+    //Declares variables needed to generate automated claim email
+    var itemID = claim.id;
+    //console.log(itemID);
+    var postID;
+
+    var posterUserID;
+    var posterEmail;
+    var posterFirstName;
+    //let posterSuiteNumber;
+    //let postingDescription;
+    //let postingExpiryDate;
+
+    //let claimerEmail;
+    //let claimerFirstName;
+    //let claimerSuiteNumber;
+
+    var postingTableQuery = "SELECT Users_UserID, postID FROM Posting WHERE FoodItem_ItemID = ? LIMIT 1";
+    connection.query(postingTableQuery, [itemID], (error, row, field) => {
+      if (error) {
+        //return error if Posting Table query fail
+        console.log("Error grabbing userID and postID from posting table: ", error);
+      } else {
+        // else return the updated table
+        console.log("Successfully grabbed userID:", row);
+        console.log(row[0]);
+        postID = row[0].postID;
+        posterUserID = row[0].Users_UserID;
+
+        var boardTableUpdate = `UPDATE Board Set userPostClaimed = 1 WHERE Posting_PostID = ?`;
+        connection.query(boardTableUpdate, [postID], (error, row, field) => {
+          if (error) {
+            //return error if update Board Table failed
+            console.log("Error updating userPostClaimed status in Board Table: ", error);
+          } else {
+            // else return the updated table
+            console.log("Successfully updated Board Table with userPostClaimed = 1", row);
+          }
+        });
+
+        var postingTableUpdate = `UPDATE Posting SET claimStatus = 1 WHERE FoodItem_ItemID = ?`;
+        connection.query(postingTableUpdate, [itemID], (error, updateResult, field) => {
+          if (error) {
+            //return error if updating the table fails
+            console.log("Error updating claimed post: ", error);
+          } else {
+            // else return the updated table
+            console.log("Successful claim update.");
+
+            var usersTableQuery = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
+            connection.query(usersTableQuery, [posterUserID], (error, row, field) => {
+              if (error) {
+                //return error if selection fail
+                console.log("Error grabbing user of claimed item: ", error);
+              } else {
+                //else return the
+                console.log("Successfully grabbed user of claimed item. ", row);
+                posterEmail = row[0].email;
+                posterFirstName = row[0].firstName;
+                console.log(posterEmail);
+                // posterSuiteNumber = row[0].suiteNumber;
+              }
+
+              //sendClaimEmailToPoster(posterEmail, posterFirstName); //may also include: claimerEmail, claimerFirstName, claimerSuiteNumber 
+
+              console.log(itemID);
+              io.emit('claim return', (itemID));
+            });
+          }
+        });
+      }
+    });
+  });
+
 });
+
+/*************************************************************************
+ * 
+ *     MISCELLANEOUS FUNCTIONS USED IN FEATURES: CLAIM, LOAD, POST
+ * 
+ *************************************************************************/
+
+function sendClaimEmailToPoster(posterEmail, posterFirstName) { //may also include: claimerEmail, claimerFirstName,
+  //claimerSuiteNumber, postingFoodName, 
+  //postingDescription, postingExpiryDate
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.ethereal.email',
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: 'de5kzppbkaumnfhu@ethereal.email',
+      pass: 'wNmg25t9fqKXZ8wVUF'
+    },
+    // tls: {
+    //     rejectUnauthorizde:false
+    // }
+  });
+
+  // setup email data with unicode symbols
+  let mailOptions = {
+    from: posterEmail, // sender address
+    to: posterEmail, // list of receivers
+    subject: 'FoodBoard: Your food item has been claimed', // Subject line
+    text: `Hello ${posterFirstName}, 
+           Your neighbor _______ from Apartment Suite _______ has claimed your food item!
+           Here's a reminder of what you posted on foodboard.ca.
+           
+           Food Name: 
+           Food Description:
+           Food Expiry:
+  
+           Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // plain text body
+    html: '' // html body
+  };
+
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log("Error occured sending claim email", error);
+    } else {
+      // Preview only available when sending through an Ethereal account
+
+      // If successful, should print the following to the console:
+      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+      // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+      console.log('Message sent: %s', info.messageId);
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    }
+  });
+};
+
+function deleteClaimedFoodItems() {
+  var claimedItemSearch = "SELECT FoodItem_ItemID FROM Posting WHERE claimStatus = 1";
+  connection.query(claimedItemSearch, (error, rows, field) => {
+    if (error) {
+      //return error if searching claimed posts fails
+      console.log("Error occured while querying for claimed posts", error);
+    } else if (rows.length < 1) {
+      console.log(rows.length + " claimed items, no deletion occured.");
+    } else {
+      console.log("Successful query of claimed food items", rows.length);
+      for (var i = 0; i < rows.length; i++) {
+
+        var tempItemID = rows[i].FoodItem_ItemID;
+        var deletePost = `DELETE FROM FoodItem WHERE itemID = ?`;
+        connection.query(deletePost, [tempItemID], (error, row, field) => {
+          if (error) {
+            // return error if insertion fail
+            console.log("Error occured when attempting to delete post: ", error);
+          } else {
+            // else return the updated table
+            console.log("Successful deletion of claimed food item.");
+          }
+        });
+      }
+    }
+  });
+};
+
+function insertIntoPostingTable() {
+  var posting = "INSERT INTO Posting (FoodItem_ItemID, Users_UserID) VALUES (?, ?)";
+  connection.query(posting, [itemID, userID], (error, result, field) => {
+    if (error) {
+      //return error if insertion into Posting Table fail
+      console.log("Error inserting into Posting", error);
+    } else {
+      console.log("Successful insertion into Posting Table.", result);
+    }
+  });
+};
 
 /*************************************************************************
  * 
  *     MYSQL HANDLE DISCONNECT
  * 
- ***********************************  **************************************/
+ *************************************************************************/
 
 
 function handleDisconnect() {
@@ -223,7 +416,7 @@ function handleDisconnect() {
       setTimeout(handleDisconnect, 2000);             // We introduce a delay before attempting to reconnect,
     }                                                 // to avoid a hot loop, and to allow our node script to
   });                                                 // process asynchronous requests in the meantime.
-                                                      // If you're also serving http, display a 503 error.
+  // If you're also serving http, display a 503 error.
 
   connection.on('error', function (err) {
     console.log('db error', err);

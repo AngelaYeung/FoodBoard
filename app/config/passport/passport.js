@@ -3,7 +3,7 @@ var bCrypt = require('bcrypt-nodejs');
 var mysql = require('mysql');
 var connection = mysql.createConnection({
   host: "localhost",
-  database: "Foodboard",
+  database: "foodboard",
   user: "root",
   password: ""
 });
