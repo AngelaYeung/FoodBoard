@@ -10,7 +10,7 @@ function deleteItem(itemID) {
 
 $(document).ready(function () {
     var sessionID = getSessionID('connect.sid');
-    console.log(sessionID);
+    console.log('sessionID', sessionID);
 
     socket = io();
     const uploader = new SocketIOFileUpload(socket);
@@ -160,7 +160,7 @@ $(document).ready(function () {
     });
 
     socket.on('post item return', (item) => {
-        addNewItem(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
+        addNewItemNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
     });
 
     /*************************************************************************
@@ -174,17 +174,33 @@ $(document).ready(function () {
      * from the data base. 
      */
     $(window).on('load', () => {
-        console.log('Client: page loaded');
-        socket.emit('page loaded');
+        console.log('Client: page loaded:', sessionID);
+        socket.emit('page loaded', {
+            sessionID: sessionID,
+        });
     });
 
 
     socket.on('load foodboard', (items) => {
-        for (var i = 0; i < items.length; i++) {
-            addNewItem(items[i].itemID, items[i].foodName, items[i].foodDescription, items[i].foodExpiryTime,
-                items[i].foodGroup, items[i].foodImage);
+        console.log('AAAAAAAAAAAAAAAAAAA');
+        var userID = items.userID; // whos logged in
+        var rows = items.rows;
+
+        for (var i = 0; i < rows.length; i++) {
+            console.log('userID', userID);
+            console.log('rows[i].user', rows[i].Users_userID);
+            if (rows[i].Users_userID === userID) {
+                console.log("IM RUNNING BUTTON ITEMNOCLAIM");
+                addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                    rows[i].foodGroup, rows[i].foodImage);
+            } else {
+                console.log("IM RUNNING BUTTON ITEMNODELETE");
+                addNewItemNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                    rows[i].foodGroup, rows[i].foodImage);
+            }
         }
-    });;
+    });
+
 
 
     /*************************************************************************
@@ -254,6 +270,87 @@ function getCookie(name) {
         return parts.pop().split(";").shift();
     }
 };
+
+function addNewItemNoDelete(id, name, description, dateTime, foodGroup, img) {
+
+    var cardDiv = document.createElement("div");
+    cardDiv.setAttribute("id", `card${id}`);
+    cardDiv.setAttribute("class", "cardContainer");
+
+    var contentDiv = document.createElement("div");
+    contentDiv.setAttribute("class", "contentDiv");
+
+    var headerDiv = document.createElement("div");
+    headerDiv.setAttribute("class", "header-Div");
+    //headerDiv.innerHTML = "i am headerdiv";
+
+    var textDiv = document.createElement("div");
+    textDiv.setAttribute("class", "col-xs-10");
+
+    var foodName = document.createElement("h4");
+    // grabs the name from the form so that it will be appended to cardDiv
+    foodName.innerHTML = name;
+
+    var dateText = document.createElement("p");
+    dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
+
+    var buttonDiv = document.createElement("div");
+    buttonDiv.setAttribute("class", "col-xs-2");
+
+    var toggleButton = document.createElement("button");
+    toggleButton.setAttribute("data-toggle", "collapse");
+    toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
+    toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
+
+    var toggleDiv = document.createElement("div");
+    toggleDiv.setAttribute("id", `collapseDiv${id}`);
+    toggleDiv.setAttribute("class", "collapse");
+
+    var foodCategory = document.createElement("p");
+    foodCategory.innerHTML = foodGroup;
+    //takes the contents of the description
+    var foodDescription = document.createElement("p");
+    foodDescription.innerHTML = description;
+
+    var imageDiv = document.createElement("div");
+    imageDiv.setAttribute("class", "imgDiv");
+
+    var foodImg = document.createElement("img");
+    foodImg.setAttribute("class", "food-img");
+    foodImg.src = setPostImage(foodGroup, img);
+
+    console.log("date:" + dateTime);
+    console.log("food category" + foodGroup);
+    console.log(img);
+
+    var claimForm = document.createElement("form");
+    claimForm.setAttribute("class", "claim-form");
+    claimForm.setAttribute("action", "javascript:void(0);")
+
+    var claimButton = document.createElement("input");
+    claimButton.setAttribute("id", `${id}`);
+    claimButton.setAttribute("class", "claim-button");
+    claimButton.setAttribute("type", "button");
+    claimButton.setAttribute("value", "Claim");
+    claimButton.setAttribute("onclick", "claimItem(this.id)");
+
+    $(cardDiv).append(imageDiv, headerDiv, contentDiv);
+    imageDiv.appendChild(foodImg);
+
+    $(contentDiv).append(toggleDiv);
+    $(headerDiv).append(textDiv, buttonDiv);
+    $(toggleDiv).append(foodCategory, foodDescription, claimForm);
+
+    buttonDiv.appendChild(toggleButton);
+    textDiv.appendChild(foodName);
+    textDiv.appendChild(dateText);
+
+    claimForm.appendChild(claimButton);
+    $("#card-list").prepend(cardDiv);
+
+    /** Clearing Forms */
+    $('#postForm').trigger('reset');
+}
 
 
 
@@ -340,15 +437,97 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     buttonDiv.appendChild(toggleButton);
     textDiv.appendChild(foodName);
     textDiv.appendChild(dateText);
-    
+
     claimForm.appendChild(claimButton);
     claimForm.appendChild(deleteButton);
     $("#card-list").prepend(cardDiv);
 
     /** Clearing Forms */
     $('#postForm').trigger('reset');
-
 }
+
+function addNewItemNoClaim(id, name, description, dateTime, foodGroup, img) {
+
+    var cardDiv = document.createElement("div");
+    cardDiv.setAttribute("id", `card${id}`);
+    cardDiv.setAttribute("class", "cardContainer");
+
+    var contentDiv = document.createElement("div");
+    contentDiv.setAttribute("class", "contentDiv");
+
+    var headerDiv = document.createElement("div");
+    headerDiv.setAttribute("class", "header-Div");
+    //headerDiv.innerHTML = "i am headerdiv";
+
+    var textDiv = document.createElement("div");
+    textDiv.setAttribute("class", "col-xs-10");
+
+    var foodName = document.createElement("h4");
+    // grabs the name from the form so that it will be appended to cardDiv
+    foodName.innerHTML = name;
+
+    var dateText = document.createElement("p");
+    dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
+
+    var buttonDiv = document.createElement("div");
+    buttonDiv.setAttribute("class", "col-xs-2");
+
+    var toggleButton = document.createElement("button");
+    toggleButton.setAttribute("data-toggle", "collapse");
+    toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
+    toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
+
+    var toggleDiv = document.createElement("div");
+    toggleDiv.setAttribute("id", `collapseDiv${id}`);
+    toggleDiv.setAttribute("class", "collapse");
+
+    var foodCategory = document.createElement("p");
+    foodCategory.innerHTML = foodGroup;
+    //takes the contents of the description
+    var foodDescription = document.createElement("p");
+    foodDescription.innerHTML = description;
+
+    var imageDiv = document.createElement("div");
+    imageDiv.setAttribute("class", "imgDiv");
+
+    var foodImg = document.createElement("img");
+    foodImg.setAttribute("class", "food-img");
+    foodImg.src = setPostImage(foodGroup, img);
+
+    console.log("date:" + dateTime);
+    console.log("food category" + foodGroup);
+    console.log(img);
+
+    var claimForm = document.createElement("form");
+    claimForm.setAttribute("class", "claim-form");
+    claimForm.setAttribute("action", "javascript:void(0);")
+
+    var deleteButton = document.createElement("input");
+    deleteButton.setAttribute("id", `${id}`);
+    deleteButton.setAttribute('class', 'delete-button');
+    deleteButton.setAttribute("type", "button");
+    deleteButton.setAttribute("value", "Delete");
+    deleteButton.setAttribute("onclick", "deleteItem(this.id)");
+
+    $(cardDiv).append(imageDiv, headerDiv, contentDiv);
+    imageDiv.appendChild(foodImg);
+
+    $(contentDiv).append(toggleDiv);
+    $(headerDiv).append(textDiv, buttonDiv);
+    $(toggleDiv).append(foodCategory, foodDescription, claimForm);
+
+    buttonDiv.appendChild(toggleButton);
+    textDiv.appendChild(foodName);
+    textDiv.appendChild(dateText);
+
+    claimForm.appendChild(deleteButton);
+    $("#card-list").prepend(cardDiv);
+
+    /** Clearing Forms */
+    $('#postForm').trigger('reset');
+}
+
+
 
 function setPostImage(foodCategory, imgName) {
     if (imgName !== "undefined.png") {
