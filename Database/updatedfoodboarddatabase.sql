@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`Posting` (
   CONSTRAINT `fk_Posting_Users1`
     FOREIGN KEY (`Users_UserID`)
     REFERENCES `Foodboard`.`Users` (`userID`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -75,7 +75,7 @@ ENGINE = InnoDB;
 -- Table `Foodboard`.`Board`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Foodboard`.`Board` (
-  `boardPostID` INT NOT NULL,
+  `boardPostID` INT NOT NULL AUTO_INCREMENT,
   `userPostClaimed` TINYINT NULL DEFAULT 0,
   `Posting_PostID` INT NOT NULL,
   PRIMARY KEY (`boardPostID`, `Posting_PostID`),
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`Board` (
   CONSTRAINT `fk_FoodboardBoard_Posting`
     FOREIGN KEY (`Posting_PostID`)
     REFERENCES `Foodboard`.`Posting` (`postID`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`UserList` (
   CONSTRAINT `fk_UserList_Users1`
     FOREIGN KEY (`Users_UserID`)
     REFERENCES `Foodboard`.`Users` (`userID`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 

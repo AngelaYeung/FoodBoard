@@ -175,7 +175,9 @@ io.on('connection', (socket) => {
 
   /** Handles 'post item' event that is fired from the index.html.  */
   socket.on('post item', (item) => {
-    var query = `SELECT sessionID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${item.sessionID}') LIMIT 1`;
+
+    let userID;
+    var query = `SELECT sessionID, Users_UserID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${item.sessionID}') LIMIT 1`;
     connection.query(query, (error, rows, fields) => {
       if (error) {
         console.log(error);
@@ -189,6 +191,7 @@ io.on('connection', (socket) => {
         let dateLocalTime = item.dateTime;
         let foodImage = item.image;
         let itemID;
+        userID = rows[0].Users_UserID;
 
         /** Inserts data into database */
         var foodItem = "INSERT INTO FoodItem (foodName, foodDescription, foodGroup,  foodExpiryTime, foodImage) VALUES (?, ?, ?, ?, ?)";
@@ -205,7 +208,7 @@ io.on('connection', (socket) => {
         });
 
         /* Inserts data into Posting Table */
-        //insertIntoPostingTable(itemID, userID);
+        insertIntoPostingTable(itemID, userID);
 
         /* Once image transfer has complete, tell client to create it's card */
         uploader.once('complete', () => {
