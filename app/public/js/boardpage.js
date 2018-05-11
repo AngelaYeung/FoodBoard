@@ -1,11 +1,9 @@
-
-
 // needs to be declared as a global variable to be in same scope as claimItem()
 var socket;
 
 /*************************************************************************
   * 
-  *         FOOD BOARD CLAIM FEATURE - CLIENT SIDE
+  *         FOOD BOARD CLAIM FEATURE - CLIENT SIDE 
   * 
   *************************************************************************/
 
@@ -14,6 +12,13 @@ function claimItem(itemID) {
         id: itemID
     });
 };
+
+function deleteItem(itemID) {
+    console.log("hi" + itemID);
+    socket.emit('delete item', {
+        id: itemID
+    });
+}
 
 $(document).ready(function () {
     var cookie = (getCookie('connect.sid'));
@@ -200,11 +205,11 @@ $(document).ready(function () {
      *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
      * 
      *************************************************************************/
-
-    $('_claim-form').on('submit', (e) => {
-        e.preventDefault();
-        console.log(this.id);
+    socket.on('delete return', (itemID) => {
+        console.log("socket on " + itemID);
+        itemDeleted(itemID); //deltes the item
     });
+    
 
     /*************************************************************************
      * 
@@ -232,107 +237,119 @@ $(document).ready(function () {
         headerDiv.setAttribute("class", "header-Div");
         //headerDiv.innerHTML = "i am headerdiv";
 
-    var textDiv = document.createElement("div");
-    textDiv.setAttribute("class", "col-xs-10");
+        var textDiv = document.createElement("div");
+        textDiv.setAttribute("class", "col-xs-10");
 
-    var foodName = document.createElement("h4");
-    // grabs the name from the form so that it will be appended to cardDiv
-    foodName.innerHTML = name;
+        var foodName = document.createElement("h4");
+        // grabs the name from the form so that it will be appended to cardDiv
+        foodName.innerHTML = name;
 
-    var dateText = document.createElement("p");
-    dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
+        var dateText = document.createElement("p");
+        dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
 
-    var buttonDiv = document.createElement("div");
-    buttonDiv.setAttribute("class", "col-xs-2");
+        var buttonDiv = document.createElement("div");
+        buttonDiv.setAttribute("class", "col-xs-2");
 
-    var toggleButton = document.createElement("button");
-    toggleButton.setAttribute("data-toggle", "collapse");
-    toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
-    toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
+        var toggleButton = document.createElement("button");
+        toggleButton.setAttribute("data-toggle", "collapse");
+        toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
+        toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
 
-    var toggleDiv = document.createElement("div");
-    toggleDiv.setAttribute("id", `collapseDiv${id}`);
-    toggleDiv.setAttribute("class", "collapse");
+        var toggleDiv = document.createElement("div");
+        toggleDiv.setAttribute("id", `collapseDiv${id}`);
+        toggleDiv.setAttribute("class", "collapse");
 
-    var foodCategory = document.createElement("p");
-    foodCategory.innerHTML = foodGroup;
-    //takes the contents of the description
-    var foodDescription = document.createElement("p");
-    foodDescription.innerHTML = description;
+        var foodCategory = document.createElement("p");
+        foodCategory.innerHTML = foodGroup;
+        //takes the contents of the description
+        var foodDescription = document.createElement("p");
+        foodDescription.innerHTML = description;
 
-    var imageDiv = document.createElement("div");
-    imageDiv.setAttribute("class", "imgDiv");
+        var imageDiv = document.createElement("div");
+        imageDiv.setAttribute("class", "imgDiv");
 
-    var foodImg = document.createElement("img");
-    foodImg.setAttribute("class", "food-img");
-    foodImg.src = setPostImage(foodGroup, img);
+        var foodImg = document.createElement("img");
+        foodImg.setAttribute("class", "food-img");
+        foodImg.src = setPostImage(foodGroup, img);
 
-    console.log("date:" + dateTime);
-    console.log("food category" + foodGroup);
-    console.log(img);
+        console.log("date:" + dateTime);
+        console.log("food category" + foodGroup);
+        console.log(img);
 
-    var claimForm = document.createElement("form");
-    claimForm.setAttribute("class", "claim-form");
-    claimForm.setAttribute("action", "javascript:void(0);")
+        var claimForm = document.createElement("form");
+        claimForm.setAttribute("class", "claim-form");
+        claimForm.setAttribute("action", "javascript:void(0);")
 
-    var claimButton = document.createElement("input");
-    claimButton.setAttribute("id", `${id}`);
-    claimButton.setAttribute("class", "claim-button");
-    claimButton.setAttribute("type", "button");
-    claimButton.setAttribute("value", "Claim");
-    claimButton.setAttribute("onclick", "claimItem(this.id)");
+        var claimButton = document.createElement("input");
+        claimButton.setAttribute("id", `${id}`);
+        claimButton.setAttribute("class", "claim-button");
+        claimButton.setAttribute("type", "button");
+        claimButton.setAttribute("value", "Claim");
+        claimButton.setAttribute("onclick", "claimItem(this.id)");
 
-    $(cardDiv).append(imageDiv, headerDiv, contentDiv);
-    imageDiv.appendChild(foodImg);
+        var deleteButton =document.createElement("input");
+        deleteButton.setAttribute("id", `${id}`);
+        deleteButton.setAttribute('class', 'delete-button');
+        deleteButton.setAttribute("type", "button");
+        deleteButton.setAttribute("value", "Delete");
+        deleteButton.setAttribute("onclick", "deleteItem(this.id)");        
+        
+        $(cardDiv).append(imageDiv, headerDiv, contentDiv);
+        imageDiv.appendChild(foodImg);
 
-    $(contentDiv).append(toggleDiv);
-    $(headerDiv).append(textDiv, buttonDiv);
-    $(toggleDiv).append(foodCategory, foodDescription, claimForm);
+        $(contentDiv).append(toggleDiv);
+        $(headerDiv).append(textDiv, buttonDiv);
+        $(toggleDiv).append(foodCategory, foodDescription, claimForm);
 
-    buttonDiv.appendChild(toggleButton);
-    textDiv.appendChild(foodName);
-    textDiv.appendChild(dateText);
+        buttonDiv.appendChild(toggleButton);
+        textDiv.appendChild(foodName);
+        textDiv.appendChild(dateText);
 
-    claimForm.appendChild(claimButton);
-    $("#card-list").prepend(cardDiv);
+        claimForm.appendChild(claimButton);
+        claimForm.appendChild(deleteButton);
+        $("#card-list").prepend(cardDiv);
 
-    /** Clearing Forms */
-    $('#postForm').trigger('reset');
+        /** Clearing Forms */
+        $('#postForm').trigger('reset');
 
-  }
-
-
-  function setPostImage(foodCategory, imgName) {
-    if (imgName !== "undefined.png") {
-      return `/images/${imgName}`;
-    } else {
-      switch (foodCategory) {
-        case "Produce":
-          return "../../Pictures/default_produce.png";
-          break;
-        case "Meat":
-          return "../../Pictures/default_meat.png";
-          break;
-        case "Canned Goods":
-          return "../../Pictures/default_food.png";
-          break;
-        case "Packaged":
-          return "../../Pictures/default_packaged.png";
-          break;
-      }
     }
-  }
+
+
+    function setPostImage(foodCategory, imgName) {
+        if (imgName !== "undefined.png") {
+            return `/images/${imgName}`;
+        } else {
+            switch (foodCategory) {
+                case "Produce":
+                    return "../../Pictures/default_produce.png";
+                    break;
+                case "Meat":
+                    return "../../Pictures/default_meat.png";
+                    break;
+                case "Canned Goods":
+                    return "../../Pictures/default_food.png";
+                    break;
+                case "Packaged":
+                    return "../../Pictures/default_packaged.png";
+                    break;
+            }
+        }
+    }
 
 
 });
 function itemClaimed(id) {
-  $(`#card${id}`).remove();
+    $(`#card${id}`).remove();
+}
+function itemDeleted(id){
+    console.log("hi");
+    $(`#card${id}`).remove();
 }
 function getCookie(name) {
     var value = "; " + document.cookie;
     var parts = value.split("; " + name + "=");
     if (parts.length == 2) return parts.pop().split(";").shift();
-  };
+};
 
 
 // Creates a thumbnail when an image has been uploaded
@@ -360,3 +377,5 @@ function getCookie(name) {
 //     }
 // }
 // document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
+
+
