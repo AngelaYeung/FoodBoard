@@ -14,7 +14,6 @@ function claimItem(itemID) {
 };
 
 function deleteItem(itemID) {
-    console.log("hi" + itemID);
     socket.emit('delete item', {
         id: itemID
     });
@@ -206,7 +205,6 @@ $(document).ready(function () {
      * 
      *************************************************************************/
     socket.on('delete return', (itemID) => {
-        console.log("socket on " + itemID);
         itemDeleted(itemID); //deltes the item
     });
     
@@ -342,7 +340,6 @@ function itemClaimed(id) {
     $(`#card${id}`).remove();
 }
 function itemDeleted(id){
-    console.log("hi");
     $(`#card${id}`).remove();
 }
 function getCookie(name) {
