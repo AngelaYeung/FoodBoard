@@ -340,7 +340,7 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     buttonDiv.appendChild(toggleButton);
     textDiv.appendChild(foodName);
     textDiv.appendChild(dateText);
-    u
+    
     claimForm.appendChild(claimButton);
     claimForm.appendChild(deleteButton);
     $("#card-list").prepend(cardDiv);
@@ -349,6 +349,33 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     $('#postForm').trigger('reset');
 
 }
+
+function setPostImage(foodCategory, imgName) {
+    if (imgName !== "undefined.png") {
+        return `/images/${imgName}`;
+    } else {
+        switch (foodCategory) {
+            case "Produce":
+                return "../../Pictures/default_produce.png";
+                break;
+            case "Meat":
+                return "../../Pictures/default_meat.png";
+                break;
+            case "Canned Goods":
+                return "../../Pictures/default_food.png";
+                break;
+            case "Packaged":
+                return "../../Pictures/default_packaged.png";
+                break;
+        }
+    }
+}
+
+function itemDeleted(id) {
+    $(`#card${id}`).remove();
+}
+
+
 
 
 // Creates a thumbnail when an image has been uploaded
@@ -376,4 +403,3 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
 //     }
 // }
 // document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
-
