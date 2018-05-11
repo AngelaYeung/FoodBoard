@@ -144,7 +144,7 @@ io.on('connection', (socket) => {
     /** Grab All Food Items from DB */
 
     //delete claimed items from FoodItem table before loading foodboard
-    //deleteClaimedFoodItems();
+    deleteClaimedFoodItems();
 
     var foodboardItems = "SELECT * FROM FoodItem";
     connection.query(foodboardItems, (error, rows, fields) => {
@@ -239,7 +239,6 @@ io.on('connection', (socket) => {
     var itemID = claim.id;
     //console.log(itemID);
     var postID;
-
     var posterUserID;
     var posterEmail;
     var posterFirstName;
@@ -263,17 +262,7 @@ io.on('connection', (socket) => {
         postID = row[0].postID;
         posterUserID = row[0].Users_UserID;
 
-        
-        var boardTableUpdate = `UPDATE Board Set userPostClaimed = 1 WHERE Posting_PostID = ?`;
-        connection.query(boardTableUpdate, [postID], (error, row, field) => {
-          if (error) {
-            //return error if update Board Table failed
-            console.log("Error updating userPostClaimed status in Board Table: ", error);
-          } else {
-            // else return the updated table
-            console.log("Successfully updated Board Table with userPostClaimed = 1", row);
-          }
-        });
+        updateClaimStatusBoardTable(postID);
 
         var postingTableUpdate = `UPDATE Posting SET claimStatus = 1 WHERE FoodItem_ItemID = ?`;
         connection.query(postingTableUpdate, [itemID], (error, updateResult, field) => {
@@ -395,6 +384,18 @@ function deleteClaimedFoodItems() {
   });
 };
 
+function updateClaimStatusBoardTable(postID) {
+  var boardTableUpdate = `UPDATE Board Set userPostClaimed = 1 WHERE Posting_PostID = ?`;
+  connection.query(boardTableUpdate, [postID], (error, row, field) => {
+    if (error) {
+      //return error if update Board Table failed
+      console.log("Error updating userPostClaimed status in Board Table: ", error);
+    } else {
+      // else return the updated table
+      console.log("Successfully updated Board Table with userPostClaimed = 1", row);
+    }
+  });
+};
 function insertIntoPostingTable() {
   var posting = "INSERT INTO Posting (FoodItem_ItemID, Users_UserID) VALUES (?, ?)";
   connection.query(posting, [itemID, userID], (error, result, field) => {
