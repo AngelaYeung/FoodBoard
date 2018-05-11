@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`Posting` (
   CONSTRAINT `fk_Posting_FoodItem1`
     FOREIGN KEY (`FoodItem_ItemID`)
     REFERENCES `Foodboard`.`FoodItem` (`itemID`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Posting_Users1`
     FOREIGN KEY (`Users_UserID`)

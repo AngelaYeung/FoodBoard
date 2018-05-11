@@ -152,7 +152,7 @@ io.on('connection', (socket) => {
 
           var tempItemID = rows[i].FoodItem_ItemID;
           //delete claimed items from FoodItem table before loading foodboard
-          //deleteFoodItem(tempItemID);
+          deleteFoodItem(tempItemID);
         }
       }
     });
@@ -241,11 +241,12 @@ io.on('connection', (socket) => {
 
   /*************************************************************************
    * 
-   *         FOOD BOARD DELEETE FEATURE - SERVER SIDE
+   *         FOOD BOARD DELETE FEATURE - SERVER SIDE
    * 
    *************************************************************************/
   socket.on('delete item', (deletion) => {
 
+    deleteFoodItem(itemID)
 
     io.emit('deletion return', (itemID));
   });
