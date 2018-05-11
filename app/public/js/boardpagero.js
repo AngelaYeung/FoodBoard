@@ -25,7 +25,6 @@ if (files[0].type.match('image.*')) {
 
 // document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
 
-
 /**
 * Creates new card based on the parameters passed into the function.
 */

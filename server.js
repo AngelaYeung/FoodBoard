@@ -141,7 +141,6 @@ io.on('connection', (socket) => {
     // TODO: SELECT * FROM FOODBOARDBOARD WHERE CLAIMSTATUS = 0;
     var foodboardItems = "SELECT * FROM FoodItem WHERE claimStatus = 0";
     connection.query(foodboardItems, (error, rows, fields) => {
-      return rows;
       if (error) {
         console.log("Error grabbing food items");
       } else if (!rows.length) {
@@ -390,30 +389,6 @@ function deleteFoodItem(itemID) {
   });
 };
 
-function updateClaimStatusBoardTable(postID) {
-  var boardTableUpdate = `UPDATE Board Set userPostClaimed = 1 WHERE Posting_PostID = ?`;
-  connection.query(boardTableUpdate, [postID], (error, row, field) => {
-    if (error) {
-      //return error if update Board Table failed
-      console.log("Error updating userPostClaimed status in Board Table: ", error);
-    } else {
-      // else return the updated table
-      console.log("Successfully updated Board Table with userPostClaimed = 1", row);
-    }
-  });
-};
-
-function insertIntoPostingTable(itemID, userID) {
-  var posting = "INSERT INTO Posting (FoodItem_ItemID, Users_UserID) VALUES (?, ?)";
-  connection.query(posting, [itemID, userID], (error, result, field) => {
-    if (error) {
-      //return error if insertion into Posting Table fail
-      console.log("Error inserting into Posting", error);
-    } else {
-      console.log("Successful insertion into Posting Table.", result);
-    }
-  });
-};
 
 /*************************************************************************
  * 
