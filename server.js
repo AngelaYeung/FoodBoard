@@ -152,7 +152,7 @@ io.on('connection', (socket) => {
 
           var tempItemID = rows[i].FoodItem_ItemID;
           //delete claimed items from FoodItem table before loading foodboard
-          //deleteFoodItem(tempItemID);
+          deleteFoodItem(tempItemID);
         }
       }
     });
@@ -241,11 +241,22 @@ io.on('connection', (socket) => {
 
   /*************************************************************************
    * 
-   *         FOOD BOARD DELEETE FEATURE - SERVER SIDE
+   *         FOOD BOARD DELETE FEATURE - SERVER SIDE
    * 
    *************************************************************************/
   socket.on('delete item', (deletion) => {
     var itemID = deletion.id;
+
+    var deletePost = `DELETE FROM FoodItem WHERE itemID = ? LIMIT 1`;
+    connection.query(deletePost, [itemID], (error, row, field) => {
+      if (error) {
+        // return error if insertion fail
+        console.log("Error occured when attempting to delete post: ", error);
+      } else {
+        // else return the updated table
+        console.log("Successful deletion of claimed food item.");
+      }
+    });
 
     io.emit('delete return', (itemID));
   });
@@ -382,7 +393,7 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName) { //may also inclu
 
 function deleteFoodItem(itemID) {
   var deletePost = `DELETE FROM FoodItem WHERE itemID = ? LIMIT 1`;
-  connection.query(deletePost, [tempItemID], (error, row, field) => {
+  connection.query(deletePost, [itemID], (error, row, field) => {
     if (error) {
       // return error if insertion fail
       console.log("Error occured when attempting to delete post: ", error);
