@@ -12,11 +12,12 @@
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.0",
     "mysql": "^2.15.0",
+    "nodemailer": "^4.6.4",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "sequelize": "^3.30.1",
     "socket.io": "^2.1.0",
-    "socketio-file-upload": "^0.6.0"
+    "socketio-file-upload": "git+https://github.com/duyanhja/socketio-file-upload.git"
   },
   "devDependencies": {},
   "scripts": {

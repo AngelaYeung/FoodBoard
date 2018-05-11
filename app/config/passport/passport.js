@@ -1,15 +1,11 @@
 //load bcrypt
 var bCrypt = require('bcrypt-nodejs');
-var mysql = require('mysql');
-var connection = mysql.createConnection({
-  host: "localhost",
-  database: "Foodboard",
-  user: "root",
-  password: "test123"
-});
-connection.connect((error) => {
-  if (error) throw error;
-});
+var dbconfig = require('../../public/js/dbconfig.js');
+const mysqlconnection = require('../../public/js/mysqlconnection');
+
+var connection = mysqlconnection.handleDisconnect(dbconfig);
+
+
 module.exports = function (passport, user) {
 
   var User = user;
@@ -55,8 +51,9 @@ module.exports = function (passport, user) {
               password: userPassword,
               firstName: req.body.register_first_name,
               lastName: req.body.register_last_name,
-              suiteNumber: req.body.register_suite_number
-            };
+              suiteNumber: req.body.register_suite_number,
+              role: 1
+            };  
 
           User.create(data).then((newUser, created) => {
             if (!newUser) {
