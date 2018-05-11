@@ -20,8 +20,6 @@ $(document).ready(function () {
     var sessionID = cookie.substring(4, cookie.lastIndexOf('.'));
     console.log("THIS IS THE ONE WE GOT" + sessionID);
 
-
-
     socket = io();
     const uploader = new SocketIOFileUpload(socket);
     var image_name;
@@ -197,14 +195,6 @@ $(document).ready(function () {
     });;
 
 
-    socket.on('load foodboard', (items) => {
-        for (var i = 0; i < items.length; i++) {
-            addNewItem(items[i].itemID, items[i].foodName, items[i].foodDescription, items[i].foodGroup, items[i].foodExpiryTime,
-                items[i].foodImage);
-        }
-    });;
-
-
     /*************************************************************************
      * 
      *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
@@ -275,7 +265,7 @@ $(document).ready(function () {
 
     var foodImg = document.createElement("img");
     foodImg.setAttribute("class", "food-img");
-    foodImg.src = setPostImage(foodGroup, `${img}`);
+    foodImg.src = setPostImage(foodGroup, img);
 
     console.log("date:" + dateTime);
     console.log("food category" + foodGroup);
@@ -338,6 +328,11 @@ $(document).ready(function () {
 function itemClaimed(id) {
   $(`#card${id}`).remove();
 }
+function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2) return parts.pop().split(";").shift();
+  };
 
 
 // Creates a thumbnail when an image has been uploaded

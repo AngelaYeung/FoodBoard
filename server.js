@@ -40,6 +40,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: {
     httpOnly: false,
+    maxAge: 1800000
   }
 })); // session secret
 app.use(passport.initialize());
@@ -210,7 +211,7 @@ io.on('connection', (socket) => {
         uploader.once('complete', () => {
           console.log('File Transfer Completed...');
           io.emit('post item return', {
-            id: id,
+            id: itemID,
             name: foodName,
             description: foodDescription,
             dateTime: dateLocalTime,
