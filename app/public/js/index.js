@@ -1,4 +1,3 @@
-
 $(document).ready(function () {
 
   // add scrollspy onto body of the page for about link
@@ -59,7 +58,6 @@ $(document).ready(function () {
 
   //Change password field red if password is incorrect
   $("#register_pwd_confirm").on('change', (e) => {
-    console.log("change");
     if (validatePassword()) {
       document.getElementById("register_pwd").style.borderColor = '#4EB266';
       document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
@@ -70,10 +68,12 @@ $(document).ready(function () {
   });
   //Change password field red if password is incorrect
   $("#register_pwd").on('change', (e) => {
-    console.log("change");
+    e.preventDefault();
     if (validatePassword()) {
       document.getElementById("register_pwd").style.borderColor = '#4EB266';
       document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
+      console.log('A', document.getElementById("register_pwd").value);
+      console.log('B', document.getElementById('register_pwd_confirm').value);
     } else {
       document.getElementById("register_pwd").style.borderColor = "#E34234";
       document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
@@ -84,12 +84,11 @@ $(document).ready(function () {
 
 //validate the password
 function validatePassword() {
-  var pass1 = document.getElementById("register_pwd").value;
-  var pass2 = document.getElementById("register_pwd_confirm").value;
-  if (pass1 !== pass2) {
+  console.log(document.getElementById("register_pwd").value);
+  console.log(document.getElementById('register_pwd_confirm').value);
+  if (document.getElementById("register_pwd").value !== document.getElementById("register_pwd_confirm").value) {
     return false;
-  }
-  else {
+  } else {
     return true;
   }
 }

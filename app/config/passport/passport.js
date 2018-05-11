@@ -18,20 +18,17 @@ module.exports = function (passport, user) {
     User.findById(id).then(function (user) {
       if (user) {
         done(null, user.get());
-      }
-      else {
+      } else {
         done(user.errors, null);
       }
     });
   });
-  passport.use('local-signup', new LocalStrategy(
-    {
+  passport.use('local-signup', new LocalStrategy({
       usernameField: 'register_email',
       passwordField: 'register_pwd',
       passReqToCallback: true // allows us to pass back the entire request to the callback
     },
     (req, register_email, register_pwd, done) => {
-
       var generateHash = (password) => {
         return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
       };
@@ -45,15 +42,14 @@ module.exports = function (passport, user) {
           return done(null, false, console.log("Email is already taken."));
         } else { // Create user
           var userPassword = generateHash(register_pwd); // hashed password
-          var data =
-            {
-              email: register_email,
-              password: userPassword,
-              firstName: req.body.register_first_name,
-              lastName: req.body.register_last_name,
-              suiteNumber: req.body.register_suite_number,
-              role: 1
-            };  
+          var data = {
+            email: register_email,
+            password: userPassword,
+            firstName: req.body.register_first_name,
+            lastName: req.body.register_last_name,
+            suiteNumber: req.body.register_suite_number,
+            role: 1
+          };
 
           User.create(data).then((newUser, created) => {
             if (!newUser) {
@@ -69,8 +65,7 @@ module.exports = function (passport, user) {
   ));
 
   //LOCAL SIGNIN
-  passport.use('local-signin', new LocalStrategy(
-    {
+  passport.use('local-signin', new LocalStrategy({
       // by default, local strategy uses username and password, we will override with email
       usernameField: 'login_email',
       passwordField: 'login_pwd',
@@ -85,15 +80,23 @@ module.exports = function (passport, user) {
         return bCrypt.compareSync(password, userpass);
       }
 
-      User.findOne({ where: { email: login_email } }).then((user) => {
+      User.findOne({
+        where: {
+          email: login_email
+        }
+      }).then((user) => {
 
         if (!user) {
-          return done(null, false, { message: 'Email does not exist.' });
+          return done(null, false, {
+            message: 'Email does not exist.'
+          });
         }
 
         if (!isValidPassword(user.password, login_pwd)) {
           // the call back function can send data back to auth.js
-          return done(null, false, { message: 'Incorrect password.' });
+          return done(null, false, {
+            message: 'Incorrect password.'
+          });
 
         }
 
@@ -106,7 +109,9 @@ module.exports = function (passport, user) {
 
         console.log("Error:", err);
 
-        return done(null, false, { message: 'Something went wrong with your sign in.' });
+        return done(null, false, {
+          message: 'Something went wrong with your sign in.'
+        });
 
 
       });
@@ -115,4 +120,3 @@ module.exports = function (passport, user) {
   ));
 
 }
-
