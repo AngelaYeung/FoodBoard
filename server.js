@@ -19,7 +19,7 @@ var authRoute = require('./app/routes/auth.js');
 var dbconfig = require('./app/public/js/dbconfig.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
 
-const port = 9000;
+const port = 8000;
 
 var app = express().use(siofu.router); // adds siofu as a router, middleware
 
@@ -245,9 +245,9 @@ io.on('connection', (socket) => {
    * 
    *************************************************************************/
   socket.on('delete item', (deletion) => {
+    var itemID = deletion.id;
 
-
-    io.emit('deletion return', (itemID));
+    io.emit('delete return', (itemID));
   });
 
   /*************************************************************************
