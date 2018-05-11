@@ -2,6 +2,12 @@
 var socket;
 
 
+function deleteItem(itemID) {
+    socket.emit('delete item', {
+        id: itemID
+    });
+}
+
 $(document).ready(function () {
     var sessionID = getSessionID('connect.sid');
     console.log(sessionID);
@@ -186,11 +192,10 @@ $(document).ready(function () {
      *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
      * 
      *************************************************************************/
-
-    $('_claim-form').on('submit', (e) => {
-        e.preventDefault();
-        console.log(this.id);
+    socket.on('delete return', (itemID) => {
+        itemDeleted(itemID); //deltes the item
     });
+
 
     /*************************************************************************
      * 
@@ -202,90 +207,6 @@ $(document).ready(function () {
         itemClaimed(itemID); //.remove() generates error
     });
 
-    /**
-     * Creates new card based on the parameters passed into the function.
-     */
-    function addNewItem(id, name, description, dateTime, foodGroup, img) {
-
-        var cardDiv = document.createElement("div");
-        cardDiv.setAttribute("id", `card${id}`);
-        cardDiv.setAttribute("class", "cardContainer");
-
-        var contentDiv = document.createElement("div");
-        contentDiv.setAttribute("class", "contentDiv");
-
-        var headerDiv = document.createElement("div");
-        headerDiv.setAttribute("class", "header-Div");
-        //headerDiv.innerHTML = "i am headerdiv";
-
-        var textDiv = document.createElement("div");
-        textDiv.setAttribute("class", "col-xs-10");
-
-        var foodName = document.createElement("h4");
-        // grabs the name from the form so that it will be appended to cardDiv
-        foodName.innerHTML = name;
-
-        var dateText = document.createElement("p");
-        dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
-
-        var buttonDiv = document.createElement("div");
-        buttonDiv.setAttribute("class", "col-xs-2");
-
-        var toggleButton = document.createElement("button");
-        toggleButton.setAttribute("data-toggle", "collapse");
-        toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
-        toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
-
-        var toggleDiv = document.createElement("div");
-        toggleDiv.setAttribute("id", `collapseDiv${id}`);
-        toggleDiv.setAttribute("class", "collapse");
-
-        var foodCategory = document.createElement("p");
-        foodCategory.innerHTML = foodGroup;
-        //takes the contents of the description
-        var foodDescription = document.createElement("p");
-        foodDescription.innerHTML = description;
-
-        var imageDiv = document.createElement("div");
-        imageDiv.setAttribute("class", "imgDiv");
-
-        var foodImg = document.createElement("img");
-        foodImg.setAttribute("class", "food-img");
-        foodImg.src = setPostImage(foodGroup, img);
-
-        console.log("date:" + dateTime);
-        console.log("food category" + foodGroup);
-        console.log(img);
-
-        var claimForm = document.createElement("form");
-        claimForm.setAttribute("class", "claim-form");
-        claimForm.setAttribute("action", "javascript:void(0);")
-
-        var claimButton = document.createElement("input");
-        claimButton.setAttribute("id", `${id}`);
-        claimButton.setAttribute("class", "claim-button");
-        claimButton.setAttribute("type", "button");
-        claimButton.setAttribute("value", "Claim");
-        claimButton.setAttribute("onclick", "claimItem(this.id)");
-
-        $(cardDiv).append(imageDiv, headerDiv, contentDiv);
-        imageDiv.appendChild(foodImg);
-
-        $(contentDiv).append(toggleDiv);
-        $(headerDiv).append(textDiv, buttonDiv);
-        $(toggleDiv).append(foodCategory, foodDescription, claimForm);
-
-        buttonDiv.appendChild(toggleButton);
-        textDiv.appendChild(foodName);
-        textDiv.appendChild(dateText);
-
-        claimForm.appendChild(claimButton);
-        $("#card-list").prepend(cardDiv);
-
-        /** Clearing Forms */
-        $('#postForm').trigger('reset');
-
-    }
 });
 
 
@@ -337,13 +258,7 @@ function getCookie(name) {
 
 
 /**
- * Adds New FoodCard to the board page.
- * @param {} id 
- * @param {*} name 
- * @param {*} description 
- * @param {*} dateTime 
- * @param {*} foodGroup 
- * @param {*} img 
+ * Creates new card based on the parameters passed into the function.
  */
 function addNewItem(id, name, description, dateTime, foodGroup, img) {
 
@@ -408,6 +323,13 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     claimButton.setAttribute("value", "Claim");
     claimButton.setAttribute("onclick", "claimItem(this.id)");
 
+    var deleteButton = document.createElement("input");
+    deleteButton.setAttribute("id", `${id}`);
+    deleteButton.setAttribute('class', 'delete-button');
+    deleteButton.setAttribute("type", "button");
+    deleteButton.setAttribute("value", "Delete");
+    deleteButton.setAttribute("onclick", "deleteItem(this.id)");
+
     $(cardDiv).append(imageDiv, headerDiv, contentDiv);
     imageDiv.appendChild(foodImg);
 
@@ -418,40 +340,15 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     buttonDiv.appendChild(toggleButton);
     textDiv.appendChild(foodName);
     textDiv.appendChild(dateText);
-
+    u
     claimForm.appendChild(claimButton);
+    claimForm.appendChild(deleteButton);
     $("#card-list").prepend(cardDiv);
 
     /** Clearing Forms */
     $('#postForm').trigger('reset');
-}
 
-/**
- * Handles situation where no image is uploaded.
- * @param {*} foodCategory - the foodgrouping of the post
- * @param {*} imgName      - the image name of the post
- */
-function setPostImage(foodCategory, imgName) {
-    if (imgName !== "undefined.png") {
-        return `/images/${imgName}`;
-    } else {
-        switch (foodCategory) {
-            case "Produce":
-                return "../../Pictures/default_produce.png";
-                break;
-            case "Meat":
-                return "../../Pictures/default_meat.png";
-                break;
-            case "Canned Goods":
-                return "../../Pictures/default_food.png";
-                break;
-            case "Packaged":
-                return "../../Pictures/default_packaged.png";
-                break;
-        }
-    }
 }
-
 
 
 // Creates a thumbnail when an image has been uploaded
@@ -479,3 +376,4 @@ function setPostImage(foodCategory, imgName) {
 //     }
 // }
 // document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
+
