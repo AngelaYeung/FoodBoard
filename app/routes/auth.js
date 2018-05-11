@@ -1,8 +1,6 @@
-var mysql = require('mysql');
-
 var authController = require('../controllers/authcontroller.js');
-var dbconfig = require('../public/js/dbconfig.js');
-var connection = mysql.createConnection(dbconfig);
+const mysqlconnection = require('../public/js/mysqlconnection.js');
+var connection = mysqlconnection.handleDisconnect();
 
 var validate = (app, passport) => {
 
@@ -68,6 +66,7 @@ function insertSessionDB(sessionID, userID) {
         console.log(rows);
     });
 };
+
 
 module.exports = {
     validate: validate

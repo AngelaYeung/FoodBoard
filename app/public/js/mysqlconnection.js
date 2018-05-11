@@ -1,4 +1,4 @@
-const dbconfig = require('./dbconfig');
+const dbconfig = require('./dbconfig.js');
 const mysql = require('mysql');
 
 /**
@@ -6,7 +6,7 @@ const mysql = require('mysql');
  * 
  * @param {object} dbconfig - options to set up the database.
  */
-function handleDisconnect(dbconfig) {
+function handleDisconnect() {
 
 
     var connection = mysql.createConnection(dbconfig); // Recreate the connection, since

@@ -1,9 +1,7 @@
 //load bcrypt
 var bCrypt = require('bcrypt-nodejs');
-var dbconfig = require('../../public/js/dbconfig.js');
 const mysqlconnection = require('../../public/js/mysqlconnection');
-
-var connection = mysqlconnection.handleDisconnect(dbconfig);
+var connection = mysqlconnection.handleDisconnect();
 
 
 module.exports = function (passport, user) {
@@ -56,7 +54,6 @@ module.exports = function (passport, user) {
               return done(null, false);
             }
             if (newUser) {
-              //insertIntoSessionsTable(newUser.userID, sessionID);
               return done(null, newUser);
             }
           });
@@ -120,21 +117,4 @@ module.exports = function (passport, user) {
     }
   ));
 
-}
-
-/*************************************************************************
- * 
- *     MISCELLANEOUS FUNCTIONS USED IN FEATURES: REGISTER
- * 
- *************************************************************************/
-
-function insertIntoSessionsTable(userID, sessionID) {
-  var query = "INSERT INTO Sessions (sessionID, Users_UserID) VALUES (?, ?)";
-  connection.query(query, [sessionID, userID], (error, row, fields) => {
-    if (error) {
-      console.log("Error inserting into Sessions Table:", error);
-    } else {
-      console.log("Successful insertion into Sessions Table.");
-    }
-  });
 }
