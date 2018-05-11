@@ -109,9 +109,9 @@ models.sequelize.sync().then(() => {
 
 
 /*************************************************************************
-* Socketio detects that connection has been made to the server.
-* The connection event is fired, whenever anyone goes to foodboard.ca.
-*/
+ * Socketio detects that connection has been made to the server.
+ * The connection event is fired, whenever anyone goes to foodboard.ca.
+ */
 io.on('connection', (socket) => {
   console.log('user connected');
 
@@ -134,25 +134,66 @@ io.on('connection', (socket) => {
    * When the user has a complete loaded page, fetch data from db to print posts
    * to screen. 
    */
-  socket.on('page loaded', () => {
+  socket.on('page loaded', (session) => {
     console.log('Server: page loaded')
     /** Grab All Food Items from DB */
 
-    // TODO: SELECT * FROM FOODBOARDBOARD WHERE CLAIMSTATUS = 0;
-    var foodboardItems = "SELECT * FROM FoodItem WHERE claimStatus = 0";
-    connection.query(foodboardItems, (error, rows, fields) => {
-      if (error) {
-        console.log("Error grabbing food items");
-      } else if (!rows.length) {
-        console.log("Database is empty.");
-      } else {
-        console.log("Successfully grabbed food items.");
-        console.log('Load Rows:', rows);
+    // SESSION ID CHECK: GET USER ID
+    // WITH USER ID GET ROLE
+    // ROLE TELLS U WHAT TO LOAD
+    //    if else role = admin render everything 
+    //    else render delete button for only your posts run (checkOwnerPost)
 
-        /* Sends list of food items to the client to print to browser */
-        socket.emit('load foodboard', rows);
+    // select all items from fooditem
+    // 
+
+    var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
+    connection.query(query, [session.sessionID], (error, rows, fields) => {
+      console.log("FUCK", rows);
+      if (error) {
+        console.log(date.now(), 'Error', error);
+      } else {
+        if (rows.length) {
+
+          var userID = rows[0].Users_userID;
+
+          var foodboardItems = "SELECT * FROM FoodItem WHERE claimStatus = 0";
+          connection.query(foodboardItems, (error, rows, fields) => {
+            if (error) {
+              console.log("Error grabbing food items");
+            } else if (!rows.length) {
+              console.log("Database is empty.");
+            } else {
+              console.log("Successfully grabbed food items.");
+              console.log(rows);
+
+              /* Sends list of food items to the client to print to browser */
+              socket.emit('load foodboard', {
+                rows: rows,
+                userID: userID,
+              });
+            }
+          });
+        } else {
+          console.log("nice try bud");
+
+          var foodboardItems = "SELECT * FROM FoodItem WHERE claimStatus = 0";
+          connection.query(foodboardItems, (error, rows, fields) => {
+            if (error) {
+              console.log("Error grabbing food items");
+            } else if (!rows.length) {
+              console.log("Database is empty.");
+            } else {
+              console.log("Successfully grabbed food items.");
+              console.log(rows);
+
+              socket.emit('load foodboardro', rows);
+            }
+          });
+        }
       }
     });
+
   });
 
 
@@ -167,7 +208,7 @@ io.on('connection', (socket) => {
   socket.on('post item', (item) => {
 
     let userID;
-    var query = `SELECT sessionID, Users_UserID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${item.sessionID}') LIMIT 1`;
+    var query = `SELECT sessionID, Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${item.sessionID}') LIMIT 1`;
     connection.query(query, (error, rows, fields) => {
       if (error) {
         console.log(error);
@@ -175,19 +216,18 @@ io.on('connection', (socket) => {
 
       console.log("this is length of rows:", rows.length);
       if (rows.length) {
-        console.log("fired");
+
         let foodName = item.name;
         let foodDescription = item.description;
         let foodGroup = item.foodgrouping;
         let dateLocalTime = item.dateTime;
         let foodImage = item.image;
         let itemID;
-        console.log("this is the user ID", rows[0].Users_UserID)
-        userID = rows[0].Users_UserID;
+        userID = rows[0].Users_userID;
 
         /** Inserts data into database */
-        var foodItem = "INSERT INTO FoodItem (foodName, foodDescription, foodGroup,  foodExpiryTime, foodImage) VALUES (?, ?, ?, ?, ?)";
-        connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage], (error, rows, field) => {
+        var foodItem = "INSERT INTO FoodItem (foodName, foodDescription, foodGroup,  foodExpiryTime, foodImage, Users_userID) VALUES (?, ?, ?, ?, ?, ?)";
+        connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage, userID], (error, rows, field) => {
           if (error) {
             // return error if insertion fail
             console.log("Error inserting" + error);
@@ -197,8 +237,6 @@ io.on('connection', (socket) => {
             console.log("Successful insertion:", rows);
             itemID = rows.insertId;
           }
-          /* Inserts data into Posting Table */
-          insertIntoPostingTable(itemID, userID);
         });
 
 
@@ -212,7 +250,7 @@ io.on('connection', (socket) => {
             description: foodDescription,
             dateTime: dateLocalTime,
             foodgrouping: foodGroup,
-            image: foodImage
+            image: foodImage,
           });
         });
       } else {
@@ -405,17 +443,17 @@ server.listen(port, () => {
 function getSessionID(clientSessionID) {
   var query = 'SELECT sessionID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?)';
   var sessionID = connection.query(query, [clientSessionID], (error, rows, fields) => {
-      if (error) {
-          console.log('Error', error)
+    if (error) {
+      console.log('Error', error)
+    } else {
+      if (rows.length) {
+        console.log('QUERY TRUE');
+        return true;
       } else {
-          if (rows.length) {
-              console.log('QUERY TRUE');
-              return true;
-          } else {
-              console.log('QUERY FALSE');
-              return false;
-          }
+        console.log('QUERY FALSE');
+        return false;
       }
+    }
   });
 
   return sessionID;

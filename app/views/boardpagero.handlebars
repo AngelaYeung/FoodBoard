@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <div id='boardpagero'></div>
+  <div id='boardpagero'></div>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <Title>"Board"</Title>
@@ -28,7 +28,29 @@
   <script src="/siofu/client.js"></script>
 
   <script>
+    /**
+ * Gets the session id. 
+ * @param {string} name - name of the cookie session key we are grabbing (should be connect.sid)
+ */
+    function getSessionID(name) {
+      var cookie = getCookie(name);
+      var sessionID = cookie.substring(4, cookie.lastIndexOf('.'));
+      return sessionID;
+    }
+    /**
+ * Gets the cookie of the particular session.
+ * @param {string} name 
+ */
+    function getCookie(name) {
+      var value = "; " + document.cookie;
+      var parts = value.split("; " + name + "=");
+      if (parts.length == 2) {
+        return parts.pop().split(";").shift();
+      }
+    };
     $(document).ready(function () {
+      var sessionID = getSessionID('connect.sid');
+      console.log('sessionID', sessionID);
       var socket = io();
       console.log(socket);
       const uploader = new SocketIOFileUpload(socket);
@@ -47,15 +69,18 @@
        * from the data base. 
        */
       $(window).on('load', () => {
-        console.log('Client: page loaded');
-        socket.emit('page loaded');
+        console.log('Client: page loaded:', sessionID);
+        socket.emit('page loaded', {
+          sessionID: sessionID,
+        });
       });
 
 
-      socket.on('load foodboard', (items) => {
+      socket.on('load foodboardro', (items) => {
+       
         for (var i = 0; i < items.length; i++) {
-          addNewItem(items[i].itemID, items[i].foodName, items[i].foodDescription, items[i].foodGroup, items[i].foodExpiryTime,
-            items[i].foodImage);
+          addNewItem(items[i].itemID, items[i].foodName, items[i].foodDescription, items[i].foodExpiryTime,
+            items[i].foodGroup, items[i].foodImage);
         }
       });;
 
