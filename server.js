@@ -206,7 +206,7 @@ io.on('connection', (socket) => {
         });
 
         /* Inserts data into Posting Table */
-        insertIntoPostingTable(itemID, userID);
+        //insertIntoPostingTable(itemID, userID);
 
         /* Once image transfer has complete, tell client to create it's card */
         uploader.once('complete', () => {
@@ -396,6 +396,7 @@ function updateClaimStatusBoardTable(postID) {
     }
   });
 };
+
 function insertIntoPostingTable() {
   var posting = "INSERT INTO Posting (FoodItem_ItemID, Users_UserID) VALUES (?, ?)";
   connection.query(posting, [itemID, userID], (error, result, field) => {
