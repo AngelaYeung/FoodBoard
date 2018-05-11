@@ -16,9 +16,9 @@ const nodemailer = require('nodemailer'); // for sending automated emails
 /** Exports made */
 var models = require("./app/models"); // tells the server to require these routes 
 var authRoute = require('./app/routes/auth.js');
-var dbconfig = require('./app/public/js/dbconfig.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
 
+var connection = mysqlconnection.handleDisconnect();
 const port = 9000;
 
 var app = express().use(siofu.router); // adds siofu as a router, middleware
@@ -41,7 +41,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: {
     httpOnly: false,
-    maxAge: 1800000
+    maxAge: 1800000,
   }
 })); // session secret
 app.use(passport.initialize());
@@ -106,7 +106,6 @@ models.sequelize.sync().then(() => {
   console.log(err, "Something went wrong with the Database Update!");
 });
 
-var connection = mysqlconnection.handleDisconnect(dbconfig);
 
 
 /*************************************************************************
@@ -143,18 +142,17 @@ io.on('connection', (socket) => {
     console.log('Server: page loaded')
     /** Grab All Food Items from DB */
 
-    //delete claimed items from FoodItem table before loading foodboard
-    //deleteClaimedFoodItems();
-
-    var foodboardItems = "SELECT * FROM FoodItem";
+    // TODO: SELECT * FROM FOODBOARDBOARD WHERE CLAIMSTATUS = 0;
+    var foodboardItems = "SELECT * FROM FoodItem WHERE claimStatus = 0";
     connection.query(foodboardItems, (error, rows, fields) => {
+      return rows;
       if (error) {
         console.log("Error grabbing food items");
       } else if (!rows.length) {
         console.log("Database is empty.");
       } else {
         console.log("Successfully grabbed food items.");
-        console.log('Rows:', rows);
+        console.log('Load Rows:', rows);
 
         /* Sends list of food items to the client to print to browser */
         socket.emit('load foodboard', rows);
@@ -218,7 +216,7 @@ io.on('connection', (socket) => {
           });
         });
       } else {
-        app.post('/nicetrybud');
+        app.get('/nicetrybud');
       }
     });
   });
@@ -231,12 +229,13 @@ io.on('connection', (socket) => {
 
 
   socket.on('claim item', (claim) => {
-    console.log("Claim entered.");
+    console.log('Event Claim Item:', claim);
+
+    var sessionID = claim.sessionID;
     //Declares variables needed to generate automated claim email
     var itemID = claim.id;
     //console.log(itemID);
     var postID;
-
     var posterUserID;
     var posterEmail;
     var posterFirstName;
@@ -248,21 +247,20 @@ io.on('connection', (socket) => {
     //let claimerFirstName;
     //let claimerSuiteNumber;
 
-    var postingTableQuery = "SELECT Users_UserID, postID FROM Posting WHERE FoodItem_ItemID = ? LIMIT 1";
-    connection.query(postingTableQuery, [itemID], (error, row, field) => {
+    var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
+    connection.query(query, (error, rows, fields) => {
       if (error) {
-        //return error if Posting Table query fail
-        console.log("Error grabbing userID and postID from posting table: ", error);
-      } else {
-        // else return the updated table
-        console.log("Successfully grabbed userID:", row);
-        console.log(row[0]);
-        postID = row[0].postID;
-        posterUserID = row[0].Users_UserID;
+        console.log(error);
+      }
 
-        
-        var boardTableUpdate = `UPDATE Board Set userPostClaimed = 1 WHERE Posting_PostID = ?`;
-        connection.query(boardTableUpdate, [postID], (error, row, field) => {
+      if (rows.length) {
+        var userID = rows[0].Users_userID;
+        var itemID = claim.id;
+        console.log('ClaimID:', itemID);
+        console.log('Claim:', claim);
+
+        var boardTableUpdate = `UPDATE FoodItem Set claimStatus = 1 WHERE itemID = ?`;
+        connection.query(boardTableUpdate, [itemID], (error, row, field) => {
           if (error) {
             //return error if update Board Table failed
             console.log("Error updating userPostClaimed status in Board Table: ", error);
@@ -272,36 +270,28 @@ io.on('connection', (socket) => {
           }
         });
 
-        var postingTableUpdate = `UPDATE Posting SET claimStatus = 1 WHERE FoodItem_ItemID = ?`;
-        connection.query(postingTableUpdate, [itemID], (error, updateResult, field) => {
+        var usersTableQuery = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
+        connection.query(usersTableQuery, [userID], (error, row, field) => {
           if (error) {
-            //return error if updating the table fails
-            console.log("Error updating claimed post: ", error);
+            //return error if selection fail
+            console.log("Error grabbing user of claimed item: ", error);
           } else {
-            // else return the updated table
-            console.log("Successful claim update.");
-
-            var usersTableQuery = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
-            connection.query(usersTableQuery, [posterUserID], (error, row, field) => {
-              if (error) {
-                //return error if selection fail
-                console.log("Error grabbing user of claimed item: ", error);
-              } else {
-                //else return the
-                console.log("Successfully grabbed user of claimed item. ", row);
-                posterEmail = row[0].email;
-                posterFirstName = row[0].firstName;
-                console.log(posterEmail);
-                // posterSuiteNumber = row[0].suiteNumber;
-              }
-
-              //sendClaimEmailToPoster(posterEmail, posterFirstName); //may also include: claimerEmail, claimerFirstName, claimerSuiteNumber 
-
-              console.log(itemID);
-              io.emit('claim return', (itemID));
-            });
+            //else return the
+            console.log("Successfully grabbed user of claimed item. ", row);
+            posterEmail = row[0].email;
+            posterFirstName = row[0].firstName;
+            console.log(posterEmail);
+            // posterSuiteNumber = row[0].suiteNumber;
           }
+
+          //sendClaimEmailToPoster(posterEmail, posterFirstName); //may also include: claimerEmail, claimerFirstName, claimerSuiteNumber 
+
+          console.log(itemID);
+          io.emit('claim return', (itemID));
         });
+
+      } else {
+        app.get('/nicetrybud');
       }
     });
   });
@@ -415,3 +405,22 @@ function insertIntoPostingTable() {
 server.listen(port, () => {
   console.log(`We are on port ${port}`);
 });
+
+function getSessionID(clientSessionID) {
+  var query = 'SELECT sessionID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?)';
+  var sessionID = connection.query(query, [clientSessionID], (error, rows, fields) => {
+      if (error) {
+          console.log('Error', error)
+      } else {
+          if (rows.length) {
+              console.log('QUERY TRUE');
+              return true;
+          } else {
+              console.log('QUERY FALSE');
+              return false;
+          }
+      }
+  });
+
+  return sessionID;
+}

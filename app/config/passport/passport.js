@@ -1,9 +1,7 @@
 //load bcrypt
 var bCrypt = require('bcrypt-nodejs');
-var dbconfig = require('../../public/js/dbconfig.js');
 const mysqlconnection = require('../../public/js/mysqlconnection');
-
-var connection = mysqlconnection.handleDisconnect(dbconfig);
+var connection = mysqlconnection.handleDisconnect();
 
 
 module.exports = function (passport, user) {
