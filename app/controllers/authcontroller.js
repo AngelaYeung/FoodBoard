@@ -1,7 +1,9 @@
 var exports = module.exports = {}
 var mysql = require('mysql');
 var dbconfig = require('../public/js/dbconfig.js');
-var connection = mysql.createConnection(dbconfig);
+var mysqlconnection = require('../public/js/mysqlconnection');
+
+var connection = mysqlconnection.handleDisconnect(dbconfig);
 
 exports.signup = (req, res) => {
   res.render('home');
