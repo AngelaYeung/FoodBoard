@@ -110,10 +110,6 @@ var connection = mysqlconnection.handleDisconnect(dbconfig);
 
 
 /*************************************************************************
-  * 
-  *         FOOD BOARD REGISTRATION FEATURE - SERVER SIDE
-  * 
-/*************************************************************************
 * Socketio detects that connection has been made to the server.
 * The connection event is fired, whenever anyone goes to foodboard.ca.
 */
@@ -136,15 +132,30 @@ io.on('connection', (socket) => {
 
 
   /**
-   * When the user has ac omplete loaded page, fetch data from db to print posts
+   * When the user has a complete loaded page, fetch data from db to print posts
    * to screen. 
    */
   socket.on('page loaded', () => {
     console.log('Server: page loaded')
     /** Grab All Food Items from DB */
 
-    //delete claimed items from FoodItem table before loading foodboard
-    //deleteClaimedFoodItems();
+    var claimedItemSearch = "SELECT FoodItem_ItemID FROM Posting WHERE claimStatus = 1";
+    connection.query(claimedItemSearch, (error, rows, field) => {
+      if (error) {
+        //return error if searching claimed posts fails
+        console.log("Error occured while querying for claimed posts", error);
+      } else if (rows.length < 1) {
+        console.log(rows.length + " claimed items, no deletion occured.");
+      } else {
+        console.log("Successful query of claimed food items", rows.length);
+        for (var i = 0; i < rows.length; i++) {
+
+          var tempItemID = rows[i].FoodItem_ItemID;
+          //delete claimed items from FoodItem table before loading foodboard
+          //deleteFoodItem(tempItemID);
+        }
+      }
+    });
 
     var foodboardItems = "SELECT * FROM FoodItem";
     connection.query(foodboardItems, (error, rows, fields) => {
@@ -172,7 +183,9 @@ io.on('connection', (socket) => {
 
   /** Handles 'post item' event that is fired from the index.html.  */
   socket.on('post item', (item) => {
-    var query = `SELECT sessionID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${item.sessionID}') LIMIT 1`;
+
+    let userID;
+    var query = `SELECT sessionID, Users_UserID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${item.sessionID}') LIMIT 1`;
     connection.query(query, (error, rows, fields) => {
       if (error) {
         console.log(error);
@@ -187,6 +200,8 @@ io.on('connection', (socket) => {
         let dateLocalTime = item.dateTime;
         let foodImage = item.image;
         let itemID;
+        console.log("this is the user ID", rows[0].Users_UserID)
+        userID = rows[0].Users_UserID;
 
         /** Inserts data into database */
         var foodItem = "INSERT INTO FoodItem (foodName, foodDescription, foodGroup,  foodExpiryTime, foodImage) VALUES (?, ?, ?, ?, ?)";
@@ -200,10 +215,11 @@ io.on('connection', (socket) => {
             console.log("Successful insertion:", rows);
             itemID = rows.insertId;
           }
+          /* Inserts data into Posting Table */
+          insertIntoPostingTable(itemID, userID);
         });
 
-        /* Inserts data into Posting Table */
-        //insertIntoPostingTable(itemID, userID);
+
 
         /* Once image transfer has complete, tell client to create it's card */
         uploader.once('complete', () => {
@@ -225,6 +241,17 @@ io.on('connection', (socket) => {
 
   /*************************************************************************
    * 
+   *         FOOD BOARD DELEETE FEATURE - SERVER SIDE
+   * 
+   *************************************************************************/
+  socket.on('delete item', (deletion) => {
+
+
+    io.emit('deletion return', (itemID));
+  });
+
+  /*************************************************************************
+   * 
    *         FOOD BOARD CLAIM FEATURE - SERVER SIDE
    * 
    *************************************************************************/
@@ -236,7 +263,6 @@ io.on('connection', (socket) => {
     var itemID = claim.id;
     //console.log(itemID);
     var postID;
-
     var posterUserID;
     var posterEmail;
     var posterFirstName;
@@ -260,17 +286,7 @@ io.on('connection', (socket) => {
         postID = row[0].postID;
         posterUserID = row[0].Users_UserID;
 
-        
-        var boardTableUpdate = `UPDATE Board Set userPostClaimed = 1 WHERE Posting_PostID = ?`;
-        connection.query(boardTableUpdate, [postID], (error, row, field) => {
-          if (error) {
-            //return error if update Board Table failed
-            console.log("Error updating userPostClaimed status in Board Table: ", error);
-          } else {
-            // else return the updated table
-            console.log("Successfully updated Board Table with userPostClaimed = 1", row);
-          }
-        });
+        updateClaimStatusBoardTable(postID);
 
         var postingTableUpdate = `UPDATE Posting SET claimStatus = 1 WHERE FoodItem_ItemID = ?`;
         connection.query(postingTableUpdate, [itemID], (error, updateResult, field) => {
@@ -327,7 +343,7 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName) { //may also inclu
       pass: 'wNmg25t9fqKXZ8wVUF'
     },
     // tls: {
-    //     rejectUnauthorizde:false
+    //     rejectUnauthorized:false
     // }
   });
 
@@ -364,35 +380,33 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName) { //may also inclu
   });
 };
 
-function deleteClaimedFoodItems() {
-  var claimedItemSearch = "SELECT FoodItem_ItemID FROM Posting WHERE claimStatus = 1";
-  connection.query(claimedItemSearch, (error, rows, field) => {
+function deleteFoodItem(itemID) {
+  var deletePost = `DELETE FROM FoodItem WHERE itemID = ? LIMIT 1`;
+  connection.query(deletePost, [tempItemID], (error, row, field) => {
     if (error) {
-      //return error if searching claimed posts fails
-      console.log("Error occured while querying for claimed posts", error);
-    } else if (rows.length < 1) {
-      console.log(rows.length + " claimed items, no deletion occured.");
+      // return error if insertion fail
+      console.log("Error occured when attempting to delete post: ", error);
     } else {
-      console.log("Successful query of claimed food items", rows.length);
-      for (var i = 0; i < rows.length; i++) {
-
-        var tempItemID = rows[i].FoodItem_ItemID;
-        var deletePost = `DELETE FROM FoodItem WHERE itemID = ?`;
-        connection.query(deletePost, [tempItemID], (error, row, field) => {
-          if (error) {
-            // return error if insertion fail
-            console.log("Error occured when attempting to delete post: ", error);
-          } else {
-            // else return the updated table
-            console.log("Successful deletion of claimed food item.");
-          }
-        });
-      }
+      // else return the updated table
+      console.log("Successful deletion of claimed food item.");
     }
   });
 };
 
-function insertIntoPostingTable() {
+function updateClaimStatusBoardTable(postID) {
+  var boardTableUpdate = `UPDATE Board Set userPostClaimed = 1 WHERE Posting_PostID = ?`;
+  connection.query(boardTableUpdate, [postID], (error, row, field) => {
+    if (error) {
+      //return error if update Board Table failed
+      console.log("Error updating userPostClaimed status in Board Table: ", error);
+    } else {
+      // else return the updated table
+      console.log("Successfully updated Board Table with userPostClaimed = 1", row);
+    }
+  });
+};
+
+function insertIntoPostingTable(itemID, userID) {
   var posting = "INSERT INTO Posting (FoodItem_ItemID, Users_UserID) VALUES (?, ?)";
   connection.query(posting, [itemID, userID], (error, result, field) => {
     if (error) {
