@@ -72,8 +72,6 @@ $(document).ready(function () {
     if (validatePassword()) {
       document.getElementById("register_pwd").style.borderColor = '#4EB266';
       document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
-      console.log('A', document.getElementById("register_pwd").value);
-      console.log('B', document.getElementById('register_pwd_confirm').value);
     } else {
       document.getElementById("register_pwd").style.borderColor = "#E34234";
       document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
@@ -84,8 +82,6 @@ $(document).ready(function () {
 
 //validate the password
 function validatePassword() {
-  console.log(document.getElementById("register_pwd").value);
-  console.log(document.getElementById('register_pwd_confirm').value);
   if (document.getElementById("register_pwd").value !== document.getElementById("register_pwd_confirm").value) {
     return false;
   } else {
