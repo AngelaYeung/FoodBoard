@@ -144,7 +144,7 @@ io.on('connection', (socket) => {
     /** Grab All Food Items from DB */
 
     //delete claimed items from FoodItem table before loading foodboard
-    deleteClaimedFoodItems();
+    //deleteClaimedFoodItems();
 
     var foodboardItems = "SELECT * FROM FoodItem";
     connection.query(foodboardItems, (error, rows, fields) => {
