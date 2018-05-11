@@ -19,7 +19,7 @@ var authRoute = require('./app/routes/auth.js');
 var dbconfig = require('./app/public/js/dbconfig.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
 
-const port = 9000;
+const port = 8000;
 
 var app = express().use(siofu.router); // adds siofu as a router, middleware
 
@@ -245,10 +245,20 @@ io.on('connection', (socket) => {
    * 
    *************************************************************************/
   socket.on('delete item', (deletion) => {
+    var itemID = deletion.id;
 
-    deleteFoodItem(itemID)
+    var deletePost = `DELETE FROM FoodItem WHERE itemID = ? LIMIT 1`;
+    connection.query(deletePost, [itemID], (error, row, field) => {
+      if (error) {
+        // return error if insertion fail
+        console.log("Error occured when attempting to delete post: ", error);
+      } else {
+        // else return the updated table
+        console.log("Successful deletion of claimed food item.");
+      }
+    });
 
-    io.emit('deletion return', (itemID));
+    io.emit('delete return', (itemID));
   });
 
   /*************************************************************************
@@ -383,7 +393,7 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName) { //may also inclu
 
 function deleteFoodItem(itemID) {
   var deletePost = `DELETE FROM FoodItem WHERE itemID = ? LIMIT 1`;
-  connection.query(deletePost, [tempItemID], (error, row, field) => {
+  connection.query(deletePost, [itemID], (error, row, field) => {
     if (error) {
       // return error if insertion fail
       console.log("Error occured when attempting to delete post: ", error);
