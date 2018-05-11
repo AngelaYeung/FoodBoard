@@ -18,12 +18,8 @@ var models = require("./app/models"); // tells the server to require these route
 var authRoute = require('./app/routes/auth.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
 
-<<<<<<< HEAD
 var connection = mysqlconnection.handleDisconnect();
 const port = 9000;
-=======
-const port = 8000;
->>>>>>> d65a3218189b9e89c93d9b0e40f18bfceae180b6
 
 var app = express().use(siofu.router); // adds siofu as a router, middleware
 
@@ -142,30 +138,8 @@ io.on('connection', (socket) => {
     console.log('Server: page loaded')
     /** Grab All Food Items from DB */
 
-<<<<<<< HEAD
     // TODO: SELECT * FROM FOODBOARDBOARD WHERE CLAIMSTATUS = 0;
     var foodboardItems = "SELECT * FROM FoodItem WHERE claimStatus = 0";
-=======
-    var claimedItemSearch = "SELECT FoodItem_ItemID FROM Posting WHERE claimStatus = 1";
-    connection.query(claimedItemSearch, (error, rows, field) => {
-      if (error) {
-        //return error if searching claimed posts fails
-        console.log("Error occured while querying for claimed posts", error);
-      } else if (rows.length < 1) {
-        console.log(rows.length + " claimed items, no deletion occured.");
-      } else {
-        console.log("Successful query of claimed food items", rows.length);
-        for (var i = 0; i < rows.length; i++) {
-
-          var tempItemID = rows[i].FoodItem_ItemID;
-          //delete claimed items from FoodItem table before loading foodboard
-          deleteFoodItem(tempItemID);
-        }
-      }
-    });
-
-    var foodboardItems = "SELECT * FROM FoodItem";
->>>>>>> d65a3218189b9e89c93d9b0e40f18bfceae180b6
     connection.query(foodboardItems, (error, rows, fields) => {
       return rows;
       if (error) {
@@ -299,7 +273,6 @@ io.on('connection', (socket) => {
     var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
     connection.query(query, (error, rows, fields) => {
       if (error) {
-<<<<<<< HEAD
         console.log(error);
       }
 
@@ -319,18 +292,6 @@ io.on('connection', (socket) => {
             console.log("Successfully updated Board Table with userPostClaimed = 1", row);
           }
         });
-=======
-        //return error if Posting Table query fail
-        console.log("Error grabbing userID and postID from posting table: ", error);
-      } else {
-        // else return the updated table
-        console.log("Successfully grabbed userID:", row);
-        console.log(row[0]);
-        postID = row[0].postID;
-        posterUserID = row[0].Users_UserID;
-
-        updateClaimStatusBoardTable(postID);
->>>>>>> d65a3218189b9e89c93d9b0e40f18bfceae180b6
 
         var usersTableQuery = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
         connection.query(usersTableQuery, [userID], (error, row, field) => {
