@@ -5,7 +5,7 @@ const path = require('path');
 const express = require('express'); // framework for node to set up web application (sets up the middleware)
 const mysql = require('mysql'); // for connection to mysql
 const bodyParser = require('body-parser'); // for parsing http request data
-const siofu = require('socketio-file-upload'); // for image uploading
+const siofu = require('socketio-file-upload'); // for image uploading w/ sockets 
 const passport = require('passport'); // for authentication
 const session = require('express-session'); // for session handling
 const env = require('dotenv').load();
@@ -17,8 +17,9 @@ const nodemailer = require('nodemailer'); // for sending automated emails
 var models = require("./app/models"); // tells the server to require these routes 
 var authRoute = require('./app/routes/auth.js');
 var dbconfig = require('./app/public/js/dbconfig.js');
+var mysqlconnection = require('./app/public/js/mysqlconnection.js');
 
-const port = 8000;
+const port = 8080;
 
 var app = express().use(siofu.router); // adds siofu as a router, middleware
 
@@ -105,18 +106,14 @@ models.sequelize.sync().then(() => {
   console.log(err, "Something went wrong with the Database Update!");
 });
 
-var connection;
-
-
-handleDisconnect();
+var connection = mysqlconnection.handleDisconnect(dbconfig);
 
 
 /*************************************************************************
   * 
   *         FOOD BOARD REGISTRATION FEATURE - SERVER SIDE
-
-
-/**
+  * 
+/*************************************************************************
 * Socketio detects that connection has been made to the server.
 * The connection event is fired, whenever anyone goes to foodboard.ca.
 */
@@ -135,7 +132,7 @@ io.on('connection', (socket) => {
    * 
    * Fired as soon as user is connected to server
    * 
-   ***********************************  **************************************/
+   *************************************************************************/
 
 
   /**
@@ -182,6 +179,7 @@ io.on('connection', (socket) => {
       if (error) {
         console.log(error);
       }
+
       console.log("this is length of rows:", rows.length);
       if (rows.length) {
         console.log("fired");
@@ -265,6 +263,7 @@ io.on('connection', (socket) => {
         postID = row[0].postID;
         posterUserID = row[0].Users_UserID;
 
+        
         var boardTableUpdate = `UPDATE Board Set userPostClaimed = 1 WHERE Posting_PostID = ?`;
         connection.query(boardTableUpdate, [postID], (error, row, field) => {
           if (error) {
@@ -414,30 +413,6 @@ function insertIntoPostingTable() {
  * 
  *************************************************************************/
 
-
-function handleDisconnect() {
-
-
-  connection = mysql.createConnection(dbconfig); // Recreate the connection, since
-  // the old one cannot be reused.
-
-  connection.connect(function (err) {                 // The server is either down
-    if (err) {                                        // or restarting (takes a while sometimes).
-      console.log('error when connecting to db:', err);
-      setTimeout(handleDisconnect, 2000);             // We introduce a delay before attempting to reconnect,
-    }                                                 // to avoid a hot loop, and to allow our node script to
-  });                                                 // process asynchronous requests in the meantime.
-  // If you're also serving http, display a 503 error.
-
-  connection.on('error', function (err) {
-    console.log('db error', err);
-    if (err.code === 'PROTOCOL_CONNECTION_LOST') {    // Connection to the MySQL server is usually
-      handleDisconnect();                             // lost due to either server restart, or a
-    } else {                                          // connnection idle timeout (the wait_timeout
-      throw err;                                      // server variable configures this)
-    }
-  });
-};
 
 // The port we are listening on
 server.listen(port, () => {

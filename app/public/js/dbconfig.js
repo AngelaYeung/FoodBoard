@@ -1,11 +1,8 @@
-var db_config = {
+var dbconfig = {
   host: "localhost",
   database: "Foodboard",
   user: "root",
   password: ""
 }
 
-
-
-
-module.exports = db_config;
+module.exports = dbconfig;
