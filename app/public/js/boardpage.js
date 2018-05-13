@@ -1,13 +1,6 @@
 // needs to be declared as a global variable to be in same scope as claimItem()
 var socket;
 
-
-function deleteItem(itemID) {
-    socket.emit('delete item', {
-        id: itemID
-    });
-}
-
 $(document).ready(function () {
     var sessionID = getSessionID('connect.sid');
     console.log('sessionID', sessionID);
@@ -234,7 +227,6 @@ function itemClaimed(id) {
     $(`#card${id}`).remove();
 };
 
-
 /**
  * Sends emits the item id to the server.
  * @param {number} itemID 
@@ -247,6 +239,13 @@ function claimItem(itemID) {
     });
 };
 
+function deleteItem(itemID) {
+    let sessionID = getSessionID('connect.sid');
+    socket.emit('delete item', {
+        id: itemID,
+        sessionID: sessionID
+    });
+}
 
 /**
  * Gets the session id. 
