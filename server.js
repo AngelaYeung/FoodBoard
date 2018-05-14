@@ -149,9 +149,8 @@ io.on('connection', (socket) => {
 
     var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
     connection.query(query, [session.sessionID], (error, rows, fields) => {
-      console.log("FUCK", rows);
       if (error) {
-        console.log(date.now(), 'Error', error);
+        console.log(Date.now(), 'Error', error);
       } else {
         if (rows.length) {
 
