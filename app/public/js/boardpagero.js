@@ -25,7 +25,6 @@ if (files[0].type.match('image.*')) {
 
 // document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
 
-
 /**
 * Creates new card based on the parameters passed into the function.
 */
@@ -78,7 +77,7 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
 
   var foodImg = document.createElement("img");
   foodImg.setAttribute("class", "food-img");
-  foodImg.src = `/images/${img}`;
+  foodImg.src = setPostImage(foodGroup, img);
 
 
   cardDiv.appendChild(imageDiv);
@@ -107,4 +106,25 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
    if ($('#itemModal').is(':visible')) {
       $('#itemModal').modal('toggle');
   }
+}
+
+function setPostImage(foodCategory, imgName) {
+    if (imgName !== "undefined.png") {
+        return `/images/${imgName}`;
+    } else {
+        switch (foodCategory) {
+            case "Produce":
+                return "../../Pictures/default_produce.png";
+                break;
+            case "Meat":
+                return "../../Pictures/default_meat.png";
+                break;
+            case "Canned Goods":
+                return "../../Pictures/default_food.png";
+                break;
+            case "Packaged":
+                return "../../Pictures/default_packaged.png";
+                break;
+        }
+    }
 }

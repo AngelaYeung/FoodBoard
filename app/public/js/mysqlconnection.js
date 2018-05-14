@@ -1,4 +1,4 @@
-const dbconfig = require('./dbconfig');
+const dbconfig = require('./dbconfig.js');
 const mysql = require('mysql');
 
 /**
@@ -6,7 +6,7 @@ const mysql = require('mysql');
  * 
  * @param {object} dbconfig - options to set up the database.
  */
-function handleDisconnect(dbconfig) {
+function handleDisconnect() {
 
 
     var connection = mysql.createConnection(dbconfig); // Recreate the connection, since
@@ -21,6 +21,7 @@ function handleDisconnect(dbconfig) {
     // If you're also serving http, display a 503 error.
 
     connection.on('error', function (err) {
+        console.log('DB TIMEOUT', err);
         console.log('db error', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
             handleDisconnect(); // lost due to either server restart, or a

@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`FoodItem` (
   `foodGroup` VARCHAR(45) NOT NULL COMMENT 'Holds the food group of the item',
   `foodExpiryTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Holds the expiry date of the food item\n',
   `foodImage` VARCHAR(255) NOT NULL COMMENT 'Holds the image of the food item\n',
+<<<<<<< HEAD
   `claimStatus` TINYINT NOT NULL DEFAULT 0 COMMENT 'Holds the \'claimed\' status of the food item\n\n0 = unclaimed\n1 = claimed',
   `Users_userID` INT NOT NULL,
   PRIMARY KEY (`itemID`, `Users_userID`),
@@ -53,6 +54,50 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`FoodItem` (
     REFERENCES `Foodboard`.`Users` (`userID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
+=======
+  PRIMARY KEY (`itemID`));
+
+
+-- -----------------------------------------------------
+-- Table `Foodboard`.`Posting`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Foodboard`.`Posting` (
+  `postID` INT NOT NULL AUTO_INCREMENT,
+  `FoodItem_ItemID` INT NOT NULL,
+  `Users_UserID` INT NOT NULL,
+  `claimStatus` TINYINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (`postID`, `FoodItem_ItemID`, `Users_UserID`),
+  INDEX `fk_Posting_FoodItem1_idx` (`FoodItem_ItemID` ASC),
+  INDEX `fk_Posting_Users1_idx` (`Users_UserID` ASC),
+  CONSTRAINT `fk_Posting_FoodItem1`
+    FOREIGN KEY (`FoodItem_ItemID`)
+    REFERENCES `Foodboard`.`FoodItem` (`itemID`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Posting_Users1`
+    FOREIGN KEY (`Users_UserID`)
+    REFERENCES `Foodboard`.`Users` (`userID`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Foodboard`.`Board`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Foodboard`.`Board` (
+  `boardPostID` INT NOT NULL AUTO_INCREMENT,
+  `userPostClaimed` TINYINT NULL DEFAULT 0,
+  `Posting_PostID` INT NOT NULL,
+  PRIMARY KEY (`boardPostID`, `Posting_PostID`),
+  INDEX `fk_FoodboardBoard_Posting_idx` (`Posting_PostID` ASC),
+  CONSTRAINT `fk_FoodboardBoard_Posting`
+    FOREIGN KEY (`Posting_PostID`)
+    REFERENCES `Foodboard`.`Posting` (`postID`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+>>>>>>> 7bcb973b623370666c603d27e182e0dc2aa68e26
 
 
 -- -----------------------------------------------------
@@ -66,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`UserList` (
   CONSTRAINT `fk_UserList_Users1`
     FOREIGN KEY (`Users_UserID`)
     REFERENCES `Foodboard`.`Users` (`userID`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 

@@ -1,8 +1,6 @@
-var mysql = require('mysql');
-
 var authController = require('../controllers/authcontroller.js');
-var dbconfig = require('../public/js/dbconfig.js');
-var connection = mysql.createConnection(dbconfig);
+const mysqlconnection = require('../public/js/mysqlconnection.js');
+var connection = mysqlconnection.handleDisconnect();
 
 var validate = (app, passport) => {
 
@@ -15,11 +13,11 @@ var validate = (app, passport) => {
         passport.authenticate('local-signup', (err, user, info) => {
             if (err) { return next(err); }
             if (!user) {
-                console.log('Err: ', err);
-                console.log('Info: ', info);
-                console.log('User: ', user);
                 return res.render('home_wrong_registration', {
-                    email: req.body.login_email
+                    email: req.body.register_email,
+                    first: req.body.register_first_name,
+                    last: req.body.register_last_name,
+                    suite: req.body.register_suite_number,
                 });
             }
             req.logIn(user, function (err) {
@@ -68,6 +66,7 @@ function insertSessionDB(sessionID, userID) {
         console.log(rows);
     });
 };
+
 
 module.exports = {
     validate: validate
