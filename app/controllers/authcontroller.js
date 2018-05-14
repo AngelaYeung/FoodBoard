@@ -27,9 +27,6 @@ exports.logout = (req, res) => {
         console.log("Successful deletion of sessionID from Sessions.");
       }
     });
-    // res.clearCookie('connect.sid', {
-    //   httpOnly: false,
-    // });
     res.redirect('/')
 
   });
