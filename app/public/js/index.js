@@ -50,8 +50,8 @@ $(document).ready(function () {
     });
 
     //closes modal when clicking back button
-    // $(window).on("popstate", this.handleBackpress);
-    // document.addEventListener("backbutton", this.handleBackpress, false);
+    $(window).on("popstate", this.handleBackpress);
+    document.addEventListener("backbutton", this.handleBackpress, false);
 
   });
 
@@ -89,11 +89,11 @@ function validatePassword() {
   }
 }
 
-// //closes modal when clicking back button
-// function handleBackpress(e) {
-//   e.preventDefault();
-//   e.stopPropagation();
+//closes modal when clicking back button
+function handleBackpress(e) {
+  e.preventDefault();
+  e.stopPropagation();
 
-//   $(".modal").modal("hide");
-//   $(".modal-backdrop").remove();
-// }
+  $(".modal").modal("hide");
+  $(".modal-backdrop").remove();
+}

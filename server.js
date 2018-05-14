@@ -19,7 +19,7 @@ var authRoute = require('./app/routes/auth.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
 
 var connection = mysqlconnection.handleDisconnect();
-const port = 9000;
+const port = 8000;
 
 var app = express().use(siofu.router); // adds siofu as a router, middleware
 
