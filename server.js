@@ -41,7 +41,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: {
     httpOnly: false,
-    maxAge: 1800000,
+    maxAge: 100000//1800000,
   }
 })); // session secret
 app.use(passport.initialize());
@@ -154,23 +154,56 @@ io.on('connection', (socket) => {
       } else {
         if (rows.length) {
 
+          // check to see if the user is an admin so we can load the full table for their session
           var userID = rows[0].Users_userID;
-
-          var foodboardItems = "SELECT * FROM FoodItem WHERE claimStatus = 0";
-          connection.query(foodboardItems, (error, rows, fields) => {
+          var checkRole = "SELECT role FROM Users WHERE userID = ? LIMIT 1";
+          connection.query(checkRole, [userID], (error, row, field) => {
             if (error) {
-              console.log("Error grabbing food items");
-            } else if (!rows.length) {
-              console.log("Database is empty.");
+              console.log("Error checking for role of user:", error);
             } else {
-              console.log("Successfully grabbed food items.");
-              console.log(rows);
+              var role = row[0].role;
 
-              /* Sends list of food items to the client to print to browser */
-              socket.emit('load foodboard', {
-                rows: rows,
-                userID: userID,
-              });
+              if (role === 1) {
+                // User is not an administrator, only load unclaimed posts
+                var unclaimedFoodboardItems = "SELECT * FROM FoodItem WHERE claimStatus = 0 OR Users_userID = ?";
+                connection.query(unclaimedFoodboardItems, [userID], (error, rows, fields) => {
+                  if (error) {
+                    console.log("Error grabbing food items: ", error);
+                  } else if (!rows.length) {
+                    console.log("Database is empty.");
+                  } else {
+                    console.log("Successfully grabbed food items.");
+                    console.log(rows);
+
+                    /* Sends list of food items to the client to print to browser */
+                    socket.emit('load foodboard', {
+                      rows: rows,
+                      userID: userID,
+                      role: role
+                    });
+                  }
+                });
+              } else {
+                // User is an administrator, load all posts including claimed ones
+                var allFoodboardItems = "SELECT * FROM FoodItem";
+                connection.query(allFoodboardItems, (error, rows, fields) => {
+                  if (error) {
+                    console.log("Error grabbing food items");
+                  } else if (!rows.length) {
+                    console.log("Database is empty.");
+                  } else {
+                    console.log("Successfully grabbed food items.");
+                    console.log(rows);
+
+                    /* Sends list of food items to the client to print to browser */
+                    socket.emit('load foodboard', {
+                      rows: rows,
+                      userID: userID,
+                      role: role
+                    });
+                  }
+                });
+              }
             }
           });
         } else {
@@ -264,21 +297,21 @@ io.on('connection', (socket) => {
   socket.on('delete item', (deletion) => {
 
     //Declaring variables needed to generate automated delete email
-    var sessionID = deletion.sessionID;
-    var itemID = deletion.id;
+    let sessionID = deletion.sessionID;
+    let itemID = deletion.id;
 
-    var posterUserID;
-    var posterFirstName;
-    var posterSuiteNumber;
+    let posterUserID;
+    let posterFirstName;
+    let posterSuiteNumber;
 
-    var foodName;
-    var foodDescription;
-    var foodExpiryTime;
-    var foodImage;
+    let foodName;
+    let foodDescription;
+    let foodExpiryTime;
+    let foodImage;
 
-    var claimerUserID;
-    var claimerEmail;
-    var claimerFirstName;
+    let claimerUserID;
+    let claimerEmail;
+    let claimerFirstName;
 
     // first check if the person deleting the post is currently in a session
     var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
@@ -286,61 +319,78 @@ io.on('connection', (socket) => {
       if (error) {
         console.log(error);
       }
-      // if poster is currently in a session, continue with deletion of the post
       if (rows.length) {
-        posterUserID = rows[0].Users_userID;
-
+        let currentUserID = rows[0].Users_userID;
+        
         // then check if we are deleting a claimed post. This will tell us if we need to send an automated email to the claimer
         var selectClaimStatus = "SELECT * FROM ClaimedPosts WHERE FoodItem_itemID = ? LIMIT 1";
         connection.query(selectClaimStatus, [itemID], (error, row, field) => {
           if (error) {
             console.log("Error occured when attempting to query ClaimedPosts Table: ", error);
           } else {
-            console.log("Successful query of claimedPosts Table.");
+            console.log("Successful query of claimedPosts Table for claimer's userID. ");
             if (row.length) {
-              claimerUserID = rows[0].Sessions_Users_userID;
-
+              posterUserID = row[0].FoodItem_Users_userID;
+              claimerUserID = row[0].Users_userID;
+              
               // post has been claimed, query for post information before deleting post from FoodItem table
               var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
               connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
                 if (error) {
-                  console.log("Error querying from FoodItem Table to get ");
+                  console.log("Error querying from FoodItem Table: ", error);
                 } else {
-                  console.log("Successfully obtained Poster's userID from FoodItem Table", row);
+                  console.log("Successfully obtained food item info from FoodItem Table");
                   foodName = row[0].foodName;
                   foodDescription = row[0].foodDescription;
                   foodExpiryTime = row[0].foodExpiryTime;
                   foodImage = row[0].foodImage;
-
+                  
                   // delete the post from all tables
                   deleteFromClaimedPosts(itemID);
                   deleteFoodItem(itemID);
-
+                  
                   // query for the first name and email of person who claimed post
                   var queryUserTable = "SELECT * FROM Users WHERE userID = ? OR userID = ? LIMIT 2";
-                  connection.query(query, [claimerUserID, posterUserID], (error, row, field) => {
+                  connection.query(queryUserTable, [claimerUserID, posterUserID], (error, row, field) => {
                     if (error) {
                       console.log("Error occured when attempting to query for claimer's information.", error);
                     } else {
-                      console.log("Successful query of claimer's information.");
+                      console.log("Successful query of claimer's and poster's information.");
+                      console.log(`ROW[0]`, row[0]);
+                      console.log(`ROW[1]`, row[1]);
                       claimerEmail = row[0].email;
                       claimerFirstName = row[0].firstName;
-                      posterFirstName = row[1].firstName;
+                      posterFirstName = row[1].firstName; // crashes if administrator account tries to delete their own post (Admin acc shouldnt be posting)
                       posterSuiteNumber = row[1].suiteNumber;
+                      console.log(row[1].suiteNumber);
 
-                      // sends an email to the claimer of the post 
-                      sendDeleteEmailToClaimer(claimerEmail, claimerFirstName,
-                        foodName, foodDescription, foodExpiryTime, foodImage,
-                        posterFirstName, posterSuiteNumber);
+                      // check to see if the user is an admin, no email/ a different type of email is sent to the poster if their post is deleted by an admin
+                      var checkRole = "SELECT role FROM Users WHERE userID = ? LIMIT 1";
+                      connection.query(checkRole, [currentUserID], (error, row, field) => {
+                        if (error) {
+                          console.log("Error checking for role of user:", error);
+                        } else {
+                          var role = row[0].role;
 
-                      io.emit('delete return', (itemID));
+                          if (role === 0) {
+                            io.emit('delete return', (itemID));
+                          } else {
+                            // sends an email to the claimer of the post 
+                            sendDeleteEmailToClaimer(claimerEmail, claimerFirstName,
+                              foodName, foodDescription, foodExpiryTime, foodImage,
+                              posterFirstName, posterSuiteNumber);
+
+                            io.emit('delete return', (itemID));
+                          }
+                        }
+                      });
                     }
                   });
                 }
               });
             } else {
               //post has not been claimed by anyone, only deletion is necessary
-              console.log("The posted food item has not been claimed and can be deleted.");
+              console.log("The posted food item has not been claimed and can simply be deleted.");
               deleteFoodItem(itemID);
 
               io.emit('delete return', (itemID));
@@ -428,11 +478,11 @@ io.on('connection', (socket) => {
                 console.log("Successfully grabbed user of claimed item. ", row);
                 posterEmail = row[0].email;
                 posterFirstName = row[0].firstName;
-                claimerEmail = row[1].email;
+                claimerEmail = row[1].email; // crashes if administrator tries to claim their own post
                 claimerFirstName = row[1].firstName;
                 claimerSuiteNumber = row[1].suiteNumber;
 
-                var insertIntoClaimedTable = `INSERT INTO ClaimedPosts (FoodItem_itemID, FoodItem_Users_userID, Sessions_Users_userID) VALUES (?, ?, ?)`;
+                var insertIntoClaimedTable = `INSERT INTO ClaimedPosts (FoodItem_itemID, FoodItem_Users_userID, Users_userID) VALUES (?, ?, ?)`;
                 connection.query(insertIntoClaimedTable, [itemID, posterUserID, claimerUserID], (error, result, field) => {
                   if (error) {
                     //return error if insertion into claimed posts table fails

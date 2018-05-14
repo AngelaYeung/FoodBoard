@@ -1,4 +1,4 @@
-// needs to be declared as a global variable to be in same scope as claimItem()
+// needs to be declared as a global variable to be in same scope as claimItem(), deleteItem()
 var socket;
 
 $(document).ready(function () {
@@ -176,13 +176,18 @@ $(document).ready(function () {
 
     socket.on('load foodboard', (items) => {
         console.log('AAAAAAAAAAAAAAAAAAA');
+        var role = items.role; // their role as administrator or user
         var userID = items.userID; // whos logged in
         var rows = items.rows;
-
+        console.log("LOAD: ROWS: ", rows);
         for (var i = 0; i < rows.length; i++) {
-            console.log('userID', userID);
-            console.log('rows[i].user', rows[i].Users_userID);
-            if (rows[i].Users_userID === userID) {
+            console.log('userID: ', userID);
+            console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
+            if (role === 0) {
+                console.log("User has Administrator priveleges."); // crashes if administrator tries to claim or delete their own post
+                addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                    rows[i].foodGroup, rows[i].foodImage);
+            } else if (rows[i].Users_userID === userID) {
                 console.log("IM RUNNING BUTTON ITEMNOCLAIM");
                 addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
                     rows[i].foodGroup, rows[i].foodImage);
@@ -202,7 +207,7 @@ $(document).ready(function () {
      * 
      *************************************************************************/
     socket.on('delete return', (itemID) => {
-        itemDeleted(itemID); //deltes the item
+        itemDeleted(itemID); //deletes the item
     });
 
 
@@ -213,7 +218,7 @@ $(document).ready(function () {
      *************************************************************************/
 
     socket.on('claim return', (itemID) => {
-        itemClaimed(itemID); //.remove() generates error
+        itemClaimed(itemID); 
     });
 
 });

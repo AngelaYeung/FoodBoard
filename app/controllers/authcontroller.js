@@ -17,11 +17,20 @@ exports.boardpage = (req, res) => {
 
 exports.logout = (req, res) => {
   req.session.destroy((err) => {
+    if (err) {
+      console.log("Error occured while logging out: ", err);
+    }
     connection.query(`DELETE FROM sessions WHERE sessionID = '${req.sessionID}'`, (error, rows, fields) => {
       if (error) {
-        console.log(error);
+        console.log("Error occured while trying to delete sessionID from Sessions: ", error);
+      } else {
+        console.log("Successful deletion of sessionID from Sessions.");
       }
     });
-    res.redirect('/');
+    // res.clearCookie('connect.sid', {
+    //   httpOnly: false,
+    // });
+    res.redirect('/')
+
   });
 };
