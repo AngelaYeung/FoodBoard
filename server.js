@@ -19,7 +19,7 @@ var authRoute = require('./app/routes/auth.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
 
 var connection = mysqlconnection.handleDisconnect();
-const port = 9000;
+const port = 8080;
 
 var app = express().use(siofu.router); // adds siofu as a router, middleware
 
@@ -108,8 +108,8 @@ app.get('/', (req, res) => {
  * 
  * 
  *************************************************************************/
-app.get('/account', (req, result) => {
-  var sessionID = getSessionID('connect.sid');
+app.get('/account', (req, res) => {
+  var sessionID = req.sessionID;
   var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
   connection.query(query, (error, rows, fields) => {
     if (error) {
@@ -118,9 +118,6 @@ app.get('/account', (req, result) => {
 
       if (rows.length) {
         var userID = rows[0].Users_userID;
-        var itemID = claim.id;
-        console.log('ClaimID:', itemID);
-        console.log('Claim:', claim);
         //Query for user info for current user
         var userInfo = "SELECT * FROM Users WHERE userID = ?";
         connection.query(userInfo, [userID], (error, result, field) => {

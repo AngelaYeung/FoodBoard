@@ -46,15 +46,12 @@
     position: relative;
     top: 3px;
   }
-<<<<<<< HEAD:navbar.css
   .dropdown-menu {
     width: 107%;
     left: -13px;
     border-radius: 0;
     background-color: #4EB266
   }
-=======
->>>>>>> 0569d5a5d670c0e52c01446d50be987d5399f491:app/public/css/navbar.css
 
 .navbar-brand .navbar-foodboard {
   color:white;
