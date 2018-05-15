@@ -56,30 +56,6 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`FoodItem` (
 
 
 -- -----------------------------------------------------
--- Table `Foodboard`.`Posting`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Foodboard`.`Posting` (
-  `postID` INT NOT NULL AUTO_INCREMENT,
-  `FoodItem_ItemID` INT NOT NULL,
-  `Users_UserID` INT NOT NULL,
-  `claimStatus` TINYINT NOT NULL DEFAULT 0,
-  PRIMARY KEY (`postID`, `FoodItem_ItemID`, `Users_UserID`),
-  INDEX `fk_Posting_FoodItem1_idx` (`FoodItem_ItemID` ASC),
-  INDEX `fk_Posting_Users1_idx` (`Users_UserID` ASC),
-  CONSTRAINT `fk_Posting_FoodItem1`
-    FOREIGN KEY (`FoodItem_ItemID`)
-    REFERENCES `Foodboard`.`FoodItem` (`itemID`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Posting_Users1`
-    FOREIGN KEY (`Users_UserID`)
-    REFERENCES `Foodboard`.`Users` (`userID`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `Foodboard`.`Board`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Foodboard`.`Board` (
@@ -94,8 +70,6 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`Board` (
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
->>>>>>> 7bcb973b623370666c603d27e182e0dc2aa68e26
-
 
 -- -----------------------------------------------------
 -- Table `Foodboard`.`UserList`
