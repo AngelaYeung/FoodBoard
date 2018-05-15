@@ -104,13 +104,57 @@ app.get('/', (req, res) => {
 
 /*************************************************************************
  * 
- *         FOOD BOARD LOGIN/REGISTER FEATURE - SERVER SIDE
+ *         FOOD BOARD ACCOUNT SETTINGS FEATURE - SERVER SIDE
  * 
  * 
  *************************************************************************/
+app.get('/account', (req, result) => {
+  var sessionID = getSessionID('connect.sid');
+  var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
+  connection.query(query, (error, rows, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+
+      if (rows.length) {
+        var userID = rows[0].Users_userID;
+        var itemID = claim.id;
+        console.log('ClaimID:', itemID);
+        console.log('Claim:', claim);
+        //Query for user info for current user
+        var userInfo = "SELECT * FROM Users WHERE userID = ?";
+        connection.query(userInfo, [userID], (error, result, field) => {
+          if (error) {
+            console.log("error");
+          } else {
+            console.log("successful");
+            var name = result[0].firstName + " " + result[0].lastName;
+            var email = result[0].email;
+            var suiteNum = result[0].suiteNumber;
+
+            res.render('account', {
+              name: name,
+              email: email,
+              suiteNum: suiteNum,
+            });
+          }
+        });
+      }
+    }
+    /*
+    GET NAME, EMAIL, Suite #, current password
+    */
+  });
+});
+  /*************************************************************************
+   * 
+   *         FOOD BOARD LOGIN/REGISTER FEATURE - SERVER SIDE
+   * 
+   * 
+   *************************************************************************/
 
 
-authRoute.validate(app, passport);
+  authRoute.validate(app, passport);
 
 
 //load passport strategies
@@ -124,12 +168,15 @@ models.sequelize.sync().then(() => {
   console.log(err, "Something went wrong with the Database Update!");
 });
 
-
-
 /*************************************************************************
- * Socketio detects that connection has been made to the server.
- * The connection event is fired, whenever anyone goes to foodboard.ca.
- */
+  * 
+  *         FOOD BOARD REGISTRATION FEATURE - SERVER SIDE
+ 
+ 
+/**
+* Socketio detects that connection has been made to the server.
+* The connection event is fired, whenever anyone goes to foodboard.ca.
+*/
 io.on('connection', (socket) => {
   console.log('user connected');
 
@@ -651,4 +698,4 @@ function getSessionID(clientSessionID) {
   });
 
   return sessionID;
-}
+};

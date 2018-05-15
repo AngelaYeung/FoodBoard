@@ -91,7 +91,7 @@ $(document).ready(function () {
 
 //validate the password
 function validatePassword() {
-  if (document.getElementById("register_pwd").value !== document.getElementById("register_pwd_confirm").value) {
+  if ($("#register_pwd").val() !== $("#register_pwd_confirm").val()) {
     return false;
   } else {
     return true;
