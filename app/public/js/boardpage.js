@@ -1,13 +1,9 @@
-// needs to be declared as a global variable to be in same scope as claimItem()
+// needs to be declared as a global variable to be in same scope as claimItem(), deleteItem()
 var socket;
 
-
-function deleteItem(itemID) {
-    socket.emit('delete item', {
-        id: itemID
-    });
-}
-
+$(window).on('load', () => {
+    window.scroll(0, 10);
+});
 $(document).ready(function () {
     var sessionID = getSessionID('connect.sid');
     console.log('sessionID', sessionID);
@@ -174,6 +170,7 @@ $(document).ready(function () {
      * from the data base. 
      */
     $(window).on('load', () => {
+        
         console.log('Client: page loaded:', sessionID);
         socket.emit('page loaded', {
             sessionID: sessionID,
@@ -182,21 +179,33 @@ $(document).ready(function () {
 
 
     socket.on('load foodboard', (items) => {
-        console.log('AAAAAAAAAAAAAAAAAAA');
+        var role = items.role; // their role as administrator or user
         var userID = items.userID; // whos logged in
         var rows = items.rows;
-
+        console.log("LOAD: ROWS: ", rows);
         for (var i = 0; i < rows.length; i++) {
-            console.log('userID', userID);
-            console.log('rows[i].user', rows[i].Users_userID);
+            console.log('userID: ', userID);
+            console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
             if (rows[i].Users_userID === userID) {
-                console.log("IM RUNNING BUTTON ITEMNOCLAIM");
+                console.log("This is my own post, only render delete.");
                 addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
                     rows[i].foodGroup, rows[i].foodImage);
             } else {
-                console.log("IM RUNNING BUTTON ITEMNODELETE");
-                addNewItemNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-                    rows[i].foodGroup, rows[i].foodImage);
+                console.log("Users dont match.");
+                if (role === 0) {
+                    if (rows[i].Users_claimerUserID) {
+                        addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                            rows[i].foodGroup, rows[i].foodImage);
+                    } else {
+                        console.log("I am an admin and i can claim and delete");
+                        addNewItem(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                            rows[i].foodGroup, rows[i].foodImage);
+                    }
+                } else {
+                    console.log("I am not admin, and can not delete.");
+                    addNewItemNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                        rows[i].foodGroup, rows[i].foodImage);
+                }
             }
         }
     });
@@ -209,7 +218,7 @@ $(document).ready(function () {
      * 
      *************************************************************************/
     socket.on('delete return', (itemID) => {
-        itemDeleted(itemID); //deltes the item
+        itemDeleted(itemID); //deletes the item
     });
 
 
@@ -220,9 +229,44 @@ $(document).ready(function () {
      *************************************************************************/
 
     socket.on('claim return', (itemID) => {
-        itemClaimed(itemID); //.remove() generates error
+        itemClaimed(itemID); 
     });
 
+        /************************************************
+     * 
+     *              Search Feature
+     * 
+     *************************************************/
+
+    /**
+     * Handles search bar clear button toggle
+     */
+    $('#search-bar').on('keyup', (event) => {
+        console.log('searchbar');
+        if ($('#search-bar').val() !== '') {
+            $('#search-bar-btn-reset').show();
+        } else {
+            $('#search-bar-btn-reset').hide();
+        }
+    });
+
+    $('#search-bar-btn-reset').on('click', () => {
+        $('#search-bar-btn-reset').hide();
+    });
+
+    $(window).on('scroll', () => {
+        if ($(window).scrollTop() < 5) {
+            $('#search-bar-container').slideDown(150);
+            $('#card-list').animate({'margin-top':'2%'}, 50, 'linear');
+        } else {
+            $('#search-bar-container').slideUp(150);
+            $('#card-list').animate({'margin-top':'10%'}, 50, 'linear');
+        }
+    });
+
+    $('#search-bar-form').on('submit', (event) => {
+        event.preventDefault();
+    });
 });
 
 
@@ -233,7 +277,6 @@ $(document).ready(function () {
 function itemClaimed(id) {
     $(`#card${id}`).remove();
 };
-
 
 /**
  * Sends emits the item id to the server.
@@ -247,6 +290,13 @@ function claimItem(itemID) {
     });
 };
 
+function deleteItem(itemID) {
+    let sessionID = getSessionID('connect.sid');
+    socket.emit('delete item', {
+        id: itemID,
+        sessionID: sessionID
+    });
+}
 
 /**
  * Gets the session id. 
@@ -563,6 +613,12 @@ function itemDeleted(id) {
     $(`#card${id}`).remove();
 }
 
+
+function deleteItem(itemID) {
+    socket.emit('delete item', {
+        id: itemID
+    });
+}
 
 
 
