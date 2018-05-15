@@ -44,7 +44,6 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`FoodItem` (
   `foodGroup` VARCHAR(45) NOT NULL COMMENT 'Holds the food group of the item',
   `foodExpiryTime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Holds the expiry date of the food item\n',
   `foodImage` VARCHAR(255) NOT NULL COMMENT 'Holds the image of the food item\n',
-<<<<<<< HEAD
   `claimStatus` TINYINT NOT NULL DEFAULT 0 COMMENT 'Holds the \'claimed\' status of the food item\n\n0 = unclaimed\n1 = claimed',
   `Users_userID` INT NOT NULL,
   PRIMARY KEY (`itemID`, `Users_userID`),
@@ -54,8 +53,6 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`FoodItem` (
     REFERENCES `Foodboard`.`Users` (`userID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
-=======
-  PRIMARY KEY (`itemID`));
 
 
 -- -----------------------------------------------------
