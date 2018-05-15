@@ -609,15 +609,6 @@ function itemDeleted(id) {
   $(`#card${id}`).remove();
 }
 
-
-function deleteItem(itemID) {
-  socket.emit('delete item', {
-    id: itemID
-  });
-}
-
-
-
 // Creates a thumbnail when an image has been uploaded
 // function handleFileSelect(evt) {
 //     var files = evt.target.files; // FileList object
