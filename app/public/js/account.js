@@ -1,7 +1,9 @@
 $(document).ready(() => {
+    console.log("Script loaded");
 
     //removes the disabled attribute from the submit button if the input fields are filled and the new passwords are the same
     $("#pw-form").change(() => {
+        console.log("Checking form");
         if (pwFieldsFilled() && validatePassword()) {
             $("#pw-submit").removeClass("disabled");
         };
