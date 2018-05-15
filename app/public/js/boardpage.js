@@ -288,6 +288,7 @@ function claimItem(itemID) {
 
 function deleteItem(itemID) {
   let sessionID = getSessionID('connect.sid');
+  console.log("THIS IS THE SESSION ID: ", sessionID);
   socket.emit('delete item', {
     id: itemID,
     sessionID: sessionID
@@ -608,15 +609,6 @@ function setPostImage(foodCategory, imgName) {
 function itemDeleted(id) {
   $(`#card${id}`).remove();
 }
-
-
-function deleteItem(itemID) {
-  socket.emit('delete item', {
-    id: itemID
-  });
-}
-
-
 
 // Creates a thumbnail when an image has been uploaded
 // function handleFileSelect(evt) {

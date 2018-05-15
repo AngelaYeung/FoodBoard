@@ -201,16 +201,6 @@ io.on('connection', (socket) => {
    */
   socket.on('page loaded', (session) => {
     console.log('Server: page loaded')
-    /** Grab All Food Items from DB */
-
-    // SESSION ID CHECK: GET USER ID
-    // WITH USER ID GET ROLE
-    // ROLE TELLS U WHAT TO LOAD
-    //    if else role = admin render everything 
-    //    else render delete button for only your posts run (checkOwnerPost)
-
-    // select all items from fooditem
-    // 
 
     var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
     connection.query(query, [session.sessionID], (error, rows, fields) => {
@@ -325,7 +315,7 @@ io.on('connection', (socket) => {
     //Declaring variables needed to generate automated delete email
     let sessionID = deletion.sessionID;
     let itemID = deletion.id;
-
+  
     let role
     let posterUserID, posterFirstName, posterSuiteNumber;
     let foodName, foodDescription, foodExpiryTime, foodImage;
@@ -338,9 +328,9 @@ io.on('connection', (socket) => {
         console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
       }
       if (row.length) {
-
+        
         let posterUserID = row[0].Users_userID;
-
+        
         // check to see if the user is an admin or poaster, no email is sent if a post is deleted by an admin
         var checkRole = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
         connection.query(checkRole, [posterUserID], (error, row, field) => {
@@ -378,7 +368,6 @@ io.on('connection', (socket) => {
                   deleteFoodItem(itemID);
 
                   if (!claimerUserID) {
-                    console.log("TEST DELETE: claimerUSERID doesnt exist!");
 
                     //posted food item has not been claimed by anyone, no email necessary
                     io.emit('delete return', (itemID));
@@ -410,10 +399,7 @@ io.on('connection', (socket) => {
             }
           }
         });
-      } else {
-        // user is not currently in a session and therefore should'nt be able to delete a post
-        app.get('/nicetrybud');
-      }
+      } 
     });
   });
 
