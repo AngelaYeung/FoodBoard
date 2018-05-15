@@ -202,26 +202,7 @@ io.on('connection', (socket) => {
               });
             }
           });
-  } else {
-      console.log("user is not in a session.");
-
-      app.get('/', (req, res) => {
-        res.render('home.handlebars')
-      });
-      // var foodboardItems = "SELECT * FROM FoodItem WHERE claimStatus = 0";
-      // connection.query(foodboardItems, (error, rows, fields) => {
-      //   if (error) {
-      //     console.log("Error grabbing food items");
-      //   } else if (!rows.length) {
-      //     console.log("Database is empty.");
-      //   } else {
-      //     console.log("Successfully grabbed food items.");
-      //     console.log(rows);
-
-      //     socket.emit('load foodboardro', rows);
-      //   }
-      // });
-    }
+        }
       }
     });
 
