@@ -73,6 +73,12 @@
     padding-left:0!important;
   }
 
+  /** Position the hamburger icon. */
+  .glyphicon-menu-hamburger {
+    font-size: 18pt;
+    margin-top:-1%;
+    }
+
   .navbar-foodboard img {
     width: 9%;
     margin-top: -8px;
@@ -321,3 +327,19 @@ body {
 .z-depth-1,.btn, .btn.disabled:active, .btn.disabled:focus, .btn.disabled:hover, .btn:disabled:active, .btn:disabled:focus, .btn:disabled:hover, .card, .pagination .page-item.active .page-link, .badge, .modal-dialog.cascading-modal .modal-c-tabs .nav-tabs, .modal-dialog.modal-notify .modal-header, .media .media-left img {
   -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); }
+
+  /** Remove outline for buttons on focus. */
+.btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
+  outline: none;
+}
+
+/** Remove background color for the hamburger button when active */
+.btn-primary.active.focus, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary:active.focus, .btn-primary:active:focus, .btn-primary:active:hover, .open>.dropdown-toggle.btn-primary.focus, .open>.dropdown-toggle.btn-primary:focus, .open>.dropdown-toggle.btn-primary:hover {
+
+  outline: none;
+
+}
+
+.glyphicon-menu-hamburger:active {
+  box-shadow:none;
+}

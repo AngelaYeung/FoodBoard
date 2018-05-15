@@ -54,7 +54,6 @@ CREATE TABLE IF NOT EXISTS `Foodboard`.`FoodItem` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
-
 -- -----------------------------------------------------
 -- Table `Foodboard`.`UserList`
 -- -----------------------------------------------------
