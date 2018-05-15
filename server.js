@@ -168,7 +168,7 @@ io.on('connection', (socket) => {
     var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
     connection.query(query, [session.sessionID], (error, rows, fields) => {
       if (error) {
-        console.log(Date.now(), 'Error', error);
+        console.log(new Date(Date.now()), 'Error selecting sessionID in load feature: ', error);
       } else {
         if (rows.length) {
 
@@ -177,7 +177,7 @@ io.on('connection', (socket) => {
           var checkRole = "SELECT role FROM Users WHERE userID = ? LIMIT 1";
           connection.query(checkRole, [userID], (error, row, field) => {
             if (error) {
-              console.log("Error checking for role of user:", error);
+              console.log(new Date(Date.now()), "Error checking for role of user:", error);
             } else {
               var role = row[0].role;
 
@@ -185,7 +185,7 @@ io.on('connection', (socket) => {
               var allFoodboardItems = "SELECT * FROM FoodItem";
               connection.query(allFoodboardItems, (error, rows, fields) => {
                 if (error) {
-                  console.log("Error grabbing food items");
+                  console.log(new Date(Date.now()), "Error grabbing food items");
                 } else if (rows.length == 0) {
                   console.log("Database is empty.");
                 } else {
@@ -242,7 +242,7 @@ socket.on('post item', (item) => {
   var query = `SELECT sessionID, Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${item.sessionID}') LIMIT 1`;
   connection.query(query, (error, rows, fields) => {
     if (error) {
-      console.log(error);
+      console.log(new Date(Date.now()), "Error selecting sessionID in post feature", error);
     }
 
     if (rows.length) {
@@ -260,7 +260,7 @@ socket.on('post item', (item) => {
       connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage, userID, null], (error, rows, field) => {
         if (error) {
           // return error if insertion fail
-          console.log("Error inserting" + error);
+          console.log(new Date(Date.now()), "Error inserting" + error);
           console.log(error);
         } else {
           // else return the updated table
@@ -308,7 +308,7 @@ socket.on('delete item', (deletion) => {
   var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
   connection.query(query, [sessionID], (error, row, fields) => {
     if (error) {
-      console.log("Error occured while inquiring for sessionID", error);
+      console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
     }
     if (row.length) {
 
@@ -318,7 +318,7 @@ socket.on('delete item', (deletion) => {
       var checkRole = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
       connection.query(checkRole, [posterUserID], (error, row, field) => {
         if (error) {
-          console.log("Error checking for role of user:", error);
+          console.log(new Date(Date.now()), "Error checking for role of user:", error);
         } else {
           console.log("Successfully inquired for poster's information: ", row);
           role = row[0].role;
@@ -338,7 +338,7 @@ socket.on('delete item', (deletion) => {
             var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
             connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
               if (error) {
-                console.log("Error querying from FoodItem Table: ", error);
+                console.log(new Date(Date.now()), "Error querying from FoodItem Table: ", error);
               } else {
                 console.log("Successfully obtained food item info from FoodItem Table");
                 foodName = row[0].foodName;
@@ -362,7 +362,7 @@ socket.on('delete item', (deletion) => {
                   var claimerQuery = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
                   connection.query(claimerQuery, [claimerUserID], (error, row, field) => {
                     if (error) {
-                      console.log("Error checking for role of user:", error);
+                      console.log(new Date(Date.now()), "Error checking for role of user:", error);
                     } else {
                       console.log("Successfully inquired for claimer's information.")
                       claimerEmail = row[0].email;
@@ -413,7 +413,7 @@ socket.on('claim item', (claim) => {
   var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
   connection.query(query, [sessionID], (error, row, fields) => {
     if (error) {
-      console.log("Error occured while inquiring for sessionID", error);
+      console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
     }
 
     if (row.length) {
@@ -424,7 +424,7 @@ socket.on('claim item', (claim) => {
       connection.query(setClaimerID, [claimerUserID, itemID], (error, row, field) => {
         if (error) {
           //return error if update claimerID into failed
-          console.log("Error updating claimerID into FoodItem table: ", error);
+          console.log(new Date(Date.now()), "Error updating claimerID into FoodItem table: ", error);
         } else {
           // else return the updated table
           console.log("Successfully updated claimerID into FoodItem table.");
@@ -433,7 +433,7 @@ socket.on('claim item', (claim) => {
           connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
             if (error) {
               //error occured while attempting to query FoodItem Table
-              console.log("Error querying from FoodItem Table to get ");
+              console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
             } else {
               console.log("Successfully obtained Poster's userID from FoodItem Table", row);
               posterUserID = row[0].Users_userID;
@@ -446,7 +446,7 @@ socket.on('claim item', (claim) => {
               connection.query(usersTableQuery, [posterUserID, claimerUserID], (error, row, field) => {
                 if (error) {
                   //return error if selection fail
-                  console.log("Error grabbing user of claimed item: ", error);
+                  console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
                 } else {
                   //else return the users information
                   console.log("Successfully grabbed user of claimed item. ", row);
