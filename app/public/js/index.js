@@ -59,10 +59,26 @@ $(document).ready(function () {
     });
 
     //closes modal when clicking back button
-    // $(window).on("popstate", this.handleBackpress);
-    // document.addEventListener("backbutton", this.handleBackpress, false);
+    $(window).on("popstate", this.handleBackpress);
+    document.addEventListener("backbutton", this.handleBackpress, false);
 
   });
+
+  //change navbar colour green when opening dropdown
+  $(function () {
+    $('.navbar-color-change').on('click', () => {
+      if ($('#color-change').attr('aria-expanded') === 'false') {
+        $('.navbar-fixed-top').css("background-color", "#4EB266");
+      } else {
+        $('.navbar-fixed-top').css("background-color", "transparent");
+        $('.navbar-fixed-top').css("transition-property", "none");
+      }
+    });
+  });
+
+
+
+
 
 
   //Change password field red if password is incorrect
@@ -91,18 +107,18 @@ $(document).ready(function () {
 
 //validate the password
 function validatePassword() {
-  if (document.getElementById("register_pwd").value !== document.getElementById("register_pwd_confirm").value) {
+  if ($("#register_pwd").val() !== $("#register_pwd_confirm").val()) {
     return false;
   } else {
     return true;
   }
 }
 
-// //closes modal when clicking back button
-// function handleBackpress(e) {
-//   e.preventDefault();
-//   e.stopPropagation();
+//closes modal when clicking back button
+function handleBackpress(e) {
+  e.preventDefault();
+  e.stopPropagation();
 
-//   $(".modal").modal("hide");
-//   $(".modal-backdrop").remove();
-// }
+  $(".modal").modal("hide");
+  $(".modal-backdrop").remove();
+}
