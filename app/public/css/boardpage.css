@@ -1,6 +1,7 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  height:870px;
 }
 
 @media screen and (max-width: 480px) {
@@ -20,7 +21,7 @@ body {
 
   /** Add spacing from navbar to the top of the first card */
   #card-list {
-    padding-top : 12.5%;
+    padding-top : 2.5%;
   }
 
   .open >.dropdown-menu{
@@ -84,6 +85,48 @@ body {
     font-size:1.4em;
     margin-top: 25%;  
   }
+
+  #search-bar-container {
+    padding-top: 17%;
+    margin: 0 auto;
+    width: 77%;
+    display:none;
+  }
+  
+  
+  #search-bar {
+    border: 0px;
+    border-bottom: 1px solid #7D7D7D;
+    background: transparent;
+    outline: none;
+    color: #7D7D7D;
+    width: 20em;
+  }
+  
+  #search-bar-btn {
+    border: 0;
+    width: 25px;
+    outline: none;
+    background: transparent;
+  }
+  
+  #search-bar-btn img {
+    width: 100%;
+  }
+  
+  #search-bar-btn-reset {
+    border: 0;
+    width: 20px;
+    outline: none;
+    background: transparent;
+    display: inline-block;
+    margin-left: -20px;
+    display: none;
+  }
+  
+  #search-bar-btn-reset img {
+    width: 100%;
+  }
 }
 
 .collapse.in {
@@ -132,7 +175,6 @@ Styling the location and layout of the expandable text for a card.
 }
 
 .contentDiv {
-  margin-right: 100px;
   visibility: visible;
 }
 
@@ -174,7 +216,6 @@ Styling the location and layout of the expandable text for a card.
   height: 40px;
   padding: 1%;
   margin-bottom: 6%;
-  margin-right: -33%;
   border-color: #4EB266;
   background: linear-gradient(-180deg, #4EB266, #3F9152 );
   border-radius: 5px;
@@ -192,7 +233,6 @@ Styling the location and layout of the expandable text for a card.
   height: 40px;
   padding: 1%;
   margin-bottom: 6%;
-  margin-right: -33%;
   border-color: red;
   background: linear-gradient(-180deg, rgb(180, 15, 15), darkred );
   border-radius: 5px;
@@ -222,3 +262,4 @@ Styling the location and layout of the expandable text for a card.
 .glyphicon-menu-hamburger:active {
   box-shadow:none;
 }
+
