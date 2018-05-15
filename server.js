@@ -172,7 +172,7 @@ io.on('connection', (socket) => {
       } else {
         if (rows.length) {
 
-          // check to see if the user is an admin so we can load the full table for their session
+          // check to see if the user is an admin
           var userID = rows[0].Users_userID;
           var checkRole = "SELECT role FROM Users WHERE userID = ? LIMIT 1";
           connection.query(checkRole, [userID], (error, row, field) => {
@@ -181,7 +181,7 @@ io.on('connection', (socket) => {
             } else {
               var role = row[0].role;
 
-              // User is an administrator, load all posts including claimed ones
+              // load all posts to be filtered later in boardpage.js
               var allFoodboardItems = "SELECT * FROM FoodItem";
               connection.query(allFoodboardItems, (error, rows, fields) => {
                 if (error) {
