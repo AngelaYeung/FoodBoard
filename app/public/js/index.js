@@ -64,6 +64,22 @@ $(document).ready(function () {
 
   });
 
+  //change navbar colour green when opening dropdown
+  $(function () {
+    $('.navbar-color-change').on('click', () => {
+      if ($('#color-change').attr('aria-expanded') === 'false') {
+        $('.navbar-fixed-top').css("background-color", "#4EB266");
+      } else {
+        $('.navbar-fixed-top').css("background-color", "transparent");
+        $('.navbar-fixed-top').css("transition-property", "none");
+      }
+    });
+  });
+
+
+
+
+
 
   //Change password field red if password is incorrect
   $("#register_pwd_confirm").on('change', (e) => {
