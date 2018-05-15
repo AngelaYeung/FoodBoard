@@ -1,6 +1,9 @@
 // needs to be declared as a global variable to be in same scope as claimItem(), deleteItem()
 var socket;
 
+$(window).on('load', () => {
+    window.scroll(0, 10);
+});
 $(document).ready(function () {
     var sessionID = getSessionID('connect.sid');
     console.log('sessionID', sessionID);
@@ -167,6 +170,7 @@ $(document).ready(function () {
      * from the data base. 
      */
     $(window).on('load', () => {
+        
         console.log('Client: page loaded:', sessionID);
         socket.emit('page loaded', {
             sessionID: sessionID,
@@ -228,6 +232,41 @@ $(document).ready(function () {
         itemClaimed(itemID); 
     });
 
+        /************************************************
+     * 
+     *              Search Feature
+     * 
+     *************************************************/
+
+    /**
+     * Handles search bar clear button toggle
+     */
+    $('#search-bar').on('keyup', (event) => {
+        console.log('searchbar');
+        if ($('#search-bar').val() !== '') {
+            $('#search-bar-btn-reset').show();
+        } else {
+            $('#search-bar-btn-reset').hide();
+        }
+    });
+
+    $('#search-bar-btn-reset').on('click', () => {
+        $('#search-bar-btn-reset').hide();
+    });
+
+    $(window).on('scroll', () => {
+        if ($(window).scrollTop() < 5) {
+            $('#search-bar-container').slideDown(150);
+            $('#card-list').animate({'margin-top':'2%'}, 50, 'linear');
+        } else {
+            $('#search-bar-container').slideUp(150);
+            $('#card-list').animate({'margin-top':'10%'}, 50, 'linear');
+        }
+    });
+
+    $('#search-bar-form').on('submit', (event) => {
+        event.preventDefault();
+    });
 });
 
 
@@ -574,6 +613,12 @@ function itemDeleted(id) {
     $(`#card${id}`).remove();
 }
 
+
+function deleteItem(itemID) {
+    socket.emit('delete item', {
+        id: itemID
+    });
+}
 
 
 
