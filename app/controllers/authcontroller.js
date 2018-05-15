@@ -27,7 +27,7 @@ exports.logout = (req, res) => {
         console.log("Successful deletion of sessionID from Sessions.");
       }
     });
-    res.redirect('/')
+    res.redirect('/');
 
   });
 };
