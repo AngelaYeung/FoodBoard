@@ -68,9 +68,9 @@ app.set('view engine', 'handlebars');
 /**
  * Renders the homepage when you first open the port
  */
-app.get('/', (req, res) => {
-  res.render('home.handlebars');
-});
+// app.get('/', (req, res) => {
+//   res.render('home.handlebars');
+// });
 
 app.get('/snake', (req, res) => {
   res.render('snake');
@@ -82,6 +82,24 @@ app.get('/boardpagero', (req, res) => {
 
 app.get('/boardpagero_home', (req, res) => {
   res.render('boardpagero_home');
+});
+
+app.get('/', (req, res) => {
+
+  var query = `SELECT sessionID, Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${req.sessionID}') LIMIT 1`;
+  connection.query(query, (error, rows, fields) => {
+    if (error) {
+      console.log(new Date(Date.now()), 'Error:', error);
+    } else {
+
+      if (rows.length > 0) {
+        res.render('home_success');
+      } else {
+        res.render('home');
+      }
+    }
+  });
+
 });
 
 /*************************************************************************

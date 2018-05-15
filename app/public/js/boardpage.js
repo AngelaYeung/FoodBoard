@@ -323,29 +323,37 @@ function addNewItemNoDelete(id, name, description, dateTime, foodGroup, img) {
     console.log("food category" + foodGroup);
     console.log(img);
 
+    var claimFormDiv = document.createElement('div');
+    claimFormDiv.setAttribute('class', 'claimFormDiv');
+
+
     var claimForm = document.createElement("form");
     claimForm.setAttribute("class", "claim-form");
     claimForm.setAttribute("action", "javascript:void(0);")
 
     var claimButton = document.createElement("input");
     claimButton.setAttribute("id", `${id}`);
-    claimButton.setAttribute("class", "claim-button");
+    claimButton.setAttribute("class", "claim-button btn");
     claimButton.setAttribute("type", "button");
-    claimButton.setAttribute("value", "Claim");
+    claimButton.setAttribute("value", "CLAIM");
     claimButton.setAttribute("onclick", "claimItem(this.id)");
 
     $(cardDiv).append(imageDiv, headerDiv, contentDiv);
     imageDiv.appendChild(foodImg);
 
+    claimFormDiv.appendChild(claimForm);
+    claimForm.appendChild(claimButton);
+
     $(contentDiv).append(toggleDiv);
     $(headerDiv).append(textDiv, buttonDiv);
-    $(toggleDiv).append(foodCategory, foodDescription, claimForm);
+    $(toggleDiv).append(foodCategory, foodDescription, claimFormDiv);
 
+
+    
     buttonDiv.appendChild(toggleButton);
     textDiv.appendChild(foodName);
     textDiv.appendChild(dateText);
 
-    claimForm.appendChild(claimButton);
     $("#card-list").prepend(cardDiv);
 
     /** Clearing Forms */
@@ -417,14 +425,14 @@ function addNewItem(id, name, description, dateTime, foodGroup, img) {
     claimButton.setAttribute("id", `${id}`);
     claimButton.setAttribute("class", "claim-button");
     claimButton.setAttribute("type", "button");
-    claimButton.setAttribute("value", "Claim");
+    claimButton.setAttribute("value", "CLAIM");
     claimButton.setAttribute("onclick", "claimItem(this.id)");
 
     var deleteButton = document.createElement("input");
     deleteButton.setAttribute("id", `${id}`);
     deleteButton.setAttribute('class', 'delete-button');
     deleteButton.setAttribute("type", "button");
-    deleteButton.setAttribute("value", "Delete");
+    deleteButton.setAttribute("value", "DELETE");
     deleteButton.setAttribute("onclick", "deleteItem(this.id)");
 
     $(cardDiv).append(imageDiv, headerDiv, contentDiv);
@@ -506,7 +514,7 @@ function addNewItemNoClaim(id, name, description, dateTime, foodGroup, img) {
     deleteButton.setAttribute("id", `${id}`);
     deleteButton.setAttribute('class', 'delete-button');
     deleteButton.setAttribute("type", "button");
-    deleteButton.setAttribute("value", "Delete");
+    deleteButton.setAttribute("value", "DELETE");
     deleteButton.setAttribute("onclick", "deleteItem(this.id)");
 
     $(cardDiv).append(imageDiv, headerDiv, contentDiv);
@@ -514,8 +522,9 @@ function addNewItemNoClaim(id, name, description, dateTime, foodGroup, img) {
 
     $(contentDiv).append(toggleDiv);
     $(headerDiv).append(textDiv, buttonDiv);
-    $(toggleDiv).append(foodCategory, foodDescription, claimForm);
+    $(toggleDiv).append(foodCategory, foodDescription);
 
+    foodDescription.appendChild(claimForm);
     buttonDiv.appendChild(toggleButton);
     textDiv.appendChild(foodName);
     textDiv.appendChild(dateText);
