@@ -229,7 +229,7 @@ io.on('connection', (socket) => {
               var role = row[0].role;
 
               // load all posts to be filtered later in boardpage.js
-              var allFoodboardItems = "SELECT * FROM FoodItem";
+              var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
               connection.query(allFoodboardItems, (error, rows, fields) => {
                 if (error) {
                   console.log(new Date(Date.now()), "Error grabbing food items");
