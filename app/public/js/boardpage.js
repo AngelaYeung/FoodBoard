@@ -1,4 +1,4 @@
-// needs to be declared as a global variable to be in same scope as claimItem()
+// needs to be declared as a global variable to be in same scope as claimItem(), deleteItem()
 var socket;
 
 $(window).on('load', () => {
@@ -179,21 +179,33 @@ $(document).ready(function () {
 
 
     socket.on('load foodboard', (items) => {
-        console.log('AAAAAAAAAAAAAAAAAAA');
+        var role = items.role; // their role as administrator or user
         var userID = items.userID; // whos logged in
         var rows = items.rows;
-
+        console.log("LOAD: ROWS: ", rows);
         for (var i = 0; i < rows.length; i++) {
-            console.log('userID', userID);
-            console.log('rows[i].user', rows[i].Users_userID);
+            console.log('userID: ', userID);
+            console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
             if (rows[i].Users_userID === userID) {
-                console.log("IM RUNNING BUTTON ITEMNOCLAIM");
+                console.log("This is my own post, only render delete.");
                 addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
                     rows[i].foodGroup, rows[i].foodImage);
             } else {
-                console.log("IM RUNNING BUTTON ITEMNODELETE");
-                addNewItemNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-                    rows[i].foodGroup, rows[i].foodImage);
+                console.log("Users dont match.");
+                if (role === 0) {
+                    if (rows[i].Users_claimerUserID) {
+                        addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                            rows[i].foodGroup, rows[i].foodImage);
+                    } else {
+                        console.log("I am an admin and i can claim and delete");
+                        addNewItem(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                            rows[i].foodGroup, rows[i].foodImage);
+                    }
+                } else {
+                    console.log("I am not admin, and can not delete.");
+                    addNewItemNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                        rows[i].foodGroup, rows[i].foodImage);
+                }
             }
         }
     });
@@ -206,7 +218,7 @@ $(document).ready(function () {
      * 
      *************************************************************************/
     socket.on('delete return', (itemID) => {
-        itemDeleted(itemID); //deltes the item
+        itemDeleted(itemID); //deletes the item
     });
 
 
@@ -217,7 +229,7 @@ $(document).ready(function () {
      *************************************************************************/
 
     socket.on('claim return', (itemID) => {
-        itemClaimed(itemID); //.remove() generates error
+        itemClaimed(itemID); 
     });
 
         /************************************************
@@ -266,7 +278,6 @@ function itemClaimed(id) {
     $(`#card${id}`).remove();
 };
 
-
 /**
  * Sends emits the item id to the server.
  * @param {number} itemID 
@@ -279,6 +290,13 @@ function claimItem(itemID) {
     });
 };
 
+function deleteItem(itemID) {
+    let sessionID = getSessionID('connect.sid');
+    socket.emit('delete item', {
+        id: itemID,
+        sessionID: sessionID
+    });
+}
 
 /**
  * Gets the session id. 
