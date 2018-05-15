@@ -7,6 +7,7 @@
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex; 
+    border-radius: 2px;
 }
 
 .modal-dialog.tabbed-modal .nav-tabs li {
@@ -18,11 +19,13 @@
 .modal-dialog.tabbed-modal .nav-tabs li a {
     text-align: center; 
     margin: 0;
+    border-radius: 2px;
 
 }
 
 .modal-content{
-  border-radius: 0;
+  border-radius: 2px;
+  border: 0px;
 }
 
 .nav-tabs> li > a{
