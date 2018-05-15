@@ -182,38 +182,26 @@ $(document).ready(function () {
         for (var i = 0; i < rows.length; i++) {
             console.log('userID: ', userID);
             console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
-            if (role === 0 && rows[i].Users_userID === userID) {
-                console.log("User has admin priveleges and is loading their own posted item.");
+            if (rows[i].Users_userID === userID) {
+                console.log("This is my own post, only render delete.");
                 addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
                     rows[i].foodGroup, rows[i].foodImage);
-
-            } else if (role === 0 && rows[i].Users_userID !== userID && rows[i].Users_claimerUserID) {
-                console.log("User has admin priveleges and is loading someone else's post that they've already claimed.");
-                addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-                    rows[i].foodGroup, rows[i].foodImage);
-
-            } else if (role === 0 && rows[i].Users_userID !== userID) {
-                console.log("User has admin priveleges and is loading someone else's post.");
-                addNewItem(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-                    rows[i].foodGroup, rows[i].foodImage);
-
-            } else if (rows[i].Users_claimerUserID === userID) {
-                console.log("User has claimed this post, skip load. Should we add an unclaim button?");
-                continue;
-
-            } else if (rows[i].Users_userID !== userID && rows[i].Users_claimerUserID) {
-                console.log("This post has been claimed by someone else, skip load.");
-                continue;
-
-            } else if (rows[i].Users_userID === userID) {
-                console.log("This is my post");
-                addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-                    rows[i].foodGroup, rows[i].foodImage);
-                    
             } else {
-                console.log("This is someones post");
-                addNewItemNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-                    rows[i].foodGroup, rows[i].foodImage);
+                console.log("Users dont match.");
+                if (role === 0) {
+                    if (rows[i].Users_claimerUserID) {
+                        addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                            rows[i].foodGroup, rows[i].foodImage);
+                    } else {
+                        console.log("I am an admin and i can claim and delete");
+                        addNewItem(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                            rows[i].foodGroup, rows[i].foodImage);
+                    }
+                } else {
+                    console.log("I am not admin, and can not delete.");
+                    addNewItemNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+                        rows[i].foodGroup, rows[i].foodImage);
+                }
             }
         }
     });
