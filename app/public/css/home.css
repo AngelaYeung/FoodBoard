@@ -153,9 +153,15 @@ body {
   border-style: none;
   padding: 0;
   box-shadow: none;
+  top:3px;
 }
 .dropdown-menu {
-  width: 100%;
+  width: 107%;
+  margin-top: 2%;
+  left: -13px;
+  border-radius: 0;
+  background-color: #4EB266;
+  border-top: none;
 }
 
 .navbar-brand .navbar-foodboard {
@@ -165,6 +171,9 @@ body {
   font-weight:bold;
 }
 
+.dropdown-backdrop {
+  display:none;
+}
 
 
 /* Navbar link properties */
@@ -217,6 +226,11 @@ body {
   font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size:14pt;
   
+}
+
+.dropdown-menu>li>a{
+  color: white;
+  font-size: 14pt;
 }
 
 /* Customize jumbotron (how-it-works) */

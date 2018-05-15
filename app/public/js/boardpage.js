@@ -2,271 +2,267 @@
 var socket;
 
 $(window).on('load', () => {
-    window.scroll(0, 10);
+  window.scroll(0, 10);
 });
 $(document).ready(function () {
-    var sessionID = getSessionID('connect.sid');
-    console.log('sessionID', sessionID);
+  var sessionID = getSessionID('connect.sid');
+  console.log('sessionID', sessionID);
 
-    socket = io();
-    const uploader = new SocketIOFileUpload(socket);
-    var image_name;
+  socket = io();
+  const uploader = new SocketIOFileUpload(socket);
+  var image_name;
 
-    /*************************************************************************
-     * 
-     *         FOOD BOARD POST FEATURE - CLIENT SIDE
-     * 
-     *************************************************************************/
+  /*************************************************************************
+   * 
+   *         FOOD BOARD POST FEATURE - CLIENT SIDE
+   * 
+   *************************************************************************/
 
-    // Checks file image submitted in form for correct type when inputted.
-    if (window.File && window.FileReader && window.FormData) {
+  // Checks file image submitted in form for correct type when inputted.
+  if (window.File && window.FileReader && window.FormData) {
 
-        $('#file-input').on('change', (e) => {
-            image_name = Date.now();
-            var file = e.target.files[0];
-            if (file) {
-                if (/^image\//i.test(file.type)) {
-                    readFile(file);
-                } else {
-                    console.log('Not a valid Image');
-                    // DOM EVENT TO NOTIFY USER
-                }
-            }
-        });
+    $('#file-input').on('change', (e) => {
+      image_name = Date.now();
+      var file = e.target.files[0];
+      if (file) {
+        if (/^image\//i.test(file.type)) {
+          readFile(file);
+        } else {
+          console.log('Not a valid Image');
+          // DOM EVENT TO NOTIFY USER
+        }
+      }
+    });
+
+  } else {
+    console.log("File Upload Not Supported");
+    // DOM EVENT TO NOTIFY USER
+  }
+
+  /**
+   * Reads the image file as a data URL
+   * @param {} file   the image file uploaded in the form 
+   */
+  function readFile(file) {
+    var reader = new FileReader();
+
+    reader.onloadend = function () {
+      processFile(reader.result, file.type);
+    }
+
+    reader.onerror = function () {
+      console.log('There was an error reading this file');
+    }
+
+    reader.readAsDataURL(file);
+  }
+
+  /**
+   * Resizes the image the image file
+   * @param {*} dataURL   the dataURL of the image
+   * @param {*} fileType  the fileType of the file
+   */
+  function processFile(dataURL, fileType) {
+    var maxWidth = 325;
+    var maxHeight = 400;
+
+    var image = new Image();
+    image.src = dataURL;
+
+    image.onload = function () {
+      var width = image.width;
+      var height = image.height;
+      var shouldResize = (width > maxWidth) || (height > maxHeight);
+
+      if (!shouldResize) {
+        sendFile(dataURL);
+        return;
+      }
+
+      var newWidth;
+      var newHeight;
+
+      if (width > height) {
+        newHeight = height * (maxWidth / width);
+        newWidth = maxWidth;
+      } else {
+        newWidth = width * (maxHeight / height);
+        newHeight = maxHeight;
+      }
+
+      var canvas = document.createElement('canvas');
+
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+
+      var context = canvas.getContext('2d');
+
+      context.drawImage(this, 0, 0, newWidth, newHeight);
+
+      canvas.toBlob((blob) => {
+        console.log(blob);
+        sendFile(blob);
+      }, fileType);
+
+    };
+
+    image.onerror = function () {
+      console.log('There was an error processing your file!');
+      // DOM EVENT TO SHOW THAT SOMETHING WENT WRONG
+    };
+  }
+
+  function sendFile(fileData) {
+    var formData = new FormData();
+
+    var png = 'png';
+
+    formData.append('imageData', fileData);
+    console.log('Uploaded');
+    uploader.listenOnSubmitBlob(document.getElementById('submit'), fileData, `${image_name}.${png}`);
+  }
+
+
+  /** Uploads the image in form to server, and grabs its name */
+  // uploader.listenOnSubmit(document.getElementById('submit'), document.getElementById('file-input'));
+
+  // uploader.addEventListener('start', (event) => {
+  //   image_name = "test.png";
+  // });
+
+
+  /** Sends data from post-form to server.js */
+  $('#submit').click(function () {
+    console.log('Submit triggered!');
+
+    if ($('#itemModal').is(':visible')) {
+      $('#itemModal').modal('toggle');
+    }
+
+    if ($('#name').val().toLowerCase() === 'ilovefoodboard') {
+      window.location.href = ('/snake');
 
     } else {
-        console.log("File Upload Not Supported");
-        // DOM EVENT TO NOTIFY USER
+      socket.emit('post item', {
+        name: $('#name').val(),
+        description: $('#description').val(),
+        dateTime: $('#datetimepicker').val(),
+        foodgrouping: $('input[name=foodgrouping]:checked').val(),
+        image: `${image_name}.png`,
+        sessionID: sessionID,
+      });
     }
+    return false;
+  });
 
-    /**
-     * Reads the image file as a data URL
-     * @param {} file   the image file uploaded in the form 
-     */
-    function readFile(file) {
-        var reader = new FileReader();
+  socket.on('post item return', (item) => {
+    addNewItemNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
+  });
 
-        reader.onloadend = function () {
-            processFile(reader.result, file.type);
-        }
+  /*************************************************************************
+   * 
+   *         FOOD BOARD LOAD FEATURE - CLIENT SIDE
+   * 
+   *************************************************************************/
 
-        reader.onerror = function () {
-            console.log('There was an error reading this file');
-        }
+  /**
+   * When the window is loaded, trigger websocket event for server to fetch foodboard posts
+   * from the data base. 
+   */
+  $(window).on('load', () => {
 
-        reader.readAsDataURL(file);
-    }
-
-    /**
-     * Resizes the image the image file
-     * @param {*} dataURL   the dataURL of the image
-     * @param {*} fileType  the fileType of the file
-     */
-    function processFile(dataURL, fileType) {
-        var maxWidth = 325;
-        var maxHeight = 400;
-
-        var image = new Image();
-        image.src = dataURL;
-
-        image.onload = function () {
-            var width = image.width;
-            var height = image.height;
-            var shouldResize = (width > maxWidth) || (height > maxHeight);
-
-            if (!shouldResize) {
-                sendFile(dataURL);
-                return;
-            }
-
-            var newWidth;
-            var newHeight;
-
-            if (width > height) {
-                newHeight = height * (maxWidth / width);
-                newWidth = maxWidth;
-            } else {
-                newWidth = width * (maxHeight / height);
-                newHeight = maxHeight;
-            }
-
-            var canvas = document.createElement('canvas');
-
-            canvas.width = newWidth;
-            canvas.height = newHeight;
-
-            var context = canvas.getContext('2d');
-
-            context.drawImage(this, 0, 0, newWidth, newHeight);
-
-            canvas.toBlob((blob) => {
-                console.log(blob);
-                sendFile(blob);
-            }, fileType);
-
-        };
-
-        image.onerror = function () {
-            console.log('There was an error processing your file!');
-            // DOM EVENT TO SHOW THAT SOMETHING WENT WRONG
-        };
-    }
-
-    function sendFile(fileData) {
-        var formData = new FormData();
-
-        var png = 'png';
-
-        formData.append('imageData', fileData);
-        console.log('Uploaded');
-        uploader.listenOnSubmitBlob(document.getElementById('submit'), fileData, `${image_name}.${png}`);
-    }
+    console.log('Client: page loaded:', sessionID);
+    socket.emit('page loaded', {
+      sessionID: sessionID,
+    });
+  });
 
 
-    /** Uploads the image in form to server, and grabs its name */
-    // uploader.listenOnSubmit(document.getElementById('submit'), document.getElementById('file-input'));
-
-    // uploader.addEventListener('start', (event) => {
-    //   image_name = "test.png";
-    // });
-
-
-    /** Sends data from post-form to server.js */
-    $('#submit').click(function () {
-        console.log('Submit triggered!');
-
-        if ($('#itemModal').is(':visible')) {
-            $('#itemModal').modal('toggle');
-        }
-
-        if ($('#name').val().toLowerCase() === 'ilovefoodboard') {
-            window.location.href = ('/snake');
-
+  socket.on('load foodboard', (items) => {
+    var role = items.role; // their role as administrator or user
+    var userID = items.userID; // whos logged in
+    var rows = items.rows;
+    console.log("LOAD: ROWS: ", rows);
+    for (var i = 0; i < rows.length; i++) {
+      console.log('userID: ', userID);
+      console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
+      if (role === 0) {
+        if (rows[i].Users_userID === userID) {
+          addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+            rows[i].foodGroup, rows[i].foodImage);
         } else {
-            socket.emit('post item', {
-                name: $('#name').val(),
-                description: $('#description').val(),
-                dateTime: $('#datetimepicker').val(),
-                foodgrouping: $('input[name=foodgrouping]:checked').val(),
-                image: `${image_name}.png`,
-                sessionID: sessionID,
-            });
+          addNewItem(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+            rows[i].foodGroup, rows[i].foodImage);
         }
-        return false;
-    });
-
-    socket.on('post item return', (item) => {
-        addNewItemNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
-    });
-
-    /*************************************************************************
-     * 
-     *         FOOD BOARD LOAD FEATURE - CLIENT SIDE
-     * 
-     *************************************************************************/
-
-    /**
-     * When the window is loaded, trigger websocket event for server to fetch foodboard posts
-     * from the data base. 
-     */
-    $(window).on('load', () => {
-        
-        console.log('Client: page loaded:', sessionID);
-        socket.emit('page loaded', {
-            sessionID: sessionID,
-        });
-    });
-
-
-    socket.on('load foodboard', (items) => {
-        var role = items.role; // their role as administrator or user
-        var userID = items.userID; // whos logged in
-        var rows = items.rows;
-        console.log("LOAD: ROWS: ", rows);
-        for (var i = 0; i < rows.length; i++) {
-            console.log('userID: ', userID);
-            console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
-            if (rows[i].Users_userID === userID) {
-                console.log("This is my own post, only render delete.");
-                addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-                    rows[i].foodGroup, rows[i].foodImage);
-            } else {
-                console.log("Users dont match.");
-                if (role === 0) {
-                    if (rows[i].Users_claimerUserID) {
-                        addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-                            rows[i].foodGroup, rows[i].foodImage);
-                    } else {
-                        console.log("I am an admin and i can claim and delete");
-                        addNewItem(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-                            rows[i].foodGroup, rows[i].foodImage);
-                    }
-                } else {
-                    console.log("I am not admin, and can not delete.");
-                    addNewItemNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-                        rows[i].foodGroup, rows[i].foodImage);
-                }
-            }
-        }
-    });
-
-
-
-    /*************************************************************************
-     * 
-     *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
-     * 
-     *************************************************************************/
-    socket.on('delete return', (itemID) => {
-        itemDeleted(itemID); //deletes the item
-    });
-
-
-    /*************************************************************************
-     * 
-     *         FOOD BOARD CLAIM FEATURE - CLIENT SIDE
-     * 
-     *************************************************************************/
-
-    socket.on('claim return', (itemID) => {
-        itemClaimed(itemID); 
-    });
-
-        /************************************************
-     * 
-     *              Search Feature
-     * 
-     *************************************************/
-
-    /**
-     * Handles search bar clear button toggle
-     */
-    $('#search-bar').on('keyup', (event) => {
-        console.log('searchbar');
-        if ($('#search-bar').val() !== '') {
-            $('#search-bar-btn-reset').show();
+      } else {
+        if (rows[i].Users_userID === userID) {
+          addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+            rows[i].foodGroup, rows[i].foodImage);
         } else {
-            $('#search-bar-btn-reset').hide();
+          addNewItemNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+            rows[i].foodGroup, rows[i].foodImage);
         }
-    });
+      }
+    }
+  });
 
-    $('#search-bar-btn-reset').on('click', () => {
-        $('#search-bar-btn-reset').hide();
-    });
 
-    $(window).on('scroll', () => {
-        if ($(window).scrollTop() < 5) {
-            $('#search-bar-container').slideDown(150);
-            $('#card-list').animate({'margin-top':'2%'}, 50, 'linear');
-        } else {
-            $('#search-bar-container').slideUp(150);
-            $('#card-list').animate({'margin-top':'10%'}, 50, 'linear');
-        }
-    });
 
-    $('#search-bar-form').on('submit', (event) => {
-        event.preventDefault();
-    });
+  /*************************************************************************
+   * 
+   *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
+   * 
+   *************************************************************************/
+  socket.on('delete return', (itemID) => {
+    itemDeleted(itemID); //deletes the item
+  });
+
+
+  /*************************************************************************
+   * 
+   *         FOOD BOARD CLAIM FEATURE - CLIENT SIDE
+   * 
+   *************************************************************************/
+
+  socket.on('claim return', (itemID) => {
+    itemClaimed(itemID);
+  });
+
+  /************************************************
+* 
+*              Search Feature
+* 
+*************************************************/
+
+  /**
+   * Handles search bar clear button toggle
+   */
+  $('#search-bar').on('keyup', (event) => {
+    console.log('searchbar');
+    if ($('#search-bar').val() !== '') {
+      $('#search-bar-btn-reset').show();
+    } else {
+      $('#search-bar-btn-reset').hide();
+    }
+  });
+
+  $('#search-bar-btn-reset').on('click', () => {
+    $('#search-bar-btn-reset').hide();
+  });
+
+  $(window).on('scroll', () => {
+    if ($(window).scrollTop() < 5) {
+      $('#search-bar-container').slideDown(150);
+      $('#card-list').animate({ 'margin-top': '2%' }, 50, 'linear');
+    } else {
+      $('#search-bar-container').slideUp(150);
+      $('#card-list').animate({ 'margin-top': '10%' }, 50, 'linear');
+    }
+  });
+
+  $('#search-bar-form').on('submit', (event) => {
+    event.preventDefault();
+  });
 });
 
 
@@ -275,7 +271,7 @@ $(document).ready(function () {
  * @param {number} id 
  */
 function itemClaimed(id) {
-    $(`#card${id}`).remove();
+  $(`#card${id}`).remove();
 };
 
 /**
@@ -283,19 +279,19 @@ function itemClaimed(id) {
  * @param {number} itemID 
  */
 function claimItem(itemID) {
-    let sessionID = getSessionID('connect.sid');
-    socket.emit('claim item', {
-        id: itemID,
-        sessionID: sessionID,
-    });
+  let sessionID = getSessionID('connect.sid');
+  socket.emit('claim item', {
+    id: itemID,
+    sessionID: sessionID,
+  });
 };
 
 function deleteItem(itemID) {
-    let sessionID = getSessionID('connect.sid');
-    socket.emit('delete item', {
-        id: itemID,
-        sessionID: sessionID
-    });
+  let sessionID = getSessionID('connect.sid');
+  socket.emit('delete item', {
+    id: itemID,
+    sessionID: sessionID
+  });
 }
 
 /**
@@ -303,9 +299,9 @@ function deleteItem(itemID) {
  * @param {string} name - name of the cookie session key we are grabbing (should be connect.sid)
  */
 function getSessionID(name) {
-    var cookie = getCookie(name);
-    var sessionID = cookie.substring(4, cookie.lastIndexOf('.'));
-    return sessionID;
+  var cookie = getCookie(name);
+  var sessionID = cookie.substring(4, cookie.lastIndexOf('.'));
+  return sessionID;
 }
 
 
@@ -314,100 +310,100 @@ function getSessionID(name) {
  * @param {string} name 
  */
 function getCookie(name) {
-    var value = "; " + document.cookie;
-    var parts = value.split("; " + name + "=");
-    if (parts.length == 2) {
-        return parts.pop().split(";").shift();
-    }
+  var value = "; " + document.cookie;
+  var parts = value.split("; " + name + "=");
+  if (parts.length == 2) {
+    return parts.pop().split(";").shift();
+  }
 };
 
 function addNewItemNoDelete(id, name, description, dateTime, foodGroup, img) {
 
-    var cardDiv = document.createElement("div");
-    cardDiv.setAttribute("id", `card${id}`);
-    cardDiv.setAttribute("class", "cardContainer");
+  var cardDiv = document.createElement("div");
+  cardDiv.setAttribute("id", `card${id}`);
+  cardDiv.setAttribute("class", "cardContainer");
 
-    var contentDiv = document.createElement("div");
-    contentDiv.setAttribute("class", "contentDiv");
+  var contentDiv = document.createElement("div");
+  contentDiv.setAttribute("class", "contentDiv");
 
-    var headerDiv = document.createElement("div");
-    headerDiv.setAttribute("class", "header-Div");
-    //headerDiv.innerHTML = "i am headerdiv";
+  var headerDiv = document.createElement("div");
+  headerDiv.setAttribute("class", "header-Div");
+  //headerDiv.innerHTML = "i am headerdiv";
 
-    var textDiv = document.createElement("div");
-    textDiv.setAttribute("class", "col-xs-10");
+  var textDiv = document.createElement("div");
+  textDiv.setAttribute("class", "col-xs-10");
 
-    var foodName = document.createElement("h4");
-    // grabs the name from the form so that it will be appended to cardDiv
-    foodName.innerHTML = name;
+  var foodName = document.createElement("h4");
+  // grabs the name from the form so that it will be appended to cardDiv
+  foodName.innerHTML = name;
 
-    var dateText = document.createElement("p");
-    dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
+  var dateText = document.createElement("p");
+  dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
 
-    var buttonDiv = document.createElement("div");
-    buttonDiv.setAttribute("class", "col-xs-2");
+  var buttonDiv = document.createElement("div");
+  buttonDiv.setAttribute("class", "col-xs-2");
 
-    var toggleButton = document.createElement("button");
-    toggleButton.setAttribute("data-toggle", "collapse");
-    toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
-    toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
+  var toggleButton = document.createElement("button");
+  toggleButton.setAttribute("data-toggle", "collapse");
+  toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
+  toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
 
-    var toggleDiv = document.createElement("div");
-    toggleDiv.setAttribute("id", `collapseDiv${id}`);
-    toggleDiv.setAttribute("class", "collapse");
+  var toggleDiv = document.createElement("div");
+  toggleDiv.setAttribute("id", `collapseDiv${id}`);
+  toggleDiv.setAttribute("class", "collapse");
 
-    var foodCategory = document.createElement("p");
-    foodCategory.innerHTML = foodGroup;
-    //takes the contents of the description
-    var foodDescription = document.createElement("p");
-    foodDescription.innerHTML = description;
+  var foodCategory = document.createElement("p");
+  foodCategory.innerHTML = foodGroup;
+  //takes the contents of the description
+  var foodDescription = document.createElement("p");
+  foodDescription.innerHTML = description;
 
-    var imageDiv = document.createElement("div");
-    imageDiv.setAttribute("class", "imgDiv");
+  var imageDiv = document.createElement("div");
+  imageDiv.setAttribute("class", "imgDiv");
 
-    var foodImg = document.createElement("img");
-    foodImg.setAttribute("class", "food-img");
-    foodImg.src = setPostImage(foodGroup, img);
+  var foodImg = document.createElement("img");
+  foodImg.setAttribute("class", "food-img");
+  foodImg.src = setPostImage(foodGroup, img);
 
-    console.log("date:" + dateTime);
-    console.log("food category" + foodGroup);
-    console.log(img);
+  console.log("date:" + dateTime);
+  console.log("food category" + foodGroup);
+  console.log(img);
 
-    var claimFormDiv = document.createElement('div');
-    claimFormDiv.setAttribute('class', 'claimFormDiv');
-
-
-    var claimForm = document.createElement("form");
-    claimForm.setAttribute("class", "claim-form");
-    claimForm.setAttribute("action", "javascript:void(0);")
-
-    var claimButton = document.createElement("input");
-    claimButton.setAttribute("id", `${id}`);
-    claimButton.setAttribute("class", "claim-button btn");
-    claimButton.setAttribute("type", "button");
-    claimButton.setAttribute("value", "CLAIM");
-    claimButton.setAttribute("onclick", "claimItem(this.id)");
-
-    $(cardDiv).append(imageDiv, headerDiv, contentDiv);
-    imageDiv.appendChild(foodImg);
-
-    claimFormDiv.appendChild(claimForm);
-    claimForm.appendChild(claimButton);
-
-    $(contentDiv).append(toggleDiv);
-    $(headerDiv).append(textDiv, buttonDiv);
-    $(toggleDiv).append(foodCategory, foodDescription, claimFormDiv);
+  var claimFormDiv = document.createElement('div');
+  claimFormDiv.setAttribute('class', 'claimFormDiv');
 
 
-    
-    buttonDiv.appendChild(toggleButton);
-    textDiv.appendChild(foodName);
-    textDiv.appendChild(dateText);
+  var claimForm = document.createElement("form");
+  claimForm.setAttribute("class", "claim-form");
+  claimForm.setAttribute("action", "javascript:void(0);")
 
-    $("#card-list").prepend(cardDiv);
+  var claimButton = document.createElement("input");
+  claimButton.setAttribute("id", `${id}`);
+  claimButton.setAttribute("class", "claim-button btn");
+  claimButton.setAttribute("type", "button");
+  claimButton.setAttribute("value", "CLAIM");
+  claimButton.setAttribute("onclick", "claimItem(this.id)");
 
-    /** Clearing Forms */
-    $('#postForm').trigger('reset');
+  $(cardDiv).append(imageDiv, headerDiv, contentDiv);
+  imageDiv.appendChild(foodImg);
+
+  claimFormDiv.appendChild(claimForm);
+  claimForm.appendChild(claimButton);
+
+  $(contentDiv).append(toggleDiv);
+  $(headerDiv).append(textDiv, buttonDiv);
+  $(toggleDiv).append(foodCategory, foodDescription, claimFormDiv);
+
+
+
+  buttonDiv.appendChild(toggleButton);
+  textDiv.appendChild(foodName);
+  textDiv.appendChild(dateText);
+
+  $("#card-list").prepend(cardDiv);
+
+  /** Clearing Forms */
+  $('#postForm').trigger('reset');
 }
 
 
@@ -417,207 +413,207 @@ function addNewItemNoDelete(id, name, description, dateTime, foodGroup, img) {
  */
 function addNewItem(id, name, description, dateTime, foodGroup, img) {
 
-    var cardDiv = document.createElement("div");
-    cardDiv.setAttribute("id", `card${id}`);
-    cardDiv.setAttribute("class", "cardContainer");
+  var cardDiv = document.createElement("div");
+  cardDiv.setAttribute("id", `card${id}`);
+  cardDiv.setAttribute("class", "cardContainer");
 
-    var contentDiv = document.createElement("div");
-    contentDiv.setAttribute("class", "contentDiv");
+  var contentDiv = document.createElement("div");
+  contentDiv.setAttribute("class", "contentDiv");
 
-    var headerDiv = document.createElement("div");
-    headerDiv.setAttribute("class", "header-Div");
-    //headerDiv.innerHTML = "i am headerdiv";
+  var headerDiv = document.createElement("div");
+  headerDiv.setAttribute("class", "header-Div");
+  //headerDiv.innerHTML = "i am headerdiv";
 
-    var textDiv = document.createElement("div");
-    textDiv.setAttribute("class", "col-xs-10");
+  var textDiv = document.createElement("div");
+  textDiv.setAttribute("class", "col-xs-10");
 
-    var foodName = document.createElement("h4");
-    // grabs the name from the form so that it will be appended to cardDiv
-    foodName.innerHTML = name;
+  var foodName = document.createElement("h4");
+  // grabs the name from the form so that it will be appended to cardDiv
+  foodName.innerHTML = name;
 
-    var dateText = document.createElement("p");
-    dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
+  var dateText = document.createElement("p");
+  dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
 
-    var buttonDiv = document.createElement("div");
-    buttonDiv.setAttribute("class", "col-xs-2");
+  var buttonDiv = document.createElement("div");
+  buttonDiv.setAttribute("class", "col-xs-2");
 
-    var toggleButton = document.createElement("button");
-    toggleButton.setAttribute("data-toggle", "collapse");
-    toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
-    toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
+  var toggleButton = document.createElement("button");
+  toggleButton.setAttribute("data-toggle", "collapse");
+  toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
+  toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
 
-    var toggleDiv = document.createElement("div");
-    toggleDiv.setAttribute("id", `collapseDiv${id}`);
-    toggleDiv.setAttribute("class", "collapse");
+  var toggleDiv = document.createElement("div");
+  toggleDiv.setAttribute("id", `collapseDiv${id}`);
+  toggleDiv.setAttribute("class", "collapse");
 
-    var foodCategory = document.createElement("p");
-    foodCategory.innerHTML = foodGroup;
-    //takes the contents of the description
-    var foodDescription = document.createElement("p");
-    foodDescription.innerHTML = description;
+  var foodCategory = document.createElement("p");
+  foodCategory.innerHTML = foodGroup;
+  //takes the contents of the description
+  var foodDescription = document.createElement("p");
+  foodDescription.innerHTML = description;
 
-    var imageDiv = document.createElement("div");
-    imageDiv.setAttribute("class", "imgDiv");
+  var imageDiv = document.createElement("div");
+  imageDiv.setAttribute("class", "imgDiv");
 
-    var foodImg = document.createElement("img");
-    foodImg.setAttribute("class", "food-img");
-    foodImg.src = setPostImage(foodGroup, img);
+  var foodImg = document.createElement("img");
+  foodImg.setAttribute("class", "food-img");
+  foodImg.src = setPostImage(foodGroup, img);
 
-    console.log("date:" + dateTime);
-    console.log("food category" + foodGroup);
-    console.log(img);
+  console.log("date:" + dateTime);
+  console.log("food category" + foodGroup);
+  console.log(img);
 
-    var claimForm = document.createElement("form");
-    claimForm.setAttribute("class", "claim-form");
-    claimForm.setAttribute("action", "javascript:void(0);")
+  var claimForm = document.createElement("form");
+  claimForm.setAttribute("class", "claim-form");
+  claimForm.setAttribute("action", "javascript:void(0);")
 
-    var claimButton = document.createElement("input");
-    claimButton.setAttribute("id", `${id}`);
-    claimButton.setAttribute("class", "claim-button");
-    claimButton.setAttribute("type", "button");
-    claimButton.setAttribute("value", "CLAIM");
-    claimButton.setAttribute("onclick", "claimItem(this.id)");
+  var claimButton = document.createElement("input");
+  claimButton.setAttribute("id", `${id}`);
+  claimButton.setAttribute("class", "claim-button");
+  claimButton.setAttribute("type", "button");
+  claimButton.setAttribute("value", "CLAIM");
+  claimButton.setAttribute("onclick", "claimItem(this.id)");
 
-    var deleteButton = document.createElement("input");
-    deleteButton.setAttribute("id", `${id}`);
-    deleteButton.setAttribute('class', 'delete-button');
-    deleteButton.setAttribute("type", "button");
-    deleteButton.setAttribute("value", "DELETE");
-    deleteButton.setAttribute("onclick", "deleteItem(this.id)");
+  var deleteButton = document.createElement("input");
+  deleteButton.setAttribute("id", `${id}`);
+  deleteButton.setAttribute('class', 'delete-button');
+  deleteButton.setAttribute("type", "button");
+  deleteButton.setAttribute("value", "DELETE");
+  deleteButton.setAttribute("onclick", "deleteItem(this.id)");
 
-    $(cardDiv).append(imageDiv, headerDiv, contentDiv);
-    imageDiv.appendChild(foodImg);
+  $(cardDiv).append(imageDiv, headerDiv, contentDiv);
+  imageDiv.appendChild(foodImg);
 
-    $(contentDiv).append(toggleDiv);
-    $(headerDiv).append(textDiv, buttonDiv);
-    $(toggleDiv).append(foodCategory, foodDescription, claimForm);
+  $(contentDiv).append(toggleDiv);
+  $(headerDiv).append(textDiv, buttonDiv);
+  $(toggleDiv).append(foodCategory, foodDescription, claimForm);
 
-    buttonDiv.appendChild(toggleButton);
-    textDiv.appendChild(foodName);
-    textDiv.appendChild(dateText);
+  buttonDiv.appendChild(toggleButton);
+  textDiv.appendChild(foodName);
+  textDiv.appendChild(dateText);
 
-    claimForm.appendChild(claimButton);
-    claimForm.appendChild(deleteButton);
-    $("#card-list").prepend(cardDiv);
+  claimForm.appendChild(claimButton);
+  claimForm.appendChild(deleteButton);
+  $("#card-list").prepend(cardDiv);
 
-    /** Clearing Forms */
-    $('#postForm').trigger('reset');
+  /** Clearing Forms */
+  $('#postForm').trigger('reset');
 }
 
 function addNewItemNoClaim(id, name, description, dateTime, foodGroup, img) {
 
-    var cardDiv = document.createElement("div");
-    cardDiv.setAttribute("id", `card${id}`);
-    cardDiv.setAttribute("class", "cardContainer");
+  var cardDiv = document.createElement("div");
+  cardDiv.setAttribute("id", `card${id}`);
+  cardDiv.setAttribute("class", "cardContainer");
 
-    var contentDiv = document.createElement("div");
-    contentDiv.setAttribute("class", "contentDiv");
+  var contentDiv = document.createElement("div");
+  contentDiv.setAttribute("class", "contentDiv");
 
-    var headerDiv = document.createElement("div");
-    headerDiv.setAttribute("class", "header-Div");
-    //headerDiv.innerHTML = "i am headerdiv";
+  var headerDiv = document.createElement("div");
+  headerDiv.setAttribute("class", "header-Div");
+  //headerDiv.innerHTML = "i am headerdiv";
 
-    var textDiv = document.createElement("div");
-    textDiv.setAttribute("class", "col-xs-10");
+  var textDiv = document.createElement("div");
+  textDiv.setAttribute("class", "col-xs-10");
 
-    var foodName = document.createElement("h4");
-    // grabs the name from the form so that it will be appended to cardDiv
-    foodName.innerHTML = name;
+  var foodName = document.createElement("h4");
+  // grabs the name from the form so that it will be appended to cardDiv
+  foodName.innerHTML = name;
 
-    var dateText = document.createElement("p");
-    dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
+  var dateText = document.createElement("p");
+  dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
 
-    var buttonDiv = document.createElement("div");
-    buttonDiv.setAttribute("class", "col-xs-2");
+  var buttonDiv = document.createElement("div");
+  buttonDiv.setAttribute("class", "col-xs-2");
 
-    var toggleButton = document.createElement("button");
-    toggleButton.setAttribute("data-toggle", "collapse");
-    toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
-    toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
+  var toggleButton = document.createElement("button");
+  toggleButton.setAttribute("data-toggle", "collapse");
+  toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
+  toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
 
-    var toggleDiv = document.createElement("div");
-    toggleDiv.setAttribute("id", `collapseDiv${id}`);
-    toggleDiv.setAttribute("class", "collapse");
+  var toggleDiv = document.createElement("div");
+  toggleDiv.setAttribute("id", `collapseDiv${id}`);
+  toggleDiv.setAttribute("class", "collapse");
 
-    var foodCategory = document.createElement("p");
-    foodCategory.innerHTML = foodGroup;
-    //takes the contents of the description
-    var foodDescription = document.createElement("p");
-    foodDescription.innerHTML = description;
+  var foodCategory = document.createElement("p");
+  foodCategory.innerHTML = foodGroup;
+  //takes the contents of the description
+  var foodDescription = document.createElement("p");
+  foodDescription.innerHTML = description;
 
-    var imageDiv = document.createElement("div");
-    imageDiv.setAttribute("class", "imgDiv");
+  var imageDiv = document.createElement("div");
+  imageDiv.setAttribute("class", "imgDiv");
 
-    var foodImg = document.createElement("img");
-    foodImg.setAttribute("class", "food-img");
-    foodImg.src = setPostImage(foodGroup, img);
+  var foodImg = document.createElement("img");
+  foodImg.setAttribute("class", "food-img");
+  foodImg.src = setPostImage(foodGroup, img);
 
-    console.log("date:" + dateTime);
-    console.log("food category" + foodGroup);
-    console.log(img);
+  console.log("date:" + dateTime);
+  console.log("food category" + foodGroup);
+  console.log(img);
 
-    var claimForm = document.createElement("form");
-    claimForm.setAttribute("class", "claim-form");
-    claimForm.setAttribute("action", "javascript:void(0);")
+  var claimForm = document.createElement("form");
+  claimForm.setAttribute("class", "claim-form");
+  claimForm.setAttribute("action", "javascript:void(0);")
 
-    var deleteButton = document.createElement("input");
-    deleteButton.setAttribute("id", `${id}`);
-    deleteButton.setAttribute('class', 'delete-button');
-    deleteButton.setAttribute("type", "button");
-    deleteButton.setAttribute("value", "DELETE");
-    deleteButton.setAttribute("onclick", "deleteItem(this.id)");
+  var deleteButton = document.createElement("input");
+  deleteButton.setAttribute("id", `${id}`);
+  deleteButton.setAttribute('class', 'delete-button');
+  deleteButton.setAttribute("type", "button");
+  deleteButton.setAttribute("value", "DELETE");
+  deleteButton.setAttribute("onclick", "deleteItem(this.id)");
 
-    $(cardDiv).append(imageDiv, headerDiv, contentDiv);
-    imageDiv.appendChild(foodImg);
+  $(cardDiv).append(imageDiv, headerDiv, contentDiv);
+  imageDiv.appendChild(foodImg);
 
-    $(contentDiv).append(toggleDiv);
-    $(headerDiv).append(textDiv, buttonDiv);
-    $(toggleDiv).append(foodCategory, foodDescription);
+  $(contentDiv).append(toggleDiv);
+  $(headerDiv).append(textDiv, buttonDiv);
+  $(toggleDiv).append(foodCategory, foodDescription);
 
-    foodDescription.appendChild(claimForm);
-    buttonDiv.appendChild(toggleButton);
-    textDiv.appendChild(foodName);
-    textDiv.appendChild(dateText);
+  foodDescription.appendChild(claimForm);
+  buttonDiv.appendChild(toggleButton);
+  textDiv.appendChild(foodName);
+  textDiv.appendChild(dateText);
 
-    claimForm.appendChild(deleteButton);
-    $("#card-list").prepend(cardDiv);
+  claimForm.appendChild(deleteButton);
+  $("#card-list").prepend(cardDiv);
 
-    /** Clearing Forms */
-    $('#postForm').trigger('reset');
+  /** Clearing Forms */
+  $('#postForm').trigger('reset');
 }
 
 
 
 function setPostImage(foodCategory, imgName) {
-    if (imgName !== "undefined.png") {
-        return `/images/${imgName}`;
-    } else {
-        switch (foodCategory) {
-            case "Produce":
-                return "../../Pictures/default_produce.png";
-                break;
-            case "Meat":
-                return "../../Pictures/default_meat.png";
-                break;
-            case "Canned Goods":
-                return "../../Pictures/default_food.png";
-                break;
-            case "Packaged":
-                return "../../Pictures/default_packaged.png";
-                break;
-        }
+  if (imgName !== "undefined.png") {
+    return `/images/${imgName}`;
+  } else {
+    switch (foodCategory) {
+      case "Produce":
+        return "../../Pictures/default_produce.png";
+        break;
+      case "Meat":
+        return "../../Pictures/default_meat.png";
+        break;
+      case "Canned Goods":
+        return "../../Pictures/default_food.png";
+        break;
+      case "Packaged":
+        return "../../Pictures/default_packaged.png";
+        break;
     }
+  }
 }
 
 function itemDeleted(id) {
-    $(`#card${id}`).remove();
+  $(`#card${id}`).remove();
 }
 
 
 function deleteItem(itemID) {
-    socket.emit('delete item', {
-        id: itemID
-    });
+  socket.emit('delete item', {
+    id: itemID
+  });
 }
 
 

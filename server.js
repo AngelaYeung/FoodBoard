@@ -19,7 +19,9 @@ var authRoute = require('./app/routes/auth.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
 
 var connection = mysqlconnection.handleDisconnect();
+
 const port = 8080;
+
 
 var app = express().use(siofu.router); // adds siofu as a router, middleware
 
@@ -226,7 +228,7 @@ io.on('connection', (socket) => {
               var role = row[0].role;
 
               // load all posts to be filtered later in boardpage.js
-              var allFoodboardItems = "SELECT * FROM FoodItem";
+              var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
               connection.query(allFoodboardItems, (error, rows, fields) => {
                 if (error) {
                   console.log(new Date(Date.now()), "Error grabbing food items");

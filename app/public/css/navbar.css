@@ -36,6 +36,7 @@
     color:white;
   }
 
+
 }
 
 
@@ -45,12 +46,6 @@
     padding: 0;
     position: relative;
     top: 3px;
-  }
-  .dropdown-menu {
-    width: 107%;
-    left: -13px;
-    border-radius: 0;
-    background-color: #4EB266
   }
 
 .navbar-brand .navbar-foodboard {
