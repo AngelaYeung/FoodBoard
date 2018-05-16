@@ -346,13 +346,6 @@ function itemDeleted(id) {
   $(`#card${id}`).remove();
 }
 
-
-function deleteItem(itemID) {
-  socket.emit('delete item', {
-    id: itemID
-  });
-}
-
 /**
  * Creates Card from FoodItem Table without a 'Claim' Button.
  * @param {*} id 

@@ -1,5 +1,11 @@
 /* Header -> NavBar */
 @media screen and (max-width: 480px) {
+
+  .navbar-foodboard img {
+    width: 9%;
+    margin-top: -15px;
+  }
+
   .navbar-right-custom {
     display: none;
   }
@@ -115,10 +121,6 @@
 
 
 @media screen and (min-width: 481px){
-  .navbar-foodboard img {
-    width: 9%;
-    margin-top: -15px;
-  }
   .navbar-brand-sm {
     display:none;
   }
@@ -128,3 +130,14 @@
   }
   
 }
+
+  /** Position the hamburger icon. */
+  .glyphicon-menu-hamburger {
+    font-size: 18pt;
+  }
+
+  /** Positions the dropdown menu on all navbars */
+  .open >.dropdown-menu{
+    margin-top: 2.5%;
+    border-top: none;
+  }

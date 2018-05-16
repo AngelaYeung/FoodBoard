@@ -78,12 +78,6 @@
     font-size: 18pt;
     margin-top:-1%;
     }
-
-  .navbar-foodboard img {
-    width: 9%;
-    margin-top: -8px;
-  }
-
 }
 
 @media screen and (min-width: 481px) {

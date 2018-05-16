@@ -5,10 +5,17 @@
         margin-left: 3em;
         margin-top: -2.3em;
       }
+
+      .form-group input {
+          border: 0.5px solid #333131;
+          border-radius: 2px;
+          padding-left: 1%;
+      }
     
       .glyphicon{
         padding-left:0!important;
       }
+
       .input-addon .glyphicon {
         padding-left: 30px;
         font-size: 25px;

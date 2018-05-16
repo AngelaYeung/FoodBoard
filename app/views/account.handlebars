@@ -9,12 +9,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="/public/css/account.css">
+    <link rel="stylesheet" href="/public/css/boardpage.css">
     <link rel="stylesheet" href="/public/css/navbar.css">
     <script src="/public/js/account.js"></script>
 </head>
 
 <body>
-    {{>acc_navbar}}
+
+    {{>acc_navbar}} {{!--
     <header>
         <div class="text-center head">
             <a class="logoHead">
@@ -104,7 +106,7 @@
                     </div>
                     <div class="form-group text-center">
                         <button id="suite-submit" class="btn btn-primary disabled" type="button">Save Changes</button>
-                        <button class="btn btn-danger" type="button" data-target="#suite-form" data-toggle="collapse" >Cancel</button>
+                        <button class="btn btn-danger" type="button" data-target="#suite-form" data-toggle="collapse">Cancel</button>
                     </div>
                 </form>
             </div>
