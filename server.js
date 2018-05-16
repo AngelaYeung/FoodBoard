@@ -158,15 +158,15 @@ app.get('/account', (req, res) => {
     */
   });
 });
-  /*************************************************************************
-   * 
-   *         FOOD BOARD LOGIN/REGISTER FEATURE - SERVER SIDE
-   * 
-   * 
-   *************************************************************************/
+/*************************************************************************
+ * 
+ *         FOOD BOARD LOGIN/REGISTER FEATURE - SERVER SIDE
+ * 
+ * 
+ *************************************************************************/
 
 
-  authRoute.validate(app, passport);
+authRoute.validate(app, passport);
 
 
 //load passport strategies
@@ -492,12 +492,18 @@ io.on('connection', (socket) => {
                     posterEmail = row[0].email;
                     posterFirstName = row[0].firstName;
                     claimerEmail = row[1].email;
+
+                    console.log("POSTER EMAIL", posterEmail);
+                    console.log("CLAIMER EMAIL", claimerEmail);
+
+                
                     claimerFirstName = row[1].firstName;
                     claimerSuiteNumber = row[1].suiteNumber;
+                    console.log("EMAIL IS HERE LOOK", claimerEmail);
 
-                    sendClaimEmailToPoster(posterEmail, posterFirstName,
+                    sendClaimEmailToPoster(claimerEmail, claimerFirstName,
                       foodName, foodDescription, foodExpiryTime, foodImage,
-                      claimerEmail, claimerFirstName, claimerSuiteNumber);
+                      posterEmail, posterFirstName, claimerSuiteNumber);
 
                     console.log(itemID);
                     io.emit('claim return', (itemID));
@@ -522,21 +528,19 @@ io.on('connection', (socket) => {
  *************************************************************************/
 function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, foodDescription, foodExpiryTime, foodImage, posterEmail, posterFirstName, posterSuiteNumber) {
   const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    service: 'gmail',
     auth: {
-      user: 'de5kzppbkaumnfhu@ethereal.email',
-      pass: 'wNmg25t9fqKXZ8wVUF'
+      user: 'foodboardcanada@gmail.com',
+      pass: 'darkthemesonly'
     },
-    // tls: {
-    //     rejectUnauthorized:false
-    // }
+    tls: {
+        rejectUnauthorized:false
+    }
   });
 
   // setup email data with unicode symbols
   let mailOptions = {
-    from: claimerEmail, // sender address
+    from: `foodboardcanada@gmail.com`, // sender address
     to: claimerEmail, // list of receivers
     subject: 'FoodBoard: The food item you claimed is no longer available.', // Subject line
     text: `Hello ${claimerFirstName},
@@ -580,7 +584,7 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
       console.log('Delete message sent: %s', info.messageId);
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+      // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
   });
 }
@@ -589,24 +593,22 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
   //claimerSuiteNumber, postingFoodName, 
   //postingDescription, postingExpiryDate
   const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    service: 'gmail',
     auth: {
-      user: 'de5kzppbkaumnfhu@ethereal.email',
-      pass: 'wNmg25t9fqKXZ8wVUF'
+      user: 'foodboardcanada@gmail.com',
+      pass: 'darkthemesonly'
     },
-    // tls: {
-    //     rejectUnauthorized:false
-    // }
+    tls: {
+        rejectUnauthorized:false
+    }
   });
 
-  // setup email data with unicode symbols
-  let mailOptions = {
-    from: posterEmail, // sender address
-    to: posterEmail, // list of receivers
-    subject: 'FoodBoard: Your food item has been claimed', // Subject line
-    text: `Hello ${posterFirstName},
+// setup email data with unicode symbols
+let mailOptions = {
+  from: `foodboardcanada@gmail.com`, // sender address
+  to: posterEmail, // list of receivers
+  subject: 'FoodBoard: Your food item has been claimed', // Subject line
+  text: `Hello ${posterFirstName},
 
     Your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can 
     let ${claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.
@@ -618,7 +620,7 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
     Food Expiry: ${foodExpiryTime}
     
     Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // plain text body
-    html: `<p>Hello ${posterFirstName},<br/>
+  html: `<p>Hello ${posterFirstName},<br/>
     <br/>
     Your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can 
     let ${claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.<br/>
@@ -633,27 +635,27 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
     <img src="cid:donotreply@foodboard.ca"/><br/>
     <br/>
     Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // html body
-    attachments: [{
-      filename: `foodboard_${foodImage}`,
-      path: `./app/images/${foodImage}`,
-      cid: 'donotreply@foodboard.ca'
-    }]
-  };
+  attachments: [{
+    filename: `foodboard_${foodImage}`,
+    path: `./app/images/${foodImage}`,
+    cid: 'donotreply@foodboard.ca'
+  }]
+};
 
-  // send mail with defined transport object
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log("Error occured sending claim email", error);
-    } else {
-      // Preview only available when sending through an Ethereal account
+// send mail with defined transport object
+transporter.sendMail(mailOptions, (error, info) => {
+  if (error) {
+    console.log("Error occured sending claim email", error);
+  } else {
+    // Preview only available when sending through an Ethereal account
 
-      // If successful, should print the following to the console:
-      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-      // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-      console.log('Claim message sent: %s', info.messageId);
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    }
-  });
+    // If successful, should print the following to the console:
+    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+    console.log('Claim message sent: %s', info.messageId);
+    // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+  }
+});
 };
 
 function deleteFoodItem(itemID) {
