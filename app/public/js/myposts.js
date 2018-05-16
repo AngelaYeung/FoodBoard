@@ -12,152 +12,6 @@ $(document).ready(function () {
   const uploader = new SocketIOFileUpload(socket);
   var image_name;
 
-  /*************************************************************************
-   * 
-   *         FOOD BOARD POST FEATURE - CLIENT SIDE
-   * 
-   *************************************************************************/
-
-  // Checks file image submitted in form for correct type when inputted.
-  if (window.File && window.FileReader && window.FormData) {
-
-    $('#file-input').on('change', (e) => {
-      image_name = Date.now();
-      var file = e.target.files[0];
-      if (file) {
-        if (/^image\//i.test(file.type)) {
-          readFile(file);
-        } else {
-          console.log('Not a valid Image');
-          // DOM EVENT TO NOTIFY USER
-        }
-      }
-    });
-
-  } else {
-    console.log("File Upload Not Supported");
-    // DOM EVENT TO NOTIFY USER
-  }
-
-  /**
-   * Reads the image file as a data URL
-   * @param {} file   the image file uploaded in the form 
-   */
-  function readFile(file) {
-    var reader = new FileReader();
-
-    reader.onloadend = function () {
-      processFile(reader.result, file.type);
-    }
-
-    reader.onerror = function () {
-      console.log('There was an error reading this file');
-    }
-
-    reader.readAsDataURL(file);
-  }
-
-  /**
-   * Resizes the image the image file
-   * @param {*} dataURL   the dataURL of the image
-   * @param {*} fileType  the fileType of the file
-   */
-  function processFile(dataURL, fileType) {
-    var maxWidth = 325;
-    var maxHeight = 400;
-
-    var image = new Image();
-    image.src = dataURL;
-
-    image.onload = function () {
-      var width = image.width;
-      var height = image.height;
-      var shouldResize = (width > maxWidth) || (height > maxHeight);
-
-      if (!shouldResize) {
-        sendFile(dataURL);
-        return;
-      }
-
-      var newWidth;
-      var newHeight;
-
-      if (width > height) {
-        newHeight = height * (maxWidth / width);
-        newWidth = maxWidth;
-      } else {
-        newWidth = width * (maxHeight / height);
-        newHeight = maxHeight;
-      }
-
-      var canvas = document.createElement('canvas');
-
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-
-      var context = canvas.getContext('2d');
-
-      context.drawImage(this, 0, 0, newWidth, newHeight);
-
-      canvas.toBlob((blob) => {
-        console.log(blob);
-        sendFile(blob);
-      }, fileType);
-
-    };
-
-    image.onerror = function () {
-      console.log('There was an error processing your file!');
-      // DOM EVENT TO SHOW THAT SOMETHING WENT WRONG
-    };
-  }
-
-  function sendFile(fileData) {
-    var formData = new FormData();
-
-    var png = 'png';
-
-    formData.append('imageData', fileData);
-    console.log('Uploaded');
-    uploader.listenOnSubmitBlob(document.getElementById('submit'), fileData, `${image_name}.${png}`);
-  }
-
-
-  /** Uploads the image in form to server, and grabs its name */
-  // uploader.listenOnSubmit(document.getElementById('submit'), document.getElementById('file-input'));
-
-  // uploader.addEventListener('start', (event) => {
-  //   image_name = "test.png";
-  // });
-
-
-  /** Sends data from post-form to server.js */
-  $('#submit').click(function () {
-    console.log('Submit triggered!');
-
-    if ($('#itemModal').is(':visible')) {
-      $('#itemModal').modal('toggle');
-    }
-
-    if ($('#name').val().toLowerCase() === 'ilovefoodboard') {
-      window.location.href = ('/snake');
-
-    } else {
-      socket.emit('post item', {
-        name: $('#name').val(),
-        description: $('#description').val(),
-        dateTime: $('#datetimepicker').val(),
-        foodgrouping: $('input[name=foodgrouping]:checked').val(),
-        image: `${image_name}.png`,
-        sessionID: sessionID,
-      });
-    }
-    return false;
-  });
-
-  socket.on('post item return', (item) => {
-    createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
-  });
 
   /*************************************************************************
    * 
@@ -171,45 +25,19 @@ $(document).ready(function () {
    */
   $(window).on('load', () => {
 
-    console.log('Client: page loaded:', sessionID);
-    socket.emit('page loaded', {
+    console.log('Myposts loading.....', sessionID);
+    socket.emit('my posts', {
       sessionID: sessionID,
     });
   });
 
-  socket.on('load foodboard', (items) => {
+  socket.on('load my posts', (items) => {
     var role = items.role; // their role as administrator or user
     var userID = items.userID; // whos logged in
     var rows = items.rows;
-    console.log("LOAD: ROWS: ", rows);
     for (var i = 0; i < rows.length; i++) {
-      console.log('userID: ', userID);
-      console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
-      if (role === 0) {
-        if (rows[i].Users_userID === userID) {
-          createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-            rows[i].foodGroup, rows[i].foodImage);
-        } else {
-          createCardBothButtons(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-            rows[i].foodGroup, rows[i].foodImage);
-        }
-      } else {
-        if (rows[i].Users_userID === userID) {
-          createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-            rows[i].foodGroup, rows[i].foodImage);
-        } else {
-          createCardNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
-            rows[i].foodGroup, rows[i].foodImage);
-        }
-      }
-    }
-  });
-
-  socket.on('myposts', (items) => {
-    let userID = items.userID;
-    let rows = items.rows;
-    for (let i = 0; i < rows.length; i++) {
-      createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime, rows[i].foodGroup, rows[i].foodImage);
+      createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+        rows[i].foodGroup, rows[i].foodImage);
     }
   });
 
@@ -222,19 +50,9 @@ $(document).ready(function () {
     itemDeleted(itemID); //deletes the item
   });
 
-  /*************************************************************************
-   * 
-   *         FOOD BOARD CLAIM FEATURE - CLIENT SIDE
-   * 
-   *************************************************************************/
-
-  socket.on('claim return', (itemID) => {
-    itemClaimed(itemID);
-  });
-
   /************************************************
 * 
-*              SEARCH FEATURE
+*              Search Feature
 * 
 *************************************************/
 
@@ -268,27 +86,6 @@ $(document).ready(function () {
     event.preventDefault();
   });
 });
-
-
-/**
- * Removes the claimed items from the board.
- * @param {number} id 
- */
-function itemClaimed(id) {
-  $(`#card${id}`).remove();
-};
-
-/**
- * Sends emits the item id to the server.
- * @param {number} itemID 
- */
-function claimItem(itemID) {
-  let sessionID = getSessionID('connect.sid');
-  socket.emit('claim item', {
-    id: itemID,
-    sessionID: sessionID,
-  });
-};
 
 function deleteItem(itemID) {
   let sessionID = getSessionID('connect.sid');
@@ -344,13 +141,6 @@ function setPostImage(foodCategory, imgName) {
 
 function itemDeleted(id) {
   $(`#card${id}`).remove();
-}
-
-
-function deleteItem(itemID) {
-  socket.emit('delete item', {
-    id: itemID
-  });
 }
 
 /**
@@ -504,3 +294,7 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
 //     }
 // }
 // document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
+
+
+
+
