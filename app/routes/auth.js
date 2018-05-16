@@ -28,16 +28,11 @@ var validate = (app, passport) => {
         })(req, res, next);
     });
 
-    // Render page for 'My Posts'.
-    app.get('/myposts', isLoggedIn, authController.myposts);
 
-    // Render 'Boardpage' upon successful login.
     app.get('/boardpage', isLoggedIn, authController.boardpage);
 
-    // Render 'Home' upon successful logout.
     app.get('/logout', authController.logout);
 
-    // Render dynamic handlebar pages handling login (successful and incorrect).
     app.post('/user_login', (req, res, next) => {
         passport.authenticate('local-signin', (err, user, info) => {
             if (err) { return next(err); }
@@ -54,11 +49,53 @@ var validate = (app, passport) => {
         })(req, res, next);
     });
 
+
+/*************************************************************************
+ * 
+ *         FOOD BOARD ACCOUNT SETTINGS FEATURE - SERVER SIDE
+ * 
+ * 
+ *************************************************************************/
+app.get('/account', isLoggedIn, (req, res) => {
+    var sessionID = req.sessionID;
+    var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
+    connection.query(query, (error, rows, fields) => {
+      if (error) {
+        console.log(error);
+      } else {
+  
+        if (rows.length) {
+          var userID = rows[0].Users_userID;
+          //Query for user info for current user
+          var userInfo = "SELECT * FROM Users WHERE userID = ?";
+          connection.query(userInfo, [userID], (error, result, field) => {
+            if (error) {
+              console.log("error");
+            } else {
+              console.log("successful");
+              var name = result[0].firstName + " " + result[0].lastName;
+              var email = result[0].email;
+              var suiteNum = result[0].suiteNumber;
+  
+              res.render('account', {
+                name: name,
+                email: email,
+                suiteNum: suiteNum,
+              });
+            }
+          });
+        }
+      }
+    });
+  });
+
     function isLoggedIn(req, res, next) {
         if (req.isAuthenticated())
             return next();
+
         res.redirect('/signin');
     }
+
 };
 
 function insertSessionDB(sessionID, userID) {
@@ -68,10 +105,7 @@ function insertSessionDB(sessionID, userID) {
     });
 };
 
+
 module.exports = {
     validate: validate
 };
-
-
-
-
