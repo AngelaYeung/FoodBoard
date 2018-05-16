@@ -157,6 +157,10 @@ body {
 }
 
 
+.collapse.in {
+  display: block;
+  padding-bottom:45px;
+}
 @media screen and (min-width: 481px){
   #board {
     display: inline-block;
@@ -169,6 +173,9 @@ body {
     box-shadow: 2px 3px 20px grey;
     }
 }
+
+
+
 
 
 #submit {

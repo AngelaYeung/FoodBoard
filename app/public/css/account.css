@@ -15,19 +15,43 @@
         color: #4EB266;
       }
 
-      .pull-right{
-          margin-right:20px;
-      }
-      
       .head{
           background-color: #4EB266;
       }
 
       .account{
+          padding-top: 10%;
           text-align: center;
       }
 
       .logoHead img {
         width: 12%;
       }
+
+      .row {
+          padding: 2%;
+      }
+
+      .col-xs-4 {
+          font-weight: bold;
+      }
+      #pw-form {
+          border-top: 2px solid lightgray;
+          border-bottom: 2px solid lightgray;
+      }
+      #pw-form form {
+          padding-top: 5%;
+      }
+
+      #suite-form {
+        border-top: 2px solid lightgray;
+        border-bottom: 2px solid lightgray;
+    }
+    #suite-form form {
+        padding-top: 5%;
+    }
+}
+
+.edit-info {
+    border: none;
 }
