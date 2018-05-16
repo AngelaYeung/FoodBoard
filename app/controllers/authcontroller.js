@@ -19,6 +19,10 @@ exports.myposts = (req, res) => {
   res.render('myposts');
 }
 
+exports.myclaims = (req, res) => {
+  res.render('myclaims');
+}
+
 exports.logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
