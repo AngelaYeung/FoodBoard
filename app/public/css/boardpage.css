@@ -51,10 +51,6 @@ body {
     padding-top : 2.5%;
   }
 
-  .open >.dropdown-menu{
-    margin-top: 2.5%;
-    border-top: none;
-  }
 
   .btn-default{
     float: right;
