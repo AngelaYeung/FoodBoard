@@ -100,7 +100,7 @@ app.get('/account', isLoggedIn, (req, res) => {
 };
 
 function insertSessionDB(sessionID, userID) {
-    connection.query("INSERT INTO sessions(sessionID, Users_userID) VALUES (?,?)", [sessionID, userID], (error, rows, fields) => {
+    connection.query("INSERT INTO Sessions(sessionID, Users_userID) VALUES (?,?)", [sessionID, userID], (error, rows, fields) => {
         if (error) console.log(error);
         console.log(rows);
     });
