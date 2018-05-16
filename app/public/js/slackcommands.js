@@ -10,7 +10,9 @@ const token = 'pbvEgpojkg1eEkIdv03G9SRA';
  */
 function newItems(req, res) {
 
-    let query = "SELECT * FROM FoodItem WHERE claimStatus = 0 ORDER BY itemID DESC LIMIT 3";
+    let slackReqObj = req.body;
+
+    let query = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
     connection.query(query, (error, rows, fields) => {
         if (error) {
             console.log('Error', new Date(Date.now()), error);
@@ -20,6 +22,8 @@ function newItems(req, res) {
                 channel: slackReqObj.channel_id,
                 text: 'Sorry but the boards empty :white_frowning_face:',
             }
+            console.log('Slack Commands:', response);
+            return res.json(response);
         } else {
             let msg;
             for (let i = 0; i < rows.length; i++) {
@@ -33,10 +37,9 @@ function newItems(req, res) {
                     text: msg,
                 }
               };
+              console.log('Slack Commands:', response);
+              return res.json(response);
         }
-        
-        console.log('Slack Commands:', response);
-        return res.json(response);
     });
 
 };
