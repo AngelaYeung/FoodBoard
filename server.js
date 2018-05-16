@@ -125,8 +125,7 @@ models.sequelize.sync().then(() => {
 /*************************************************************************
   * 
   *         FOOD BOARD REGISTRATION FEATURE - SERVER SIDE
- 
- 
+  *
 /*************************************************************************
 * Socketio detects that connection has been made to the server.
 * The connection event is fired, whenever anyone goes to foodboard.ca.
@@ -154,16 +153,6 @@ io.on('connection', (socket) => {
    */
   socket.on('page loaded', (session) => {
     console.log('Server: page loaded')
-    /** Grab All Food Items from DB */
-
-    // SESSION ID CHECK: GET USER ID
-    // WITH USER ID GET ROLE
-    // ROLE TELLS U WHAT TO LOAD
-    //    if else role = admin render everything 
-    //    else render delete button for only your posts run (checkOwnerPost)
-
-    // select all items from fooditem
-    // 
 
     var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
     connection.query(query, [session.sessionID], (error, rows, fields) => {
