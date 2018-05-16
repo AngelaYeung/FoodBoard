@@ -17,6 +17,7 @@ const nodemailer = require('nodemailer'); // for sending automated emails
 var models = require("./app/models"); // tells the server to require these routes 
 var authRoute = require('./app/routes/auth.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
+var slackcmd = require('./app/public/js/slackcommands');
 
 var connection = mysqlconnection.handleDisconnect();
 
@@ -103,6 +104,18 @@ app.get('/', (req, res) => {
   });
 
 });
+
+app.post('/slack/command/new', (req, res) => {
+  console.log('CMD:', req.body);
+
+  if (req.body.token === slackcmd.token) {
+    slackcmd.newItems(req, res); 
+  } else {
+    console.log('Incorrect slack token');
+  }
+
+});
+
 
 /*************************************************************************
  * 
