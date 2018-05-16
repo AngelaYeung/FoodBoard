@@ -68,7 +68,7 @@ app.get('/account', isLoggedIn, (req, res) => {
         if (rows.length) {
           var userID = rows[0].Users_userID;
           //Query for user info for current user
-          var userInfo = "SELECT * FROM Users WHERE userID = ?";
+          var userInfo = "SELECT * FROM users WHERE userID = ?";
           connection.query(userInfo, [userID], (error, result, field) => {
             if (error) {
               console.log("error");
