@@ -2,7 +2,7 @@
 var socket;
 
 $(window).on('load', () => {
-  window.scroll(0, 10);
+  window.scroll(0, 5);
 });
 $(document).ready(function () {
   var sessionID = getSessionID('connect.sid');
@@ -255,12 +255,15 @@ $(document).ready(function () {
   });
 
   $(window).on('scroll', () => {
-    if ($(window).scrollTop() < 5) {
+    if ($(window).scrollTop() < 2) {
       $('#search-bar-container').slideDown(150);
-      $('#card-list').animate({ 'margin-top': '2%' }, 50, 'linear');
+      $('#card-list').animate({ 'margin-top': '2%', 'padding-top' : '0%' }, 25, 'linear');
+      $('#search-bar-container').animate({'padding-top' : '15%'}, 25, 'linear');
+
     } else {
       $('#search-bar-container').slideUp(150);
-      $('#card-list').animate({ 'margin-top': '10%' }, 50, 'linear');
+      $('#search-bar-container').animate({'padding-top' : '15%'}, 25, 'linear');
+      $('#card-list').animate({ 'margin-top': '10%', 'padding-top' : '2%' }, 25, 'linear');
     }
   });
 

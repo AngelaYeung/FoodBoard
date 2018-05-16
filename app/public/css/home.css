@@ -9,7 +9,8 @@
     display: none;
   }
   .navbar-brand-sm {
-    padding: 3%;
+    padding: 1.5% 3% 3% 3%;
+    border-bottom:none;
   }
   .navbar-brand-sm .dropdown {
     margin-top: -30px;
@@ -147,7 +148,6 @@ body {
   border-style: none;
   padding: 0;
   box-shadow: none;
-  top:3px;
 }
 .dropdown-menu {
   width: 107%;
