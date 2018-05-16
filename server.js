@@ -101,10 +101,6 @@ app.post('/slack/command/new', (req, res) => {
 
 });
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 9640c336df117e2d00be59fd6da905a57fd50af8
 /*************************************************************************
  * 
  *         FOOD BOARD LOGIN/REGISTER FEATURE - SERVER SIDE
