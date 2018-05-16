@@ -126,7 +126,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
         <div class="row">
             <div class="col-xs-10">
                 <h4>${name}</h4>
-                <p>Expires on ${moment(dateTime).format('MM/DD/YYYY')}</p>
+                 <p>Expires ${formatDate(dateTime)}</p>
             </div>
             <div class="col-xs-2">
                 <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
@@ -149,3 +149,11 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   $('#postForm').trigger('reset');
 }
 
+function formatDate(dateTime) {
+  var expiryDate = new Date(dateTime);
+  console.log('Expiry date', expiryDate);
+  var today = new Date(Date.now());
+  console.log('today', today);
+  var formatedDate = moment(expiryDate).fromNow();
+  return formatedDate;
+};
