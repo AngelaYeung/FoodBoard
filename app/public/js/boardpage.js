@@ -156,7 +156,7 @@ $(document).ready(function () {
   });
 
   socket.on('post item return', (item) => {
-    addNewItemNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
+    createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
   });
 
   /*************************************************************************
@@ -188,18 +188,18 @@ $(document).ready(function () {
       console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
       if (role === 0) {
         if (rows[i].Users_userID === userID) {
-          addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+          createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         } else {
-          addNewItem(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+          createCardBothButtons(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         }
       } else {
         if (rows[i].Users_userID === userID) {
-          addNewItemNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+          createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         } else {
-          addNewItemNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
+          createCardNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         }
       }
@@ -317,273 +317,6 @@ function getCookie(name) {
   }
 };
 
-function addNewItemNoDelete(id, name, description, dateTime, foodGroup, img) {
-
-  var cardDiv = document.createElement("div");
-  cardDiv.setAttribute("id", `card${id}`);
-  cardDiv.setAttribute("class", "cardContainer");
-
-  var contentDiv = document.createElement("div");
-  contentDiv.setAttribute("class", "contentDiv");
-
-  var headerDiv = document.createElement("div");
-  headerDiv.setAttribute("class", "header-Div");
-  //headerDiv.innerHTML = "i am headerdiv";
-
-  var textDiv = document.createElement("div");
-  textDiv.setAttribute("class", "col-xs-10");
-
-  var foodName = document.createElement("h4");
-  // grabs the name from the form so that it will be appended to cardDiv
-  foodName.innerHTML = name;
-
-  var dateText = document.createElement("p");
-  dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
-
-  var buttonDiv = document.createElement("div");
-  buttonDiv.setAttribute("class", "col-xs-2");
-
-  var toggleButton = document.createElement("button");
-  toggleButton.setAttribute("data-toggle", "collapse");
-  toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
-  toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
-
-  var toggleDiv = document.createElement("div");
-  toggleDiv.setAttribute("id", `collapseDiv${id}`);
-  toggleDiv.setAttribute("class", "collapse");
-
-  var foodCategory = document.createElement("p");
-  foodCategory.innerHTML = foodGroup;
-  //takes the contents of the description
-  var foodDescription = document.createElement("p");
-  foodDescription.innerHTML = description;
-
-  var imageDiv = document.createElement("div");
-  imageDiv.setAttribute("class", "imgDiv");
-
-  var foodImg = document.createElement("img");
-  foodImg.setAttribute("class", "food-img");
-  foodImg.src = setPostImage(foodGroup, img);
-
-  console.log("date:" + dateTime);
-  console.log("food category" + foodGroup);
-  console.log(img);
-
-  var claimFormDiv = document.createElement('div');
-  claimFormDiv.setAttribute('class', 'claimFormDiv');
-
-
-  var claimForm = document.createElement("form");
-  claimForm.setAttribute("class", "claim-form");
-  claimForm.setAttribute("action", "javascript:void(0);")
-
-  var claimButton = document.createElement("input");
-  claimButton.setAttribute("id", `${id}`);
-  claimButton.setAttribute("class", "claim-button btn");
-  claimButton.setAttribute("type", "button");
-  claimButton.setAttribute("value", "CLAIM");
-  claimButton.setAttribute("onclick", "claimItem(this.id)");
-
-  $(cardDiv).append(imageDiv, headerDiv, contentDiv);
-  imageDiv.appendChild(foodImg);
-
-  claimFormDiv.appendChild(claimForm);
-  claimForm.appendChild(claimButton);
-
-  $(contentDiv).append(toggleDiv);
-  $(headerDiv).append(textDiv, buttonDiv);
-  $(toggleDiv).append(foodCategory, foodDescription, claimFormDiv);
-
-
-
-  buttonDiv.appendChild(toggleButton);
-  textDiv.appendChild(foodName);
-  textDiv.appendChild(dateText);
-
-  $("#card-list").prepend(cardDiv);
-
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
-}
-
-
-
-/**
- * Creates new card based on the parameters passed into the function.
- */
-function addNewItem(id, name, description, dateTime, foodGroup, img) {
-
-  var cardDiv = document.createElement("div");
-  cardDiv.setAttribute("id", `card${id}`);
-  cardDiv.setAttribute("class", "cardContainer");
-
-  var contentDiv = document.createElement("div");
-  contentDiv.setAttribute("class", "contentDiv");
-
-  var headerDiv = document.createElement("div");
-  headerDiv.setAttribute("class", "header-Div");
-  //headerDiv.innerHTML = "i am headerdiv";
-
-  var textDiv = document.createElement("div");
-  textDiv.setAttribute("class", "col-xs-10");
-
-  var foodName = document.createElement("h4");
-  // grabs the name from the form so that it will be appended to cardDiv
-  foodName.innerHTML = name;
-
-  var dateText = document.createElement("p");
-  dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
-
-  var buttonDiv = document.createElement("div");
-  buttonDiv.setAttribute("class", "col-xs-2");
-
-  var toggleButton = document.createElement("button");
-  toggleButton.setAttribute("data-toggle", "collapse");
-  toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
-  toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
-
-  var toggleDiv = document.createElement("div");
-  toggleDiv.setAttribute("id", `collapseDiv${id}`);
-  toggleDiv.setAttribute("class", "collapse");
-
-  var foodCategory = document.createElement("p");
-  foodCategory.innerHTML = foodGroup;
-  //takes the contents of the description
-  var foodDescription = document.createElement("p");
-  foodDescription.innerHTML = description;
-
-  var imageDiv = document.createElement("div");
-  imageDiv.setAttribute("class", "imgDiv");
-
-  var foodImg = document.createElement("img");
-  foodImg.setAttribute("class", "food-img");
-  foodImg.src = setPostImage(foodGroup, img);
-
-  console.log("date:" + dateTime);
-  console.log("food category" + foodGroup);
-  console.log(img);
-
-  var claimForm = document.createElement("form");
-  claimForm.setAttribute("class", "claim-form");
-  claimForm.setAttribute("action", "javascript:void(0);")
-
-  var claimButton = document.createElement("input");
-  claimButton.setAttribute("id", `${id}`);
-  claimButton.setAttribute("class", "claim-button");
-  claimButton.setAttribute("type", "button");
-  claimButton.setAttribute("value", "CLAIM");
-  claimButton.setAttribute("onclick", "claimItem(this.id)");
-
-  var deleteButton = document.createElement("input");
-  deleteButton.setAttribute("id", `${id}`);
-  deleteButton.setAttribute('class', 'delete-button');
-  deleteButton.setAttribute("type", "button");
-  deleteButton.setAttribute("value", "DELETE");
-  deleteButton.setAttribute("onclick", "deleteItem(this.id)");
-
-  $(cardDiv).append(imageDiv, headerDiv, contentDiv);
-  imageDiv.appendChild(foodImg);
-
-  $(contentDiv).append(toggleDiv);
-  $(headerDiv).append(textDiv, buttonDiv);
-  $(toggleDiv).append(foodCategory, foodDescription, claimForm);
-
-  buttonDiv.appendChild(toggleButton);
-  textDiv.appendChild(foodName);
-  textDiv.appendChild(dateText);
-
-  claimForm.appendChild(claimButton);
-  claimForm.appendChild(deleteButton);
-  $("#card-list").prepend(cardDiv);
-
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
-}
-
-function addNewItemNoClaim(id, name, description, dateTime, foodGroup, img) {
-
-  var cardDiv = document.createElement("div");
-  cardDiv.setAttribute("id", `card${id}`);
-  cardDiv.setAttribute("class", "cardContainer");
-
-  var contentDiv = document.createElement("div");
-  contentDiv.setAttribute("class", "contentDiv");
-
-  var headerDiv = document.createElement("div");
-  headerDiv.setAttribute("class", "header-Div");
-  //headerDiv.innerHTML = "i am headerdiv";
-
-  var textDiv = document.createElement("div");
-  textDiv.setAttribute("class", "col-xs-10");
-
-  var foodName = document.createElement("h4");
-  // grabs the name from the form so that it will be appended to cardDiv
-  foodName.innerHTML = name;
-
-  var dateText = document.createElement("p");
-  dateText.innerHTML = "Expires on " + moment(dateTime).format('MM/DD/YYYY');
-
-  var buttonDiv = document.createElement("div");
-  buttonDiv.setAttribute("class", "col-xs-2");
-
-  var toggleButton = document.createElement("button");
-  toggleButton.setAttribute("data-toggle", "collapse");
-  toggleButton.setAttribute("data-target", `#collapseDiv${id}`);
-  toggleButton.setAttribute("class", "glyphicon glyphicon glyphicon-option-vertical collapse-button");
-
-  var toggleDiv = document.createElement("div");
-  toggleDiv.setAttribute("id", `collapseDiv${id}`);
-  toggleDiv.setAttribute("class", "collapse");
-
-  var foodCategory = document.createElement("p");
-  foodCategory.innerHTML = foodGroup;
-  //takes the contents of the description
-  var foodDescription = document.createElement("p");
-  foodDescription.innerHTML = description;
-
-  var imageDiv = document.createElement("div");
-  imageDiv.setAttribute("class", "imgDiv");
-
-  var foodImg = document.createElement("img");
-  foodImg.setAttribute("class", "food-img");
-  foodImg.src = setPostImage(foodGroup, img);
-
-  console.log("date:" + dateTime);
-  console.log("food category" + foodGroup);
-  console.log(img);
-
-  var claimForm = document.createElement("form");
-  claimForm.setAttribute("class", "claim-form");
-  claimForm.setAttribute("action", "javascript:void(0);")
-
-  var deleteButton = document.createElement("input");
-  deleteButton.setAttribute("id", `${id}`);
-  deleteButton.setAttribute('class', 'delete-button');
-  deleteButton.setAttribute("type", "button");
-  deleteButton.setAttribute("value", "DELETE");
-  deleteButton.setAttribute("onclick", "deleteItem(this.id)");
-
-  $(cardDiv).append(imageDiv, headerDiv, contentDiv);
-  imageDiv.appendChild(foodImg);
-
-  $(contentDiv).append(toggleDiv);
-  $(headerDiv).append(textDiv, buttonDiv);
-  $(toggleDiv).append(foodCategory, foodDescription);
-
-  foodDescription.appendChild(claimForm);
-  buttonDiv.appendChild(toggleButton);
-  textDiv.appendChild(foodName);
-  textDiv.appendChild(dateText);
-
-  claimForm.appendChild(deleteButton);
-  $("#card-list").prepend(cardDiv);
-
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
-}
-
-
-
 function setPostImage(foodCategory, imgName) {
   if (imgName !== "undefined.png") {
     return `/images/${imgName}`;
@@ -607,6 +340,139 @@ function setPostImage(foodCategory, imgName) {
 
 function itemDeleted(id) {
   $(`#card${id}`).remove();
+}
+
+
+function deleteItem(itemID) {
+  socket.emit('delete item', {
+    id: itemID
+  });
+}
+
+/**
+ * Creates Card from FoodItem Table without a 'Claim' Button.
+ * @param {*} id 
+ * @param {*} name 
+ * @param {*} description 
+ * @param {*} dateTime 
+ * @param {*} foodGroup 
+ * @param {*} img 
+ */
+function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
+  $('#card-list').prepend(`
+  <div id="card${id}" class="cardContainer">
+    <div class="imgDiv">
+        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+    </div>
+    <div class="header-Div">
+        <div class="row">
+            <div class="col-xs-10">
+                <h4>${name}</h4>
+                <p>Expires on ${moment(dateTime).format('MM/DD/YYYY')}</p>
+            </div>
+            <div class="col-xs-2">
+                <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
+                    aria-expanded="false"></button>
+            </div>
+        </div>
+    </div>
+    <div class="contentDiv row">
+        <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
+            <p>${foodGroup}</p>
+            <p>${description}</p>
+            <form class="claim-form"
+                action="javascript:void(0);">
+                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteItem(this.id)">
+            </form>
+            <p></p>
+        </div>
+    </div>`);
+  /** Clearing Forms */
+  $('#postForm').trigger('reset');
+}
+
+/**
+ * Creates Card from FoodItem Table without a 'Delete' Button.
+ * @param {*} id 
+ * @param {*} name 
+ * @param {*} description 
+ * @param {*} dateTime 
+ * @param {*} foodGroup 
+ * @param {*} img 
+ */
+function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
+  $('#card-list').prepend(`
+  <div id="card${id}" class="cardContainer">
+    <div class="imgDiv">
+        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+    </div>
+    <div class="header-Div">
+        <div class="row">
+            <div class="col-xs-10">
+                <h4>${name}</h4>
+                <p>Expires on ${moment(dateTime).format('MM/DD/YYYY')}</p>
+            </div>
+            <div class="col-xs-2">
+                <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
+                    aria-expanded="false"></button>
+            </div>
+        </div>
+    </div>
+    <div class="contentDiv row">
+        <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
+            <p>${foodGroup}</p>
+            <p>${description}</p>
+            <form class="claim-form"
+                action="javascript:void(0);">
+                <input id="${id}" class="claim-button" type="button" value="CLAIM" onclick="claimItem(this.id)">
+            </form>
+            <p></p>
+        </div>
+    </div>`);
+  /** Clearing Forms */
+  $('#postForm').trigger('reset');
+}
+
+/**
+ * Creates Card from FoodItem Table with both buttons.
+ * @param {*} id 
+ * @param {*} name 
+ * @param {*} description 
+ * @param {*} dateTime 
+ * @param {*} foodGroup 
+ * @param {*} img 
+ */
+function createCardBothButtons(id, name, description, dateTime, foodGroup, img) {
+  $('#card-list').prepend(`
+  <div id="card${id}" class="cardContainer">
+    <div class="imgDiv">
+        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+    </div>
+    <div class="header-Div">
+        <div class="row">
+            <div class="col-xs-10">
+                <h4>${name}</h4>
+                <p>Expires on ${moment(dateTime).format('MM/DD/YYYY')}</p>
+            </div>
+            <div class="col-xs-2">
+                <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
+                    aria-expanded="false"></button>
+            </div>
+        </div>
+    </div>
+    <div class="contentDiv row">
+        <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
+            <p>${foodGroup}</p>
+            <p>${description}</p>
+            <form class="claim-form"
+                action="javascript:void(0);">
+                <input style="width:50%; border-bottom-left-radius:0px; " id="${id}" class="claim-button" type="button" value="CLAIM" onclick="claimItem(this.id)"><input style="width:50%;  border-bottom-right-radius:0px;"  id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteItem(this.id)">
+            </form>
+            <p></p>
+        </div>
+    </div>`);
+  /** Clearing Forms */
+  $('#postForm').trigger('reset');
 }
 
 // Creates a thumbnail when an image has been uploaded

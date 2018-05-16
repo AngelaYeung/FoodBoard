@@ -2,6 +2,7 @@ const mysqlconnection = require('./mysqlconnection.js');
 
 var connection = mysqlconnection.handleDisconnect();
 
+const token = 'pbvEgpojkg1eEkIdv03G9SRA';
 
 
 /**
@@ -20,23 +21,30 @@ function newItems(req, res) {
                 text: 'Sorry but the boards empty :white_frowning_face:',
             }
         } else {
-            let text;
+            let msg;
             for (let i = 0; i < rows.length; i++) {
-                text += `${i}.\t${rows.foodName}\n`;
+                msg += `${i}.\t${rows.foodName}\n`;
             }
             const response = {
                 response_type: 'in_channel',
                 channel: slackReqObj.channel_id,
-                text: 'Sorry but the boards empty :white_frowning_face:',
+                text: 'Most Recent Posts:',
+                attachments: {
+                    text: msg,
+                }
               };
         }
         
+        console.log('Slack Commands:', response);
         return res.json(response);
     });
 
 };
 
 
+
+
 module.exports = {
     newItems: newItems,
+    token: token
 };
