@@ -106,7 +106,14 @@ app.get('/', (req, res) => {
 });
 
 app.post('/slack/command/new', (req, res) => {
-  slackcmd(req, res); 
+  console.log('CMD:', req.body);
+
+  if (req.body.token === slackcmd.token) {
+    slackcmd.newItems(req, res); 
+  } else {
+    console.log('Incorrect slack token');
+  }
+
 });
 
 
