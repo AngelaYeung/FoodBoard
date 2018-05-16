@@ -119,47 +119,6 @@ app.post('/slack/command/new', (req, res) => {
 
 /*************************************************************************
  * 
- *         FOOD BOARD ACCOUNT SETTINGS FEATURE - SERVER SIDE
- * 
- * 
- *************************************************************************/
-app.get('/account', (req, res) => {
-  var sessionID = req.sessionID;
-  var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
-  connection.query(query, (error, rows, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-
-      if (rows.length) {
-        var userID = rows[0].Users_userID;
-        //Query for user info for current user
-        var userInfo = "SELECT * FROM Users WHERE userID = ?";
-        connection.query(userInfo, [userID], (error, result, field) => {
-          if (error) {
-            console.log("error");
-          } else {
-            console.log("successful");
-            var name = result[0].firstName + " " + result[0].lastName;
-            var email = result[0].email;
-            var suiteNum = result[0].suiteNumber;
-
-            res.render('account', {
-              name: name,
-              email: email,
-              suiteNum: suiteNum,
-            });
-          }
-        });
-      }
-    }
-    /*
-    GET NAME, EMAIL, Suite #, current password
-    */
-  });
-});
-/*************************************************************************
- * 
  *         FOOD BOARD LOGIN/REGISTER FEATURE - SERVER SIDE
  * 
  * 
@@ -520,6 +479,24 @@ io.on('connection', (socket) => {
   });
 });
 
+ 
+// socket.on("user claims", (claim) => {
+//   console.log("User Claims:", claim);
+
+//   let sessionID = claim.sessionID;
+//   let claimerUserID;
+
+//   var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID =?) LIMIT 1`;
+//   connection.query(query, [sessionID], (error, row, fields) => {
+//     if (error) {
+//       console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID",);
+//     }
+
+//     if (row.length) {
+//       claimerUserID = row[0].Users_userID;
+//     } 
+//   });
+// });
 
 /*************************************************************************
  * 
