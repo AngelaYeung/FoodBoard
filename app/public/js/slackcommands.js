@@ -2,6 +2,7 @@ const mysqlconnection = require('./mysqlconnection.js');
 
 var connection = mysqlconnection.handleDisconnect();
 
+const token = 'pbvEgpojkg1eEkIdv03G9SRA';
 
 
 /**
@@ -9,7 +10,9 @@ var connection = mysqlconnection.handleDisconnect();
  */
 function newItems(req, res) {
 
-    let query = "SELECT * FROM FoodItem WHERE claimStatus = 0 ORDER BY itemID DESC LIMIT 3";
+    let slackReqObj = req.body;
+
+    let query = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
     connection.query(query, (error, rows, fields) => {
         if (error) {
             console.log('Error', new Date(Date.now()), error);
@@ -19,24 +22,32 @@ function newItems(req, res) {
                 channel: slackReqObj.channel_id,
                 text: 'Sorry but the boards empty :white_frowning_face:',
             }
+            console.log('Slack Commands:', response);
+            return res.json(response);
         } else {
-            let text;
+            let msg;
             for (let i = 0; i < rows.length; i++) {
-                text += `${i}.\t${rows.foodName}\n`;
+                msg += `${i}.\t${rows.foodName}\n`;
             }
             const response = {
                 response_type: 'in_channel',
                 channel: slackReqObj.channel_id,
-                text: 'Sorry but the boards empty :white_frowning_face:',
+                text: 'Most Recent Posts:',
+                attachments: {
+                    text: msg,
+                }
               };
+              console.log('Slack Commands:', response);
+              return res.json(response);
         }
-        
-        return res.json(response);
     });
 
 };
 
 
+
+
 module.exports = {
     newItems: newItems,
+    token: token
 };

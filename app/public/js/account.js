@@ -9,6 +9,12 @@ $(document).ready(() => {
         };
     });
 
+    $("#suite-form").change( () => {
+        if (pwFieldsFilled()) {
+            $("#suite-submit").removeClass("disabled");
+        }
+    });
+
 
     //Change password field styling green if right, red if incorrect
     $("#newPW,#confirmPW").on('change', (e) => {
@@ -36,5 +42,3 @@ function pwFieldsFilled() {
         && !($("#newPW").val().length === 0)
         && !($("#confirmPW").val().length === 0));
 };
-
-

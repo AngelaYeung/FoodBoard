@@ -17,6 +17,7 @@ const nodemailer = require('nodemailer'); // for sending automated emails
 var models = require("./app/models"); // tells the server to require these routes 
 var authRoute = require('./app/routes/auth.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
+var slackcmd = require('./app/public/js/slackcommands');
 
 var connection = mysqlconnection.handleDisconnect();
 
@@ -89,48 +90,21 @@ app.get('/', (req, res) => {
   });
 });
 
-/*************************************************************************
- * 
- *         FOOD BOARD ACCOUNT SETTINGS FEATURE - SERVER SIDE
- * 
- * 
- *************************************************************************/
-app.get('/account', (req, res) => {
-  var sessionID = req.sessionID;
-  var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
-  connection.query(query, (error, rows, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
+app.post('/slack/command/new', (req, res) => {
+  console.log('CMD:', req.body);
 
-      if (rows.length) {
-        var userID = rows[0].Users_userID;
-        //Query for user info for current user
-        var userInfo = "SELECT * FROM Users WHERE userID = ?";
-        connection.query(userInfo, [userID], (error, result, field) => {
-          if (error) {
-            console.log("error");
-          } else {
-            console.log("successful");
-            var name = result[0].firstName + " " + result[0].lastName;
-            var email = result[0].email;
-            var suiteNum = result[0].suiteNumber;
+  if (req.body.token === slackcmd.token) {
+    slackcmd.newItems(req, res); 
+  } else {
+    console.log('Incorrect slack token');
+  }
 
-            res.render('account', {
-              name: name,
-              email: email,
-              suiteNum: suiteNum,
-            });
-          }
-        });
-      }
-    }
-    /*
-    GET NAME, EMAIL, Suite #, current password
-    */
-  });
 });
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9640c336df117e2d00be59fd6da905a57fd50af8
 /*************************************************************************
  * 
  *         FOOD BOARD LOGIN/REGISTER FEATURE - SERVER SIDE
@@ -525,6 +499,24 @@ io.on('connection', (socket) => {
   });
 });
 
+ 
+// socket.on("user claims", (claim) => {
+//   console.log("User Claims:", claim);
+
+//   let sessionID = claim.sessionID;
+//   let claimerUserID;
+
+//   var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID =?) LIMIT 1`;
+//   connection.query(query, [sessionID], (error, row, fields) => {
+//     if (error) {
+//       console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID",);
+//     }
+
+//     if (row.length) {
+//       claimerUserID = row[0].Users_userID;
+//     } 
+//   });
+// });
 
 /*************************************************************************
  * 

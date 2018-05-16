@@ -28,6 +28,7 @@ var validate = (app, passport) => {
         })(req, res, next);
     });
 
+    app.get('/myposts', isLoggedIn, authController.myposts);
 
     app.get('/boardpage', isLoggedIn, authController.boardpage);
 
