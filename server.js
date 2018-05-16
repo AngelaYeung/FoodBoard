@@ -10,13 +10,19 @@ const passport = require('passport'); // for authentication
 const session = require('express-session'); // for session handling
 const env = require('dotenv').load();
 const exphbs = require('express-handlebars'); // for rendering dynamic templates
-const nodemailer = require('nodemailer'); // for sending automated emails
+const nodemailer = require('nodemailer');
 
+/** FOR SENDING AUTOMATED EMAILS 
+const nodemailer = require('nodemailer'); // for sending automated emails
+const ses = require('node-ses'), client = ses.createClient({key: '', secret: ''}); // for creating a client key
+const ejs = require('ejs');
+*/
 
 /** Exports made */
 var models = require("./app/models"); // tells the server to require these routes 
 var authRoute = require('./app/routes/auth.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
+var bCrypt = require('bcrypt-nodejs'); // decrypting/encrypting passwords server side
 
 var connection = mysqlconnection.handleDisconnect();
 
@@ -115,21 +121,21 @@ app.get('/account', (req, res) => {
   var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
   connection.query(query, (error, rows, fields) => {
     if (error) {
-      console.log(error);
+      console.log(new Date(Date.now()), 'Error grabbing userID from Sessions table: ', error);
     } else {
 
       if (rows.length) {
         var userID = rows[0].Users_userID;
         //Query for user info for current user
         var userInfo = "SELECT * FROM Users WHERE userID = ?";
-        connection.query(userInfo, [userID], (error, result, field) => {
+        connection.query(userInfo, [userID], (error, rows, field) => {
           if (error) {
             console.log("error");
           } else {
             console.log("successful");
-            var name = result[0].firstName + " " + result[0].lastName;
-            var email = result[0].email;
-            var suiteNum = result[0].suiteNumber;
+            var name = rows[0].firstName + " " + rows[0].lastName;
+            var email = rows[0].email;
+            var suiteNum = rows[0].suiteNumber;
 
             res.render('account', {
               name: name,
@@ -145,15 +151,151 @@ app.get('/account', (req, res) => {
     */
   });
 });
-  /*************************************************************************
+
+/*************************************************************************
    * 
-   *         FOOD BOARD LOGIN/REGISTER FEATURE - SERVER SIDE
+   *         FOOD BOARD VERIFY AND CHANGE PASSWORD COMBINED - SERVER SIDE
    * 
+   *************************************************************************/
+app.post('/changepassword', (req, res) => {
+  console.log("Entered change password event.");
+
+  let sessionID = req.sessionID;
+  let passwordNotHashed = req.body.currentPW;
+  let userID, passwordHashed, newPassword;
+
+
+  // first check if the user is in a session
+  var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
+  connection.query(query, [sessionID], (error, rows, fields) => {
+    if (error) {
+      console.log(Date.now(), 'Error grabbing userID from Sessions table: ', error);
+    } else {
+      if (rows.length) {
+        userID = rows[0].Users_userID;
+
+        // the user is confirmed to be in a session, now grab the old password tied to the user ID from the database
+        var verifyOldPassword = "SELECT password FROM Users WHERE userID = ?";
+        connection.query(verifyOldPassword, [userID], (error, rows, field) => {
+          if (error) {
+            console.log(new Date(Date.now()), "Error querying for old password in the Users Table: ", error);
+          } else if (rows.length) {
+
+            // the old password was contained in the database, now verify the old password matches the hashed password contained in the database
+            passwordHashed = rows[0].password;
+            var isValidPassword = (formalHashed, formalNotHashed) => {
+              return bCrypt.compareSync(formalNotHashed, formalHashed);
+            }
+            // function compares the password to determine if they match
+            if (!isValidPassword(passwordHashed, passwordNotHashed)) {
+              // the call back function can send data back to auth.js
+              res.render('account', {
+                passwordMessage: "Not a valid password" //renders an invalid password message using handlebars onto account page
+              });
+
+            } else {
+
+              // the password is valid and matches what was found in the database, continue with changing the password
+              var generateHash = (password) => {
+                return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
+              };
+              newPassword = generateHash(req.body.newPW); // hashed password
+
+              // updates the old password with the new password in the Users table
+              queryChangePassword = "UPDATE Users SET password = ? WHERE userID = ?";
+              connection.query(queryChangePassword, [newPassword, userID], (error, rows, field) => {
+                if (error) {
+                  console.log(new Date(Date.now()), "Error occured while trying to change password:", error);
+                } else {
+                  console.log("Successfully changed password.");
+
+                  res.render('account', {
+                    passwordMessage: "Your password has been changed!"
+                  });
+                }
+              });
+            }
+          }
+        });
+      }
+    }
+  });
+});
+
+/*************************************************************************
+   * 
+   *         FOOD BOARD VERIFY PASSWORD/CHANGE SUITE NUMBER COMBINED - SERVER SIDE
    * 
    *************************************************************************/
 
+app.post("/changesuitenumber", (req, res) => {
 
-  authRoute.validate(app, passport);
+  let sessionID = req.sessionID;
+  let newSuiteNumber = req.body.newSuiteNumber;
+  let passwordNotHashed = req.body.currentPW;
+  let userID, passwordHashed;
+
+  // first check if the user is in a session
+  var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
+  connection.query(query, [sessionID], (error, rows, fields) => {
+    if (error) {
+      console.log(new Date(Date.now()), 'Error grabbing userID from Sessions table: ', error);
+    } else if (rows.length) {
+      userID = rows[0].Users_userID;
+
+      // the user is confirmed to be in a session, now grab the old password tied to the userID from the database
+      var verifyOldPassword = "SELECT password, FROM Users WHERE userID = ?";
+      connection.query(verifyOldPassword, [userID], (error, rows, field) => {
+        if (error) {
+          console.log(new Date(Date.now()), "Error querying for old password in the Users Table: ", error);
+        } else {
+          if (rows.length) {
+
+            // the old password was contained in the database, now verify the old password matches the hashed password contained in the database
+            passwordHashed = rows[0].password;
+            var isValidPassword = (formalHashed, formalNotHashed) => {
+              return bCrypt.compareSync(formalNotHashed, formalHashed);
+            }
+
+            // function compares the password to determine if they match
+            if (!isValidPassword(passwordHashed, passwordNotHashed)) {
+              // the call back function can send data back to auth.js
+              res.render('account', {
+                passwordMessage: "Not a valid password" //renders an invalid password message using handlebars onto account page
+              });
+
+            } else {
+
+              // updates the old email with the new email in the Users table
+              queryChangeEmail = "UPDATE Users SET suiteNumber = ? WHERE userID = ?";
+              connection.query(queryChangeEmail, [newSuiteNumber, userID], (error, rows, field) => {
+                if (error) {
+                  console.log(new Date(Date.now()), "Error occured while trying to change email:", error);
+                } else {
+                  console.log("Successfully changed suite number.");
+
+                  res.render('account', {
+                    passwordMessage: "Your suite number has been changed!"
+                  });
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+  });
+});
+
+/*************************************************************************
+ * 
+ *         FOOD BOARD LOGIN/REGISTER FEATURE - SERVER SIDE
+ * 
+ * 
+ *************************************************************************/
+
+
+authRoute.validate(app, passport);
 
 
 //load passport strategies
@@ -314,7 +456,7 @@ io.on('connection', (socket) => {
     //Declaring variables needed to generate automated delete email
     let sessionID = deletion.sessionID;
     let itemID = deletion.id;
-  
+
     let role
     let posterUserID, posterFirstName, posterSuiteNumber;
     let foodName, foodDescription, foodExpiryTime, foodImage;
@@ -322,24 +464,24 @@ io.on('connection', (socket) => {
 
     // first check if the person deleting the post is currently in a session
     var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
-    connection.query(query, [sessionID], (error, row, fields) => {
+    connection.query(query, [sessionID], (error, rows, fields) => {
       if (error) {
         console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
       }
-      if (row.length) {
-        
-        let posterUserID = row[0].Users_userID;
-        
+      if (rows.length) {
+
+        let posterUserID = rows[0].Users_userID;
+
         // check to see if the user is an admin or poaster, no email is sent if a post is deleted by an admin
         var checkRole = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
-        connection.query(checkRole, [posterUserID], (error, row, field) => {
+        connection.query(checkRole, [posterUserID], (error, rows, field) => {
           if (error) {
             console.log(new Date(Date.now()), "Error checking for role of user:", error);
           } else {
-            console.log("Successfully inquired for poster's information: ", row);
-            role = row[0].role;
-            posterFirstName = row[0].firstName;
-            posterSuiteNumber = row[0].suiteNumber;
+            console.log("Successfully inquired for poster's information.");
+            role = rows[0].role;
+            posterFirstName = rows[0].firstName;
+            posterSuiteNumber = rows[0].suiteNumber;
 
             if (role === 0) {
 
@@ -352,16 +494,16 @@ io.on('connection', (socket) => {
               // user is the poster of the food item
               // next query for the food item information as well as the claimerID if there is one.
               var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
-              connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
+              connection.query(queryFoodItemTable, [itemID], (error, rows, field) => {
                 if (error) {
                   console.log(new Date(Date.now()), "Error querying from FoodItem Table: ", error);
                 } else {
-                  console.log("Successfully obtained food item info from FoodItem Table");
-                  foodName = row[0].foodName;
-                  foodDescription = row[0].foodDescription;
-                  foodExpiryTime = row[0].foodExpiryTime;
-                  foodImage = row[0].foodImage;
-                  claimerUserID = row[0].Users_claimerUserID;
+                  console.log("Successfully obtained food item info from FoodItem Table", rows);
+                  foodName = rows[0].foodName;
+                  foodDescription = rows[0].foodDescription;
+                  foodExpiryTime = rows[0].foodExpiryTime;
+                  foodImage = rows[0].foodImage;
+                  claimerUserID = rows[0].Users_claimerUserID;
 
                   // item can now be deleted from fooditem table, we have all relevant information
                   deleteFoodItem(itemID);
@@ -375,14 +517,14 @@ io.on('connection', (socket) => {
                     // posted food item has been claimed
                     // query for claimer's information so we can send an automated email
                     var claimerQuery = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
-                    connection.query(claimerQuery, [claimerUserID], (error, row, field) => {
+                    connection.query(claimerQuery, [claimerUserID], (error, rows, field) => {
                       if (error) {
                         console.log(new Date(Date.now()), "Error checking for role of user:", error);
                       } else {
-                        console.log("Successfully inquired for claimer's information.")
-                        claimerEmail = row[0].email;
-                        claimerFirstName = row[0].firstName;
-                        claimerSuiteNumber = row[0].suiteNumber;
+                        console.log("Successfully inquired for claimer's information.", rows)
+                        claimerEmail = rows[0].email;
+                        claimerFirstName = rows[0].firstName;
+                        claimerSuiteNumber = rows[0].suiteNumber;
 
                         // sends an email to the claimer of the post 
                         sendDeleteEmailToClaimer(claimerEmail, claimerFirstName,
@@ -398,7 +540,7 @@ io.on('connection', (socket) => {
             }
           }
         });
-      } 
+      }
     });
   });
 
@@ -423,17 +565,17 @@ io.on('connection', (socket) => {
     let claimerUserID, claimerEmail, claimerFirstName, claimerSuiteNumber;
 
     var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
-    connection.query(query, [sessionID], (error, row, fields) => {
+    connection.query(query, [sessionID], (error, rows, fields) => {
       if (error) {
         console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
       }
 
-      if (row.length) {
+      if (rows.length) {
 
-        claimerUserID = row[0].Users_userID;
+        claimerUserID = rows[0].Users_userID;
 
         var setClaimerID = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ?`;
-        connection.query(setClaimerID, [claimerUserID, itemID], (error, row, field) => {
+        connection.query(setClaimerID, [claimerUserID, itemID], (error, rows, field) => {
           if (error) {
             //return error if update claimerID into failed
             console.log(new Date(Date.now()), "Error updating claimerID into FoodItem table: ", error);
@@ -442,31 +584,31 @@ io.on('connection', (socket) => {
             console.log("Successfully updated claimerID into FoodItem table.");
 
             var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
-            connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
+            connection.query(queryFoodItemTable, [itemID], (error, rows, field) => {
               if (error) {
                 //error occured while attempting to query FoodItem Table
                 console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
               } else {
-                console.log("Successfully obtained Poster's userID from FoodItem Table", row);
-                posterUserID = row[0].Users_userID;
-                foodName = row[0].foodName;
-                foodDescription = row[0].foodDescription;
-                foodExpiryTime = row[0].foodExpiryTime;
-                foodImage = row[0].foodImage;
+                console.log("Successfully obtained Poster's userID from FoodItem Table.");
+                posterUserID = rows[0].Users_userID;
+                foodName = rows[0].foodName;
+                foodDescription = rows[0].foodDescription;
+                foodExpiryTime = rows[0].foodExpiryTime;
+                foodImage = rows[0].foodImage;
 
                 var usersTableQuery = "SELECT * FROM Users WHERE userID = ? OR userID = ? LIMIT 2";
-                connection.query(usersTableQuery, [posterUserID, claimerUserID], (error, row, field) => {
+                connection.query(usersTableQuery, [posterUserID, claimerUserID], (error, rows, field) => {
                   if (error) {
                     //return error if selection fail
                     console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
                   } else {
                     //else return the users information
-                    console.log("Successfully grabbed user of claimed item. ", row);
-                    posterEmail = row[0].email;
-                    posterFirstName = row[0].firstName;
-                    claimerEmail = row[1].email;
-                    claimerFirstName = row[1].firstName;
-                    claimerSuiteNumber = row[1].suiteNumber;
+                    console.log("Successfully grabbed user of claimed item.");
+                    posterEmail = rows[0].email;
+                    posterFirstName = rows[0].firstName;
+                    claimerEmail = rows[1].email;
+                    claimerFirstName = rows[1].firstName;
+                    claimerSuiteNumber = rows[1].suiteNumber;
 
                     sendClaimEmailToPoster(posterEmail, posterFirstName,
                       foodName, foodDescription, foodExpiryTime, foodImage,

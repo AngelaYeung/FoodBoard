@@ -1,5 +1,9 @@
 @media screen and (max-width: 480px) {   
 
+    .account {
+        padding-top: 30px;
+    }
+    
     .form-control{
         width: 85%;
         margin-left: 3em;
@@ -31,3 +35,7 @@
         width: 12%;
       }
 }
+
+body {
+    background: #DDE5E5;
+  }
