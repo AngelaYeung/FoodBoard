@@ -8,7 +8,7 @@ module.exports = function (sequelize, Sequelize) {
 		email: { type: Sequelize.STRING, validate: { isEmail: true } },
 		password: { type: Sequelize.STRING, allowNull: false },
 		suiteNumber: { type: Sequelize.STRING, notEmpty: true },
-		role: { type: Sequelize.BOOLEAN, notEmpty: true }
+		role: { type: Sequelize.BOOLEAN, defaultValue: '0', notEmpty: true }
 	});
 
 	return User;
