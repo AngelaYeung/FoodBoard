@@ -163,7 +163,7 @@ io.on('connection', (socket) => {
 
           // check to see if the user is an admin
           var userID = rows[0].Users_userID;
-          var checkRole = "SELECT role FROM Users WHERE userID = ? LIMIT 1";
+          var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
           connection.query(checkRole, [userID], (error, row, field) => {
             if (error) {
               console.log(new Date(Date.now()), "Error checking for role of user:", error);
