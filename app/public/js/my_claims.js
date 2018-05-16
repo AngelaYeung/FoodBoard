@@ -22,10 +22,7 @@ $(document).ready(() => {
         rows[i].foodGroup, rows[i].foodImage);
     };
   });
-
 }); //closes $(document).ready();
-
-
 /**
  * Gets the session id. 
  * @param {string} name - name of the cookie session key we are grabbing (should be connect.sid)
@@ -118,7 +115,10 @@ function setPostImage(foodCategory, imgName) {
   }
 }
 
-function unclaimItem(id) {
-  console.log("Function for unclaim button");
-  
+function unclaimItem(cardID) {
+  console.log("The cardID is:", cardID);
+  socket.emit('unclaim item', {
+    cardID: cardID,
+  });
+  $(`#card${cardID}`).remove();
 }

@@ -513,6 +513,31 @@ io.on('connection', (socket) => {
       }
     });
   });
+
+  /************************************************************************
+   * 
+   *          MY CLAIMS - UNCLAIM FEATURE - SERVER SIDE
+   * 
+   * 
+   ***********************************************************************/
+
+   socket.on('unclaim item', (cardID) => {
+    console.log("unclaim this item");
+    let postID = cardID.cardID;
+    console.log("postID", postID);
+
+    var query = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ${postID}`;
+    connection.query(query, [null], (error, rows, field) => {
+      if (error) {
+        console.log(new Date( Date.now()), "Error changing claim status of food item", error);
+      } else if (rows.length) {
+        console.log("Claim status updated");
+        socket.emit('unclaim item return', {
+          cardID: postID,
+        });
+      }
+    });
+   });
 });
 
 
