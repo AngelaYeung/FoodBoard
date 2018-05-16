@@ -1,4 +1,8 @@
-/* Header -> NavBar */
+/**********************************************************
+*
+*             Stlying for Mobile
+*
+**********************************************************/
 @media screen and (max-width: 480px) {
 
   .navbar-foodboard img {
@@ -35,18 +39,50 @@
     left:-20px;
     border-radius: 0;
     background-color: #4EB266;
-    box-shadow:none;
   }
   .dropdown-menu li a {
     font-size: 14pt;
     color:white;
   }
+}
+/**********************************************************
+*
+*             Stlying for Desktop.
+*
+**********************************************************/
+@media screen and (min-width: 481px){
+  .navbar-brand-sm {
+    display:none;
+  }
 
-
+  .navbar-fixed-top{
+    background-color: #4EB266;
+  }
+  .navbar-brand .navbar-foodboard {
+    font-size: 14pt;
+  }
 }
 
+/**********************************************************
+*
+*             General Style
+*
+**********************************************************/
 
-.dropdown .btn-primary {
+  /** Position the hamburger icon. */
+  .glyphicon-menu-hamburger {
+    font-size: 18pt;
+  }
+
+  /** Positions the dropdown menu on all navbars */
+  .open >.dropdown-menu{
+    margin-top: 2.5%;
+    border-top: none;
+  }
+  .dropdown-menu {
+    border:none;
+  }
+  .dropdown .btn-primary {
     background-color: transparent;
     border-style: none;
     padding: 0;
@@ -56,7 +92,6 @@
 
 .navbar-brand .navbar-foodboard {
   color:white;
-  font-size:50pt;
   padding-left:5%;
   font-weight:bold;
 }
@@ -115,29 +150,6 @@
 .navbar-right-custom {
   padding-right: 5%;
   font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-size:14pt;
-  
+  font-size:14pt; 
 }
 
-
-@media screen and (min-width: 481px){
-  .navbar-brand-sm {
-    display:none;
-  }
-
-  .navbar-fixed-top{
-    background-color: #4EB266;
-  }
-  
-}
-
-  /** Position the hamburger icon. */
-  .glyphicon-menu-hamburger {
-    font-size: 18pt;
-  }
-
-  /** Positions the dropdown menu on all navbars */
-  .open >.dropdown-menu{
-    margin-top: 2.5%;
-    border-top: none;
-  }
