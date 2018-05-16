@@ -67,23 +67,9 @@ app.engine('handlebars',
 
 app.set('view engine', 'handlebars');
 
-/**
- * Renders the homepage when you first open the port
- */
-// app.get('/', (req, res) => {
-//   res.render('home.handlebars');
-// });
 
 app.get('/snake', (req, res) => {
   res.render('snake');
-});
-
-app.get('/boardpagero', (req, res) => {
-  res.render('boardpagero');
-});
-
-app.get('/boardpagero_home', (req, res) => {
-  res.render('boardpagero_home');
 });
 
 app.get('/', (req, res) => {
@@ -101,7 +87,6 @@ app.get('/', (req, res) => {
       }
     }
   });
-
 });
 
 /*************************************************************************
@@ -145,10 +130,10 @@ app.get('/account', (req, res) => {
     */
   });
 });
+
 /*************************************************************************
  * 
  *         FOOD BOARD LOGIN/REGISTER FEATURE - SERVER SIDE
- * 
  * 
  *************************************************************************/
 
@@ -172,7 +157,7 @@ models.sequelize.sync().then(() => {
   *         FOOD BOARD REGISTRATION FEATURE - SERVER SIDE
  
  
-/**
+/*************************************************************************
 * Socketio detects that connection has been made to the server.
 * The connection event is fired, whenever anyone goes to foodboard.ca.
 */
@@ -191,8 +176,7 @@ io.on('connection', (socket) => {
    * 
    * Fired as soon as user is connected to server
    * 
-   *************************************************************************/
-
+   *************************************************************************
 
   /**
    * When the user has a complete loaded page, fetch data from db to print posts
@@ -253,7 +237,41 @@ io.on('connection', (socket) => {
     });
   });
 
-
+  /*************************************************************************
+   * 
+   *         FOOD BOARD MYPOSTS FEATURE - SERVER SIDE
+   * 
+   * 
+   *************************************************************************/
+  socket.on('my posts', (session) => {
+    var sessionID = session.sessionID;
+    var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
+    console.log('I AM EMITTING MY POSTS');
+    connection.query(query, (error, rows, fields) => {
+      if (error) {
+        console.log(new Date(Date.now()), "Error selecting sessionID in 'myposts' feature:", error);
+      } else {
+        if (rows.length) {
+          var userID = rows[0].Users_userID;
+          //Query for user info for current user
+          var userInfo = "SELECT * FROM FoodItem WHERE Users_userID = ?";
+          connection.query(userInfo, [userID], (error, rows, fields) => {
+            if (error) {
+              console.log(new Date(Date.now()), "Error selecting User's posts in 'myposts' feature:", error);
+            } else if (rows.length === 0) {
+              console.log("This user has no posts to load in 'myposts' page.");
+            } else {
+              console.log("Successfully loading the users posts.");
+              socket.emit('load my posts', {
+                rows: rows,
+                userID: userID,
+              });
+            }
+          });
+        }
+      }
+    });
+  });
 
   /*************************************************************************
    * 
@@ -483,7 +501,7 @@ io.on('connection', (socket) => {
                     console.log("POSTER EMAIL", posterEmail);
                     console.log("CLAIMER EMAIL", claimerEmail);
 
-                
+
                     claimerFirstName = row[1].firstName;
                     claimerSuiteNumber = row[1].suiteNumber;
                     console.log("EMAIL IS HERE LOOK", claimerEmail);
@@ -521,7 +539,7 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
       pass: 'darkthemesonly'
     },
     tls: {
-        rejectUnauthorized:false
+      rejectUnauthorized: false
     }
   });
 
@@ -586,16 +604,16 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
       pass: 'darkthemesonly'
     },
     tls: {
-        rejectUnauthorized:false
+      rejectUnauthorized: false
     }
   });
 
-// setup email data with unicode symbols
-let mailOptions = {
-  from: `foodboardcanada@gmail.com`, // sender address
-  to: posterEmail, // list of receivers
-  subject: 'FoodBoard: Your food item has been claimed', // Subject line
-  text: `Hello ${posterFirstName},
+  // setup email data with unicode symbols
+  let mailOptions = {
+    from: `foodboardcanada@gmail.com`, // sender address
+    to: posterEmail, // list of receivers
+    subject: 'FoodBoard: Your food item has been claimed', // Subject line
+    text: `Hello ${posterFirstName},
 
     Your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can 
     let ${claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.
@@ -607,7 +625,7 @@ let mailOptions = {
     Food Expiry: ${foodExpiryTime}
     
     Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // plain text body
-  html: `<p>Hello ${posterFirstName},<br/>
+    html: `<p>Hello ${posterFirstName},<br/>
     <br/>
     Your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can 
     let ${claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.<br/>
@@ -622,27 +640,27 @@ let mailOptions = {
     <img src="cid:donotreply@foodboard.ca"/><br/>
     <br/>
     Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // html body
-  attachments: [{
-    filename: `foodboard_${foodImage}`,
-    path: `./app/images/${foodImage}`,
-    cid: 'donotreply@foodboard.ca'
-  }]
-};
+    attachments: [{
+      filename: `foodboard_${foodImage}`,
+      path: `./app/images/${foodImage}`,
+      cid: 'donotreply@foodboard.ca'
+    }]
+  };
 
-// send mail with defined transport object
-transporter.sendMail(mailOptions, (error, info) => {
-  if (error) {
-    console.log("Error occured sending claim email", error);
-  } else {
-    // Preview only available when sending through an Ethereal account
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log("Error occured sending claim email", error);
+    } else {
+      // Preview only available when sending through an Ethereal account
 
-    // If successful, should print the following to the console:
-    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-    console.log('Claim message sent: %s', info.messageId);
-    // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-  }
-});
+      // If successful, should print the following to the console:
+      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+      // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+      console.log('Claim message sent: %s', info.messageId);
+      // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    }
+  });
 };
 
 function deleteFoodItem(itemID) {

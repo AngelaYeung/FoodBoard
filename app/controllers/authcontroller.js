@@ -15,6 +15,10 @@ exports.boardpage = (req, res) => {
   res.render('boardpage');
 }
 
+exports.myposts = (req, res) => {
+  res.render('myposts');
+}
+
 exports.logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
