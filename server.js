@@ -318,7 +318,7 @@ io.on('connection', (socket) => {
         let posterUserID = row[0].Users_userID;
 
         // check to see if the user is an admin or poaster, no email is sent if a post is deleted by an admin
-        var checkRole = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
+        var checkRole = "SELECT * FROM users WHERE userID = ? LIMIT 1";
         connection.query(checkRole, [posterUserID], (error, row, field) => {
           if (error) {
             console.log(new Date(Date.now()), "Error checking for role of user:", error);
@@ -362,7 +362,7 @@ io.on('connection', (socket) => {
 
                     // posted food item has been claimed
                     // query for claimer's information so we can send an automated email
-                    var claimerQuery = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
+                    var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
                     connection.query(claimerQuery, [claimerUserID], (error, row, field) => {
                       if (error) {
                         console.log(new Date(Date.now()), "Error checking for role of user:", error);
@@ -445,7 +445,7 @@ io.on('connection', (socket) => {
                 foodExpiryTime = row[0].foodExpiryTime;
                 foodImage = row[0].foodImage;
 
-                var usersTableQuery = "SELECT * FROM Users WHERE userID = ? OR userID = ? LIMIT 2";
+                var usersTableQuery = "SELECT * FROM users WHERE userID = ? OR userID = ? LIMIT 2";
                 connection.query(usersTableQuery, [posterUserID, claimerUserID], (error, row, field) => {
                   if (error) {
                     //return error if selection fail

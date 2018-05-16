@@ -31,7 +31,7 @@ module.exports = function (passport, user) {
         return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
       };
 
-      var userSelect = "SELECT userID FROM Users WHERE exists (select * from Users where email = ?) LIMIT 1";
+      var userSelect = "SELECT userID FROM users WHERE exists (select * from users where email = ?) LIMIT 1";
       connection.query(userSelect, [register_email], (error, results) => {
         if (error) {
           return done(error);
