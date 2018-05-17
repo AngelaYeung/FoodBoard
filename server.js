@@ -655,7 +655,8 @@ io.on('connection', (socket) => {
 
       if (row.length) {
 
-        claimerUserID = row[0].Users_userID;
+        claimerUserID = row[0].Users_userID; // ID of the user in the session
+        console.log("CLAIMERUSERID:", claimerUserID);
 
         var setClaimerID = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ?`;
         connection.query(setClaimerID, [claimerUserID, itemID], (error, rows, field) => {
@@ -666,6 +667,7 @@ io.on('connection', (socket) => {
           } else {
             // else return the updated table
             console.log("Successfully updated claimerID into FoodItem table.");
+            console.log("PRINTING THE UPDATED FIELD OF FOODITEM TABLE WITH CLAIMER ID:", rows);
 
             var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
             connection.query(queryFoodItemTable, [itemID], (error, rows, field) => {
@@ -674,15 +676,17 @@ io.on('connection', (socket) => {
                 slackcmd.log(`Event: Claim item. ${query}.`, error);
                 console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
               } else {
-                console.log("Successfully obtained Poster's userID from FoodItem Table", row);
+                console.log("Successfully obtained Poster's userID from FoodItem Table", rows);
                 posterUserID = rows[0].Users_userID;
                 foodName = rows[0].foodName;
                 foodDescription = rows[0].foodDescription;
                 foodExpiryTime = rows[0].foodExpiryTime;
                 foodImage = rows[0].foodImage;
+                console.log("THIS IS THE POSTER USER ID:", posterUserID);
+                console.log("THIS IS THE CLAIMER USER ID:", claimerUserID);
 
                 var usersTableQuery = "SELECT * FROM users WHERE userID = ? OR userID = ? LIMIT 2";
-                connection.query(usersTableQuery, [posterUserID, claimerUserID], (error, rows, field) => {
+                connection.query(usersTableQuery, [claimerUserID, posterUserID], (error, rows, field) => {
                   if (error) {
                     //return error if selection fail
                     slackcmd.log(`Event: Claim item. ${query}.`, error);
@@ -690,10 +694,10 @@ io.on('connection', (socket) => {
                   } else {
                     //else return the users information
                     console.log("Successfully grabbed user of claimed item. ", rows);
-                    posterEmail = rows[0].email;
-                    posterFirstName = rows[0].firstName;
-                    claimerEmail = rows[1].email;
-
+                    posterEmail = rows[1].email;
+                    posterFirstName = rows[1].firstName;
+                    claimerEmail = rows[0].email;
+                    console.log("CLAIMERUSERID:", claimerUserID);
                     console.log("POSTER EMAIL", posterEmail);
                     console.log("CLAIMER EMAIL", claimerEmail);
 
@@ -702,9 +706,9 @@ io.on('connection', (socket) => {
                     claimerSuiteNumber = rows[1].suiteNumber;
                     console.log("EMAIL IS HERE LOOK", claimerEmail);
 
-                    sendClaimEmailToPoster(claimerEmail, claimerFirstName,
+                    sendClaimEmailToPoster(posterEmail, posterFirstName,
                       foodName, foodDescription, foodExpiryTime, foodImage,
-                      posterEmail, posterFirstName, claimerSuiteNumber);
+                      claimerEmail, claimerFirstName, claimerSuiteNumber);
 
                     console.log(itemID);
                     io.emit('claim return', (itemID));
@@ -801,15 +805,15 @@ io.on('connection', (socket) => {
                   console.log("Successfully unclaimed food item.");
 
                   var queryPosterAndClaimerInformation = `SELECT * FROM users WHERE userID = ? OR userID = ?`;
-                  connection.query(queryPosterAndClaimerInformation, [posterUserID, claimerUserID], (error, rows, field) => {
+                  connection.query(queryPosterAndClaimerInformation, [claimerUserID, posterUserID], (error, rows, field) => {
                     if (error) {
                       console.log(new Date(Date.now()), "Error inquiring for poster and claimer information in unclaim event: ", error);
                     } else if (rows.length) {
                       console.log("Successfully inquired for poster and claimer information in unclaim event.");
-                      posterEmail = rows[0].email;
-                      posterFirstName = rows[0].firstName;
-                      claimerFirstName = rows[1].firstName;
-                      claimerSuiteNumber = rows[1].suiteNumber;
+                      posterEmail = rows[1].email;
+                      posterFirstName = rows[1].firstName;
+                      claimerFirstName = rows[0].firstName;
+                      claimerSuiteNumber = rows[0].suiteNumber;
 
                       // Send email to poster that their food item has been unclaimed.
                       sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber);
@@ -836,9 +840,9 @@ io.on('connection', (socket) => {
 function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, foodDescription, foodExpiryTime, foodImage, posterFirstName, posterSuiteNumber) {
 
   const transporter = nodemailer.createTransport({
-    host: 'gmail', //'smtp.ethereal.email'
-    //port: 587,
-    //secure: false, // true for 465, false for other ports
+    service: 'gmail', //'smtp.ethereal.email'
+    // port: 587,
+    // secure: false, // true for 465, false for other ports
     auth: {
       user: 'foodboardcanada@gmail.com', //'de5kzppbkaumnfhu@ethereal.email'
       pass: 'darkthemesonly' //'wNmg25t9fqKXZ8wVUF'
@@ -931,9 +935,9 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
 function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerEmail, claimerFirstName, claimerSuiteNumber) {
 
   const transporter = nodemailer.createTransport({
-    host: 'gmail', //'smtp.ethereal.email'
-    //port: 587,
-    //secure: false, // true for 465, false for other ports
+    service: 'gmail', //'smtp.ethereal.email'
+    // port: 587,
+    // secure: false, // true for 465, false for other ports
     auth: {
       user: 'foodboardcanada@gmail.com', //'de5kzppbkaumnfhu@ethereal.email'
       pass: 'darkthemesonly' //'wNmg25t9fqKXZ8wVUF'
@@ -1030,9 +1034,9 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
 function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber) {
 
   const transporter = nodemailer.createTransport({
-    host: 'gmail', //'smtp.ethereal.email'
-    //port: 587,
-    //secure: false, // true for 465, false for other ports
+    service: 'gmail', //'smtp.ethereal.email'
+    // port: 587,
+    // secure: false, // true for 465, false for other ports
     auth: {
       user: 'foodboardcanada@gmail.com', //'de5kzppbkaumnfhu@ethereal.email'
       pass: 'darkthemesonly' //'wNmg25t9fqKXZ8wVUF'
