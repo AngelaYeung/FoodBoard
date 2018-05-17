@@ -17,7 +17,8 @@ $(document).ready(function () {
    *         FOOD BOARD POST FEATURE - CLIENT SIDE
    * 
    *************************************************************************/
-
+  //#region post feature
+  
   // Checks file image submitted in form for correct type when inputted.
   if (window.File && window.FileReader && window.FormData) {
 
@@ -130,19 +131,23 @@ $(document).ready(function () {
   //   image_name = "test.png";
   // });
 
-
   /** Sends data from post-form to server.js */
   $('#submit').click(function () {
     console.log('Submit triggered!');
 
-    if ($('#itemModal').is(':visible')) {
-      $('#itemModal').modal('toggle');
-    }
+    $('.invalid-feedback').hide();
 
     if ($('#name').val().toLowerCase() === 'ilovefoodboard') {
       window.location.href = ('/snake');
+    }
 
-    } else {
+    //submits the form if the date is valid
+    if (validateDate($('#datetimepicker').val())) {
+
+      // closes the form modal after the submit button is clicked
+      if ($('#itemModal').is(':visible')) {
+        $('#itemModal').modal('toggle');
+      };
       socket.emit('post item', {
         name: $('#name').val(),
         description: $('#description').val(),
@@ -151,6 +156,10 @@ $(document).ready(function () {
         image: `${image_name}.png`,
         sessionID: sessionID,
       });
+    } else {
+      console.log("time is invalid");
+      $('#datetimepicker').addClass("invalid-input");
+      $('.invalid-feedback').show();
     }
     return false;
   });
@@ -158,13 +167,14 @@ $(document).ready(function () {
   socket.on('post item return', (item) => {
     createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
   });
+  //#endregion post feature
 
   /*************************************************************************
    * 
    *         FOOD BOARD LOAD FEATURE - CLIENT SIDE
    * 
    *************************************************************************/
-
+  //#region load feature
   /**
    * When the window is loaded, trigger websocket event for server to fetch foodboard posts
    * from the data base. 
@@ -213,30 +223,75 @@ $(document).ready(function () {
     }
   });
 
+  //#endregion load feature
+
   /*************************************************************************
    * 
    *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
    * 
    *************************************************************************/
-  socket.on('delete return', (itemID) => {
+  //#region delete feature
+   socket.on('delete return', (itemID) => {
     itemDeleted(itemID); //deletes the item
   });
 
+  function deleteItem(itemID) {
+    let sessionID = getSessionID('connect.sid');
+    socket.emit('delete item', {
+      id: itemID,
+      sessionID: sessionID
+    });
+  }
+
+  /**
+   * Removes the card from the board (client-side)
+   * @param {*} id 
+   */
+  function itemDeleted(id) {
+    $(`#card${id}`).remove();
+  }
+
+  //#endregion delete feature
+  
+  
   /*************************************************************************
    * 
    *         FOOD BOARD CLAIM FEATURE - CLIENT SIDE
    * 
    *************************************************************************/
-
+  //#region claim feature
   socket.on('claim return', (itemID) => {
     itemClaimed(itemID);
   });
 
+  /**
+   * Removes the claimed items from the board.
+   * @param {number} id 
+   */
+  function itemClaimed(id) {
+    $(`#card${id}`).remove();
+  };
+
+  /**
+   * Sends emits the item id to the server.
+   * @param {number} itemID 
+   */
+  function claimItem(itemID) {
+    let sessionID = getSessionID('connect.sid');
+    socket.emit('claim item', {
+      id: itemID,
+      sessionID: sessionID,
+    });
+  };
+  //#endregion claim feature
+
+
   /************************************************
-* 
-*              SEARCH FEATURE
-* 
-*************************************************/
+  * 
+  *              SEARCH FEATURE
+  * 
+  *************************************************/
+  //#region search feature
 
   /**
    * Handles search bar clear button toggle
@@ -257,13 +312,13 @@ $(document).ready(function () {
   $(window).on('scroll', () => {
     if ($(window).scrollTop() < 2) {
       $('#search-bar-container').slideDown(150);
-      $('#card-list').animate({ 'margin-top': '2%', 'padding-top' : '0%' }, 25, 'linear');
-      $('#search-bar-container').animate({'padding-top' : '15%'}, 25, 'linear');
+      $('#card-list').animate({ 'margin-top': '2%', 'padding-top': '0%' }, 25, 'linear');
+      $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
 
     } else {
       $('#search-bar-container').slideUp(150);
-      $('#search-bar-container').animate({'padding-top' : '15%'}, 25, 'linear');
-      $('#card-list').animate({ 'margin-top': '10%', 'padding-top' : '2%' }, 25, 'linear');
+      $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
+      $('#card-list').animate({ 'margin-top': '10%', 'padding-top': '2%' }, 25, 'linear');
     }
   });
 
@@ -271,35 +326,8 @@ $(document).ready(function () {
     event.preventDefault();
   });
 });
+//#endregion search feature
 
-
-/**
- * Removes the claimed items from the board.
- * @param {number} id 
- */
-function itemClaimed(id) {
-  $(`#card${id}`).remove();
-};
-
-/**
- * Sends emits the item id to the server.
- * @param {number} itemID 
- */
-function claimItem(itemID) {
-  let sessionID = getSessionID('connect.sid');
-  socket.emit('claim item', {
-    id: itemID,
-    sessionID: sessionID,
-  });
-};
-
-function deleteItem(itemID) {
-  let sessionID = getSessionID('connect.sid');
-  socket.emit('delete item', {
-    id: itemID,
-    sessionID: sessionID
-  });
-}
 
 /**
  * Gets the session id. 
@@ -324,31 +352,107 @@ function getCookie(name) {
   }
 };
 
-function setPostImage(foodCategory, imgName) {
-  if (imgName !== "undefined.png") {
-    return `/images/${imgName}`;
-  } else {
-    switch (foodCategory) {
-      case "Produce":
-        return "../../Pictures/default_produce.png";
-        break;
-      case "Meat":
-        return "../../Pictures/default_meat.png";
-        break;
-      case "Canned Goods":
-        return "../../Pictures/default_food.png";
-        break;
-      case "Packaged":
-        return "../../Pictures/default_packaged.png";
-        break;
-    }
-  }
+
+
+
+/**
+ * Returns true if the input time is larger than the current time --> it is a valid date
+ * , otherwise returns false.
+ * @param {*} dateInput 
+ */
+function validateDate(dateInput) {
+
+  var input = new Date(dateInput).getTime(); //user input time converted to milliseconds
+  var currentTime = Date.now(); //current time in milliseconds
+  console.log('input > currentTime:', (input > currentTime));
+  return (input > currentTime);
+};
+
+
+//#region create card functions
+ 
+/**
+ * Creates Card from FoodItem Table without a 'Delete' Button.
+ * @param {*} id 
+ * @param {*} name 
+ * @param {*} description 
+ * @param {*} dateTime 
+ * @param {*} foodGroup 
+ * @param {*} img 
+ */
+function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
+  $('#card-list').prepend(`
+  <div id="card${id}" class="cardContainer">
+    <div class="imgDiv">
+        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+    </div>
+    <div class="header-Div">
+        <div class="row">
+            <div class="col-xs-10">
+                <h4>${name}</h4>
+                <p>Expires ${formatDate(dateTime)}</p>
+            </div>
+            <div class="col-xs-2">
+                <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
+                    aria-expanded="false"></button>
+            </div>
+        </div>
+    </div>
+    <div class="contentDiv row">
+        <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
+            <p>${foodGroup}</p>
+            <p>${description}</p>
+            <form class="claim-form"
+                action="javascript:void(0);">
+                <input id="${id}" class="claim-button" type="button" value="CLAIM" onclick="claimItem(this.id)">
+            </form>
+            <p></p>
+        </div>
+    </div>`);
+  /** Clearing Forms */
+  $('#postForm').trigger('reset');
 }
 
-function itemDeleted(id) {
-  $(`#card${id}`).remove();
+/**
+ * Creates Card from FoodItem Table without a 'Delete' Button.
+ * @param {*} id 
+ * @param {*} name 
+ * @param {*} description 
+ * @param {*} dateTime 
+ * @param {*} foodGroup 
+ * @param {*} img 
+ */
+function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
+  $('#card-list').prepend(`
+  <div id="card${id}" class="cardContainer">
+    <div class="imgDiv">
+        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+    </div>
+    <div class="header-Div">
+        <div class="row">
+            <div class="col-xs-10">
+                <h4>${name}</h4>
+                <p>Expires ${formatDate(dateTime)}</p>
+            <div class="col-xs-2">
+                <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
+                    aria-expanded="false"></button>
+            </div>
+        </div>
+    </div>
+    <div class="contentDiv row">
+        <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
+            <p>${foodGroup}</p>
+            <p>${description}</p>
+            <form class="claim-form"
+                action="javascript:void(0);">
+                <input style="width:50%; border-bottom-left-radius:0px; " id="${id}" class="claim-button" type="button" value="CLAIM" onclick="claimItem(this.id)"><input style="width:50%;  border-bottom-right-radius:0px;"  id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteItem(this.id)">
+            </form>
+            <p></p>
+        </div>
+    </div>`);
+  /** Clearing Forms */
+  $('#postForm').trigger('reset');
 }
-
 /**
  * Creates Card from FoodItem Table without a 'Claim' Button.
  * @param {*} id 
@@ -399,88 +503,30 @@ function formatDate(dateTime) {
   var formatedDate = moment(expiryDate).fromNow();
   return formatedDate;
 };
-/**
- * Creates Card from FoodItem Table without a 'Delete' Button.
- * @param {*} id 
- * @param {*} name 
- * @param {*} description 
- * @param {*} dateTime 
- * @param {*} foodGroup 
- * @param {*} img 
- */
-function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
-  $('#card-list').prepend(`
-  <div id="card${id}" class="cardContainer">
-    <div class="imgDiv">
-        <img class="food-img" src="${setPostImage(foodGroup, img)}">
-    </div>
-    <div class="header-Div">
-        <div class="row">
-            <div class="col-xs-10">
-                <h4>${name}</h4>
-                <p>Expires ${formatDate(dateTime)}</p>
-            </div>
-            <div class="col-xs-2">
-                <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
-                    aria-expanded="false"></button>
-            </div>
-        </div>
-    </div>
-    <div class="contentDiv row">
-        <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
-            <p>${foodGroup}</p>
-            <p>${description}</p>
-            <form class="claim-form"
-                action="javascript:void(0);">
-                <input id="${id}" class="claim-button" type="button" value="CLAIM" onclick="claimItem(this.id)">
-            </form>
-            <p></p>
-        </div>
-    </div>`);
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
-}
 
-/**
- * Creates Card from FoodItem Table with both buttons.
- * @param {*} id 
- * @param {*} name 
- * @param {*} description 
- * @param {*} dateTime 
- * @param {*} foodGroup 
- * @param {*} img 
- */
-function createCardBothButtons(id, name, description, dateTime, foodGroup, img) {
-  $('#card-list').prepend(`
-  <div id="card${id}" class="cardContainer">
-    <div class="imgDiv">
-        <img class="food-img" src="${setPostImage(foodGroup, img)}">
-    </div>
-    <div class="header-Div">
-        <div class="row">
-            <div class="col-xs-10">
-                <h4>${name}</h4>
-                <p>Expires ${formatDate(dateTime)}</p>
-            <div class="col-xs-2">
-                <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
-                    aria-expanded="false"></button>
-            </div>
-        </div>
-    </div>
-    <div class="contentDiv row">
-        <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
-            <p>${foodGroup}</p>
-            <p>${description}</p>
-            <form class="claim-form"
-                action="javascript:void(0);">
-                <input style="width:50%; border-bottom-left-radius:0px; " id="${id}" class="claim-button" type="button" value="CLAIM" onclick="claimItem(this.id)"><input style="width:50%;  border-bottom-right-radius:0px;"  id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteItem(this.id)">
-            </form>
-            <p></p>
-        </div>
-    </div>`);
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
+function setPostImage(foodCategory, imgName) {
+  if (imgName !== "undefined.png") {
+    return `/images/${imgName}`;
+  } else {
+    switch (foodCategory) {
+      case "Produce":
+        return "../../Pictures/default_produce.png";
+        break;
+      case "Meat":
+        return "../../Pictures/default_meat.png";
+        break;
+      case "Canned Goods":
+        return "../../Pictures/default_food.png";
+        break;
+      case "Packaged":
+        return "../../Pictures/default_packaged.png";
+        break;
+    }
+  }
 }
+//#endregion create card functions
+
+
 
 // Creates a thumbnail when an image has been uploaded
 // function handleFileSelect(evt) {
