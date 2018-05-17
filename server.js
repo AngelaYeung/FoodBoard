@@ -131,7 +131,8 @@ models.sequelize.sync().then(() => {
 * The connection event is fired, whenever anyone goes to foodboard.ca.
 */
 io.on('connection', (socket) => {
-  console.log('user connected');
+  console.log('User connected');
+  slackcmd.log('User connected.');
 
   /** Initalizes the stockio-file-upload object */
   const uploader = new siofu();

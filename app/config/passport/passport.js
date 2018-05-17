@@ -39,8 +39,8 @@ module.exports = function (passport, user) {
         }
         if (results.length) { // Return fail
           return done(null, false, console.log("Email is already taken."));
-        } else { // Create user
-          https://github.com/mysqljs/mysql/issues/832          var userPassword = generateHash(register_pwd); // hashed password
+        } else { 
+          var userPassword = generateHash(register_pwd); // hashed password
           var data = {
             email: register_email,
             password: userPassword,
