@@ -1,8 +1,41 @@
+const http = require('http');
+
 const mysqlconnection = require('./mysqlconnection.js');
-
 var connection = mysqlconnection.handleDisconnect();
-
 const token = 'pbvEgpojkg1eEkIdv03G9SRA';
+
+const options = {
+    host: 'https://hooks.slack.com',
+    port: '80',
+    path: '/services/TAPJCHR5G/BARUPCJJZ/SixLycbd5dQtcvAdMHdLfnJH',
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json'
+    }
+};
+
+
+function log(msg) {
+    var timeStamp = new Date(Date.now());
+    
+    var post_data = JSON.stringify({
+        text: `${timeStamp}, Error: ${msg}`,
+    });
+
+
+    var post_req = http.request(options, (res) => {
+        res.setEncoding('utf8');
+        res.on('data', (chunk) => {
+            console.log(`BODY: ${chunk}`);
+        });
+
+        console.log(new Date(Date.now()), 'Slack response: ', res);
+    });
+
+    req.write(postData);
+    req.end();
+};
 
 
 /**
@@ -47,7 +80,9 @@ function newItems(req, res) {
 
 
 
+
 module.exports = {
     newItems: newItems,
-    token: token
+    token: token,
+    log: log, 
 };

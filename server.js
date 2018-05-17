@@ -157,6 +157,7 @@ io.on('connection', (socket) => {
     var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
     connection.query(query, [session.sessionID], (error, rows, fields) => {
       if (error) {
+        slackcmd.log(error);
         console.log(new Date(Date.now()), 'Error selecting sessionID in load feature: ', error);
       } else {
         if (rows.length) {
