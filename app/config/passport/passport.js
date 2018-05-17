@@ -31,15 +31,16 @@ module.exports = function (passport, user) {
         return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
       };
 
-      var userSelect = "SELECT userID FROM users WHERE exists (select * from users where email = ?) LIMIT 1";
+      var userSelect = "SELECT userID FROM users WHERE email = ? LIMIT 1";
       connection.query(userSelect, [register_email], (error, results) => {
         if (error) {
+          console.log(new Date(Date.now()), 'Error:', error);
           return done(error);
         }
         if (results.length) { // Return fail
           return done(null, false, console.log("Email is already taken."));
         } else { // Create user
-          var userPassword = generateHash(register_pwd); // hashed password
+          https://github.com/mysqljs/mysql/issues/832          var userPassword = generateHash(register_pwd); // hashed password
           var data = {
             email: register_email,
             password: userPassword,

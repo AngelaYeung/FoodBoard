@@ -75,7 +75,7 @@ app.get('/snake', (req, res) => {
 
 app.get('/', (req, res) => {
 
-  var query = `SELECT sessionID, Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${req.sessionID}') LIMIT 1`;
+  var query = `SELECT * FROM Sessions WHERE sessionID = '${req.sessionID}' LIMIT 1`;
   connection.query(query, (error, rows, fields) => {
     if (error) {
       console.log(new Date(Date.now()), 'Error:', error);
@@ -151,26 +151,25 @@ io.on('connection', (socket) => {
    * When the user has a complete loaded page, fetch data from db to print posts
    * to screen. 
    */
+
   socket.on('page loaded', (session) => {
     console.log('Server: page loaded')
-
-    var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
+    var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [session.sessionID], (error, rows, fields) => {
       if (error) {
         slackcmd.log(error);
         console.log(new Date(Date.now()), 'Error selecting sessionID in load feature: ', error);
       } else {
         if (rows.length) {
-
           // check to see if the user is an admin
           var userID = rows[0].Users_userID;
+          console.log("PAGE HAS BEEN lOADED FIRST QUERY, USERID:", userID, session.sessionID);
           var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
           connection.query(checkRole, [userID], (error, row, field) => {
             if (error) {
               console.log(new Date(Date.now()), "Error checking for role of user:", error);
             } else {
               var role = row[0].role;
-
               // load all posts to be filtered later in boardpage.js
               var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
               connection.query(allFoodboardItems, (error, rows, fields) => {
@@ -181,11 +180,13 @@ io.on('connection', (socket) => {
                 } else {
                   console.log("Successfully grabbed food items.");
                   console.log(rows);
-
+                  console.log("PAGE HAS BEEN lOADED SECOND QUERY, USERID:", userID, session.sessionID);
+                  var sessionID = session.sessionID;
                   /* Sends list of food items to the client to print to browser */
                   socket.emit('load foodboard', {
                     rows: rows,
                     userID: userID,
+                    sessionID: sessionID,
                     role: role
                   });
                 }
@@ -204,8 +205,7 @@ io.on('connection', (socket) => {
    * 
    *************************************************************************/
   socket.on('my posts', (session) => {
-    var sessionID = session.sessionID;
-    var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
+    var query = `SELECT * FROM Sessions WHERE sessionID = '${session.sessionID}' LIMIT 1`;
     console.log('I AM EMITTING MY POSTS');
     connection.query(query, (error, rows, fields) => {
       if (error) {
@@ -243,7 +243,7 @@ io.on('connection', (socket) => {
   socket.on('post item', (item) => {
 
     let userID;
-    var query = `SELECT sessionID, Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${item.sessionID}') LIMIT 1`;
+    var query = `SELECT sessionID, Users_userID FROM Sessions WHERE sessionID = '${item.sessionID}' LIMIT 1`;
     connection.query(query, (error, rows, fields) => {
       if (error) {
         console.log(new Date(Date.now()), "Error selecting sessionID in post feature", error);
@@ -257,6 +257,7 @@ io.on('connection', (socket) => {
         let dateLocalTime = item.dateTime;
         let foodImage = item.image;
         let itemID;
+        let sessionID = item.sessionID;
         userID = rows[0].Users_userID;
 
         /** Inserts data into database */
@@ -277,7 +278,7 @@ io.on('connection', (socket) => {
         uploader.once('complete', () => {
           console.log('File Transfer Completed...');
           io.emit('post item return', {
-            userID: userID,
+            sessionID: sessionID,
             id: itemID,
             name: foodName,
             description: foodDescription,
@@ -310,7 +311,7 @@ io.on('connection', (socket) => {
     let claimerUserID, claimerEmail, claimerFirstName;
 
     // first check if the person deleting the post is currently in a session
-    var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
+    var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [sessionID], (error, row, fields) => {
       if (error) {
         console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
@@ -415,7 +416,7 @@ io.on('connection', (socket) => {
     let foodName, foodDescription, foodExpiryTime, foodImage;
     let claimerUserID, claimerEmail, claimerFirstName, claimerSuiteNumber;
 
-    var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
+    var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [sessionID], (error, row, fields) => {
       if (error) {
         console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
@@ -490,7 +491,7 @@ io.on('connection', (socket) => {
     let sessionID = claim.sessionID;
     let claimerUserID;
 
-    var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID =?) LIMIT 1`;
+    var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [sessionID], (error, row, fields) => {
       if (error) {
         console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID", );
@@ -697,7 +698,7 @@ function deleteFromClaimedPosts(itemID) {
   var deleteFromClaimedPostsTable = "DELETE FROM ClaimedPosts WHERE FoodItem_itemID = ? LIMIT 1";
   connection.query(deleteFromClaimedPostsTable, [itemID], (error, row, field) => {
     if (error) {
-      console.log("Error occured when attempting to delete from ClaimedPosts table: ", error);
+      console.log(new Date(Date.now()), 'Error:', error);
     } else {
       console.log("Successful deletion from ClaimedPosts table.")
     }
@@ -718,10 +719,10 @@ server.listen(port, () => {
 });
 
 function getSessionID(clientSessionID) {
-  var query = 'SELECT sessionID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?)';
+  var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
   var sessionID = connection.query(query, [clientSessionID], (error, rows, fields) => {
     if (error) {
-      console.log('Error', error)
+      console.log(new Date(Date.now()), 'Error:', error);
     } else {
       if (rows.length) {
         console.log('QUERY TRUE');
