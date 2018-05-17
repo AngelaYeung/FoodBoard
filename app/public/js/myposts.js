@@ -35,6 +35,7 @@ $(document).ready(function () {
     var role = items.role; // their role as administrator or user
     var userID = items.userID; // whos logged in
     var rows = items.rows;
+    console.log("MYPOSTS JAVASCRIPT EVENT: items: ", items);
     for (var i = 0; i < rows.length; i++) {
       createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
         rows[i].foodGroup, rows[i].foodImage);
