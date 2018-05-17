@@ -520,7 +520,7 @@ io.on('connection', (socket) => {
 
     // first check if the person deleting the post is currently in a session
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-    connection.query(query, [sessionID], (error, row, fields) => {
+    connection.query(query, [sessionID], (error, rows, fields) => {
       if (error) {
         console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
       }
@@ -621,7 +621,7 @@ io.on('connection', (socket) => {
     let claimerUserID, claimerEmail, claimerFirstName, claimerSuiteNumber;
 
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-    connection.query(query, [sessionID], (error, row, fields) => {
+    connection.query(query, [sessionID], (error, rows, fields) => {
       if (error) {
         console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
       }
@@ -690,7 +690,7 @@ io.on('connection', (socket) => {
     let claimerUserID;
 
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-    connection.query(query, [sessionID], (error, row, fields) => {
+    connection.query(query, [sessionID], (error, rows, fields) => {
       if (error) {
         console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID", );
       } else {
