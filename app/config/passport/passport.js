@@ -40,7 +40,6 @@ module.exports = function (passport, user) {
         if (results.length) { // Return fail
           return done(null, false, console.log("Email is already taken."));
         } else { 
-          // Create user
           var userPassword = generateHash(register_pwd); // hashed password
           var data = {
             email: register_email,
