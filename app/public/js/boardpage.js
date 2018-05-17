@@ -2,7 +2,7 @@
 var socket;
 
 $(window).on('load', () => {
-  window.scroll(0, 10);
+  window.scroll(0, 5);
 });
 $(document).ready(function () {
   var sessionID = getSessionID('connect.sid');
@@ -177,7 +177,6 @@ $(document).ready(function () {
     });
   });
 
-
   socket.on('load foodboard', (items) => {
     var role = items.role; // their role as administrator or user
     var userID = items.userID; // whos logged in
@@ -206,7 +205,13 @@ $(document).ready(function () {
     }
   });
 
-
+  socket.on('myposts', (items) => {
+    let userID = items.userID;
+    let rows = items.rows;
+    for (let i = 0; i < rows.length; i++) {
+      createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime, rows[i].foodGroup, rows[i].foodImage);
+    }
+  });
 
   /*************************************************************************
    * 
@@ -216,7 +221,6 @@ $(document).ready(function () {
   socket.on('delete return', (itemID) => {
     itemDeleted(itemID); //deletes the item
   });
-
 
   /*************************************************************************
    * 
@@ -230,7 +234,7 @@ $(document).ready(function () {
 
   /************************************************
 * 
-*              Search Feature
+*              SEARCH FEATURE
 * 
 *************************************************/
 
@@ -251,12 +255,15 @@ $(document).ready(function () {
   });
 
   $(window).on('scroll', () => {
-    if ($(window).scrollTop() < 5) {
+    if ($(window).scrollTop() < 2) {
       $('#search-bar-container').slideDown(150);
-      $('#card-list').animate({ 'margin-top': '2%' }, 50, 'linear');
+      $('#card-list').animate({ 'margin-top': '2%', 'padding-top' : '0%' }, 25, 'linear');
+      $('#search-bar-container').animate({'padding-top' : '15%'}, 25, 'linear');
+
     } else {
       $('#search-bar-container').slideUp(150);
-      $('#card-list').animate({ 'margin-top': '10%' }, 50, 'linear');
+      $('#search-bar-container').animate({'padding-top' : '15%'}, 25, 'linear');
+      $('#card-list').animate({ 'margin-top': '10%', 'padding-top' : '2%' }, 25, 'linear');
     }
   });
 
@@ -342,13 +349,6 @@ function itemDeleted(id) {
   $(`#card${id}`).remove();
 }
 
-
-function deleteItem(itemID) {
-  socket.emit('delete item', {
-    id: itemID
-  });
-}
-
 /**
  * Creates Card from FoodItem Table without a 'Claim' Button.
  * @param {*} id 
@@ -368,7 +368,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
         <div class="row">
             <div class="col-xs-10">
                 <h4>${name}</h4>
-                <p>Expires on ${moment(dateTime).format('MM/DD/YYYY')}</p>
+                <p>Expires ${formatDate(dateTime)}</p>
             </div>
             <div class="col-xs-2">
                 <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
@@ -391,6 +391,14 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   $('#postForm').trigger('reset');
 }
 
+function formatDate(dateTime) {
+  var expiryDate = new Date(dateTime);
+  console.log('Expiry date', expiryDate);
+  var today = new Date(Date.now());
+  console.log('today', today);
+  var formatedDate = moment(expiryDate).fromNow();
+  return formatedDate;
+};
 /**
  * Creates Card from FoodItem Table without a 'Delete' Button.
  * @param {*} id 
@@ -410,7 +418,7 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
         <div class="row">
             <div class="col-xs-10">
                 <h4>${name}</h4>
-                <p>Expires on ${moment(dateTime).format('MM/DD/YYYY')}</p>
+                <p>Expires ${formatDate(dateTime)}</p>
             </div>
             <div class="col-xs-2">
                 <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
@@ -452,8 +460,7 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
         <div class="row">
             <div class="col-xs-10">
                 <h4>${name}</h4>
-                <p>Expires on ${moment(dateTime).format('MM/DD/YYYY')}</p>
-            </div>
+                <p>Expires ${formatDate(dateTime)}</p>
             <div class="col-xs-2">
                 <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
                     aria-expanded="false"></button>
