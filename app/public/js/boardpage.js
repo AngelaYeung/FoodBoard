@@ -5,9 +5,6 @@ $(window).on('load', () => {
   window.scroll(0, 5);
 });
 $(document).ready(function () {
-  var sessionID = getSessionID('connect.sid');
-  console.log('sessionID', sessionID);
-
   socket = io();
   const uploader = new SocketIOFileUpload(socket);
   var image_name;
@@ -17,6 +14,7 @@ $(document).ready(function () {
    *         FOOD BOARD POST FEATURE - CLIENT SIDE
    * 
    *************************************************************************/
+  //#region post feature
 
   // Checks file image submitted in form for correct type when inputted.
   if (window.File && window.FileReader && window.FormData) {
@@ -130,57 +128,73 @@ $(document).ready(function () {
   //   image_name = "test.png";
   // });
 
-
   /** Sends data from post-form to server.js */
   $('#submit').click(function () {
     console.log('Submit triggered!');
 
-    if ($('#itemModal').is(':visible')) {
-      $('#itemModal').modal('toggle');
-    }
+    $('.invalid-feedback').hide();
 
     if ($('#name').val().toLowerCase() === 'ilovefoodboard') {
       window.location.href = ('/snake');
+    }
 
-    } else {
+    //submits the form if the date is valid
+    if (validateDate($('#datetimepicker').val())) {
+
+      // closes the form modal after the submit button is clicked
+      if ($('#itemModal').is(':visible')) {
+        $('#itemModal').modal('toggle');
+      };
       socket.emit('post item', {
         name: $('#name').val(),
         description: $('#description').val(),
         dateTime: $('#datetimepicker').val(),
         foodgrouping: $('input[name=foodgrouping]:checked').val(),
         image: `${image_name}.png`,
-        sessionID: sessionID,
+        sessionID: getSessionID('connect.sid'),
       });
+      $('#postForm').trigger('reset');
+    } else {
+      console.log("time is invalid");
+      $('#datetimepicker').addClass("invalid-input");
+      $('.invalid-feedback').show();
     }
     return false;
   });
 
   socket.on('post item return', (item) => {
-    createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
+    console.log("postitemreturn item.sessionID:", item.sessionID);
+    console.log("postitemreturn active sessionID:", getSessionID('connect.sid'));
+    if (getSessionID('connect.sid') === item.sessionID) {
+      createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
+    } else {
+      createCardNoDelete(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
+    }
   });
+  //#endregion post feature
 
   /*************************************************************************
    * 
    *         FOOD BOARD LOAD FEATURE - CLIENT SIDE
    * 
    *************************************************************************/
-
+  //#region load feature
   /**
    * When the window is loaded, trigger websocket event for server to fetch foodboard posts
    * from the data base. 
    */
   $(window).on('load', () => {
-
-    console.log('Client: page loaded:', sessionID);
+    console.log('Client: page loaded:', getSessionID('connect.sid'));
     socket.emit('page loaded', {
-      sessionID: sessionID,
+      sessionID: getSessionID('connect.sid'),
     });
   });
 
   socket.on('load foodboard', (items) => {
     var role = items.role; // their role as administrator or user
-    var userID = items.userID; // whos logged in
+    var userID = items.userID; // whos logged in the active session 
     var rows = items.rows;
+    console.log("SESSIONID OF THE USER WHO IS LOADING:", items.sessionID);
     console.log("LOAD: ROWS: ", rows);
     for (var i = 0; i < rows.length; i++) {
       console.log('userID: ', userID);
@@ -213,11 +227,14 @@ $(document).ready(function () {
     }
   });
 
+  //#endregion load feature
+
   /*************************************************************************
    * 
    *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
    * 
    *************************************************************************/
+  //#region delete feature
   socket.on('delete return', (itemID) => {
     itemDeleted(itemID); //deletes the item
   });
@@ -227,16 +244,17 @@ $(document).ready(function () {
    *         FOOD BOARD CLAIM FEATURE - CLIENT SIDE
    * 
    *************************************************************************/
-
+  //#region claim feature
   socket.on('claim return', (itemID) => {
     itemClaimed(itemID);
   });
 
   /************************************************
-* 
-*              SEARCH FEATURE
-* 
-*************************************************/
+  * 
+  *              SEARCH FEATURE
+  * 
+  *************************************************/
+  //#region search feature
 
   /**
    * Handles search bar clear button toggle
@@ -257,13 +275,13 @@ $(document).ready(function () {
   $(window).on('scroll', () => {
     if ($(window).scrollTop() < 2) {
       $('#search-bar-container').slideDown(150);
-      $('#card-list').animate({ 'margin-top': '2%', 'padding-top' : '0%' }, 25, 'linear');
-      $('#search-bar-container').animate({'padding-top' : '15%'}, 25, 'linear');
+      $('#card-list').animate({ 'margin-top': '2%', 'padding-top': '0%' }, 25, 'linear');
+      $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
 
     } else {
       $('#search-bar-container').slideUp(150);
-      $('#search-bar-container').animate({'padding-top' : '15%'}, 25, 'linear');
-      $('#card-list').animate({ 'margin-top': '10%', 'padding-top' : '2%' }, 25, 'linear');
+      $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
+      $('#card-list').animate({ 'margin-top': '10%', 'padding-top': '2%' }, 25, 'linear');
     }
   });
 
@@ -271,36 +289,7 @@ $(document).ready(function () {
     event.preventDefault();
   });
 });
-
-
-/**
- * Removes the claimed items from the board.
- * @param {number} id 
- */
-function itemClaimed(id) {
-  $(`#card${id}`).remove();
-};
-
-/**
- * Sends emits the item id to the server.
- * @param {number} itemID 
- */
-function claimItem(itemID) {
-  let sessionID = getSessionID('connect.sid');
-  socket.emit('claim item', {
-    id: itemID,
-    sessionID: sessionID,
-  });
-};
-
-function deleteItem(itemID) {
-  let sessionID = getSessionID('connect.sid');
-  console.log("THIS IS THE SESSION ID: ", sessionID);
-  socket.emit('delete item', {
-    id: itemID,
-    sessionID: sessionID
-  });
-}
+//#endregion search feature
 
 /**
  * Gets the session id. 
@@ -325,72 +314,24 @@ function getCookie(name) {
   }
 };
 
-function setPostImage(foodCategory, imgName) {
-  if (imgName !== "undefined.png") {
-    return `/images/${imgName}`;
-  } else {
-    switch (foodCategory) {
-      case "Produce":
-        return "../../Pictures/default_produce.png";
-        break;
-      case "Meat":
-        return "../../Pictures/default_meat.png";
-        break;
-      case "Canned Goods":
-        return "../../Pictures/default_food.png";
-        break;
-      case "Packaged":
-        return "../../Pictures/default_packaged.png";
-        break;
-    }
-  }
-}
 
-function itemDeleted(id) {
-  $(`#card${id}`).remove();
-}
+
 
 /**
- * Creates Card from FoodItem Table without a 'Claim' Button.
- * @param {*} id 
- * @param {*} name 
- * @param {*} description 
- * @param {*} dateTime 
- * @param {*} foodGroup 
- * @param {*} img 
+ * Returns true if the input time is larger than the current time --> it is a valid date
+ * , otherwise returns false.
+ * @param {*} dateInput 
  */
-function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
-  $('#card-list').prepend(`
-  <div id="card${id}" class="cardContainer">
-    <div class="imgDiv">
-        <img class="food-img" src="${setPostImage(foodGroup, img)}">
-    </div>
-    <div class="header-Div">
-        <div class="row">
-            <div class="col-xs-10">
-                <h4>${name}</h4>
-                <p>Expires ${formatDate(dateTime)}</p>
-            </div>
-            <div class="col-xs-2">
-                <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
-                    aria-expanded="false"></button>
-            </div>
-        </div>
-    </div>
-    <div class="contentDiv row">
-        <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
-            <p>${foodGroup}</p>
-            <p>${description}</p>
-            <form class="claim-form"
-                action="javascript:void(0);">
-                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteItem(this.id)">
-            </form>
-            <p></p>
-        </div>
-    </div>`);
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
-}
+function validateDate(dateInput) {
+
+  var input = new Date(dateInput).getTime(); //user input time converted to milliseconds
+  var currentTime = Date.now(); //current time in milliseconds
+  console.log('input > currentTime:', (input > currentTime));
+  return (input > currentTime);
+};
+
+
+//#region create card functions
 
 /**
  * Creates Card from FoodItem Table without a 'Delete' Button.
@@ -430,12 +371,10 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
             <p></p>
         </div>
     </div>`);
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
 }
 
 /**
- * Creates Card from FoodItem Table with both buttons.
+ * Creates Card from FoodItem Table without a 'Delete' Button.
  * @param {*} id 
  * @param {*} name 
  * @param {*} description 
@@ -454,6 +393,7 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
             <div class="col-xs-10">
                 <h4>${name}</h4>
                 <p>Expires ${formatDate(dateTime)}</p>
+            </div>
             <div class="col-xs-2">
                 <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
                     aria-expanded="false"></button>
@@ -471,9 +411,83 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
             <p></p>
         </div>
     </div>`);
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
 }
+/**
+ * Creates Card from FoodItem Table without a 'Claim' Button.
+ * @param {*} id 
+ * @param {*} name 
+ * @param {*} description 
+ * @param {*} dateTime 
+ * @param {*} foodGroup 
+ * @param {*} img 
+ */
+function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
+  $('#card-list').prepend(`
+  <div id="card${id}" class="cardContainer">
+    <div class="imgDiv">
+        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+    </div>
+    <div class="header-Div">
+        <div class="row">
+            <div class="col-xs-10">
+                <h4>${name}</h4>
+                <p>Expires ${formatDate(dateTime)}</p>
+            </div>
+            <div class="col-xs-2">
+                <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
+                    aria-expanded="false"></button>
+            </div>
+        </div>
+    </div>
+    <div class="contentDiv row">
+        <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
+            <p>${foodGroup}</p>
+            <p>${description}</p>
+            <form class="claim-form"
+                action="javascript:void(0);">
+                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteItem(this.id)">
+            </form>
+            <p></p>
+        </div>
+    </div>`);
+}
+
+function deleteItem(itemID) {
+  let sessionID = getSessionID('connect.sid');
+  socket.emit('delete item', {
+    id: itemID,
+    sessionID: sessionID
+  });
+}
+
+/**
+ * Removes the card from the board (client-side)
+ * @param {*} id 
+ */
+function itemDeleted(id) {
+  $(`#card${id}`).remove();
+}
+
+/**
+ * Removes the claimed items from the board.
+ * @param {number} id 
+ */
+function itemClaimed(id) {
+  $(`#card${id}`).remove();
+};
+
+/**
+* Sends emits the item id to the server.
+* @param {number} itemID 
+*/
+function claimItem(itemID) {
+  let sessionID = getSessionID('connect.sid');
+  socket.emit('claim item', {
+    id: itemID,
+    sessionID: sessionID,
+  });
+};
+//#endregion claim feature
 
 function formatDate(dateTime) {
   var expiryDate = new Date(dateTime);
@@ -483,6 +497,30 @@ function formatDate(dateTime) {
   var formatedDate = moment(expiryDate).fromNow();
   return formatedDate;
 };
+
+function setPostImage(foodCategory, imgName) {
+  if (imgName !== "undefined.png") {
+    return `/images/${imgName}`;
+  } else {
+    switch (foodCategory) {
+      case "Produce":
+        return "../../Pictures/default_produce.png";
+        break;
+      case "Meat":
+        return "../../Pictures/default_meat.png";
+        break;
+      case "Canned Goods":
+        return "../../Pictures/default_food.png";
+        break;
+      case "Packaged":
+        return "../../Pictures/default_packaged.png";
+        break;
+    }
+  }
+}
+//#endregion create card functions
+
+
 
 // Creates a thumbnail when an image has been uploaded
 // function handleFileSelect(evt) {
