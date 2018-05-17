@@ -132,442 +132,469 @@ models.sequelize.sync().then(() => {
 */
 io.on('connection', (socket) => {
   console.log('User connected');
-  slackcmd.log('User connected.');
-
-  /** Initalizes the stockio-file-upload object */
-  const uploader = new siofu();
-  uploader.dir = path.join(__dirname, '/app/images'); // sets the upload directory
-  uploader.listen(socket); // listens for image uploads
-
-
-  /*************************************************************************
-   * 
-   *         FOOD BOARD LOAD FEATURE - SERVER SIDE
-   * 
-   * Fired as soon as user is connected to server
-   * 
-   *************************************************************************
-
-  /**
-   * When the user has a complete loaded page, fetch data from db to print posts
-   * to screen. 
-   */
-
-  socket.on('page loaded', (session) => {
-    console.log('Server: page loaded')
-    var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-    connection.query(query, [session.sessionID], (error, rows, fields) => {
-      if (error) {
-        slackcmd.log(error);
-        console.log(new Date(Date.now()), 'Error selecting sessionID in load feature: ', error);
-      } else {
-        if (rows.length) {
-          // check to see if the user is an admin
-          var userID = rows[0].Users_userID;
-          console.log("PAGE HAS BEEN lOADED FIRST QUERY, USERID:", userID, session.sessionID);
-          var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
-          connection.query(checkRole, [userID], (error, row, field) => {
-            if (error) {
-              console.log(new Date(Date.now()), "Error checking for role of user:", error);
-            } else {
-              var role = row[0].role;
-              // load all posts to be filtered later in boardpage.js
-              var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
-              connection.query(allFoodboardItems, (error, rows, fields) => {
-                if (error) {
-                  console.log(new Date(Date.now()), "Error grabbing food items");
-                } else if (rows.length == 0) {
-                  console.log("Database is empty.");
-                } else {
-                  console.log("Successfully grabbed food items.");
-                  console.log(rows);
-                  console.log("PAGE HAS BEEN lOADED SECOND QUERY, USERID:", userID, session.sessionID);
-                  var sessionID = session.sessionID;
-                  /* Sends list of food items to the client to print to browser */
-                  socket.emit('load foodboard', {
-                    rows: rows,
-                    userID: userID,
-                    sessionID: sessionID,
-                    role: role
-                  });
-                }
-              });
-            }
-          });
-        }
-      }
-    });
+  var query = `SELECT * FROM Sessions`;
+  connection.query(query, (error, rows, fields) => {
+    if (error) {
+      slackcmd.log(`Event: Connection ${query}.`, error);
+      console.log(new Date(Date.now()), 'Connection: ', error);
+    } else {
+      slackcmd.log('Number of active sessions', rows.length);
+    }
   });
 
-  /*************************************************************************
-   * 
-   *         FOOD BOARD MYPOSTS FEATURE - SERVER SIDE
-   * 
-   * 
-   *************************************************************************/
-  socket.on('my posts', (session) => {
-    var query = `SELECT * FROM Sessions WHERE sessionID = '${session.sessionID}' LIMIT 1`;
-    console.log('I AM EMITTING MY POSTS');
-    connection.query(query, (error, rows, fields) => {
-      if (error) {
-        console.log(new Date(Date.now()), "Error selecting sessionID in 'myposts' feature:", error);
-      } else {
-        if (rows.length) {
-          var userID = rows[0].Users_userID;
-          //Query for user info for current user
-          var userInfo = "SELECT * FROM FoodItem WHERE Users_userID = ?";
-          connection.query(userInfo, [userID], (error, rows, fields) => {
-            if (error) {
-              console.log(new Date(Date.now()), "Error selecting User's posts in 'myposts' feature:", error);
-            } else if (rows.length === 0) {
-              console.log("This user has no posts to load in 'myposts' page.");
-            } else {
-              console.log("Successfully loading the users posts.");
-              socket.emit('load my posts', {
-                rows: rows,
-                userID: userID,
-              });
-            }
-          });
-        }
-      }
-    });
-  });
-
-  /*************************************************************************
-   * 
-   *         FOOD BOARD POST FEATURE - SERVER SIDE
-   * 
-   *************************************************************************/
-
-  /** Handles 'post item' event that is fired from the index.html.  */
-  socket.on('post item', (item) => {
-
-    let userID;
-    var query = `SELECT sessionID, Users_userID FROM Sessions WHERE sessionID = '${item.sessionID}' LIMIT 1`;
-    connection.query(query, (error, rows, fields) => {
-      if (error) {
-        console.log(new Date(Date.now()), "Error selecting sessionID in post feature", error);
-      }
-
-      if (rows.length) {
-
-        let foodName = item.name;
-        let foodDescription = item.description;
-        let foodGroup = item.foodgrouping;
-        let dateLocalTime = item.dateTime;
-        let foodImage = item.image;
-        let itemID;
-        let sessionID = item.sessionID;
-        userID = rows[0].Users_userID;
-
-        /** Inserts data into database */
-        var foodItem = "INSERT INTO FoodItem (foodName, foodDescription, foodGroup,  foodExpiryTime, foodImage, Users_userID, Users_claimerUserID) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage, userID, null], (error, rows, field) => {
-          if (error) {
-            // return error if insertion fail
-            console.log(new Date(Date.now()), "Error inserting" + error);
-            console.log(error);
-          } else {
-            // else return the updated table
-            console.log("Successful insertion:");
-            itemID = rows.insertId;
-          }
-        });
-
-        /* Once image transfer has complete, tell client to create it's card */
-        uploader.once('complete', () => {
-          console.log('File Transfer Completed...');
-          io.emit('post item return', {
-            sessionID: sessionID,
-            id: itemID,
-            name: foodName,
-            description: foodDescription,
-            dateTime: dateLocalTime,
-            foodgrouping: foodGroup,
-            image: foodImage,
-          });
-        });
-      } else {
-        app.get('/nicetrybud');
-      }
-    });
-  });
-
-  /*************************************************************************
-   * 
-   *         FOOD BOARD DELETE FEATURE - SERVER SIDE
-   * 
-   *************************************************************************/
-  socket.on('delete item', (deletion) => {
-    console.log("Event Delete Item:", deletion);
-
-    //Declaring variables needed to generate automated delete email
-    let sessionID = deletion.sessionID;
-    let itemID = deletion.id;
-
-    let role
-    let posterUserID, posterFirstName, posterSuiteNumber;
-    let foodName, foodDescription, foodExpiryTime, foodImage;
-    let claimerUserID, claimerEmail, claimerFirstName;
-
-    // first check if the person deleting the post is currently in a session
-    var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-    connection.query(query, [sessionID], (error, row, fields) => {
-      if (error) {
-        console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
-      }
-      if (row.length) {
-
-        let posterUserID = row[0].Users_userID;
-
-        // check to see if the user is an admin or poaster, no email is sent if a post is deleted by an admin
-        var checkRole = "SELECT * FROM users WHERE userID = ? LIMIT 1";
-        connection.query(checkRole, [posterUserID], (error, row, field) => {
-          if (error) {
-            console.log(new Date(Date.now()), "Error checking for role of user:", error);
-          } else {
-            console.log("Successfully inquired for poster's information: ", row);
-            role = row[0].role;
-            posterFirstName = row[0].firstName;
-            posterSuiteNumber = row[0].suiteNumber;
-
-            if (role === 0) {
-
-              // user is an admin, simply delete the post from all tables no email necessary
-              deleteFoodItem(itemID);
-
-              io.emit('delete return', (itemID));
-            } else {
-
-              // user is the poster of the food item
-              // next query for the food item information as well as the claimerID if there is one.
-              var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
-              connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
-                if (error) {
-                  console.log(new Date(Date.now()), "Error querying from FoodItem Table: ", error);
-                } else {
-                  console.log("Successfully obtained food item info from FoodItem Table");
-                  foodName = row[0].foodName;
-                  foodDescription = row[0].foodDescription;
-                  foodExpiryTime = row[0].foodExpiryTime;
-                  foodImage = row[0].foodImage;
-                  claimerUserID = row[0].Users_claimerUserID;
-
-                  // item can now be deleted from fooditem table, we have all relevant information
-                  deleteFoodItem(itemID);
-
-                  if (!claimerUserID) {
-                    console.log("TEST DELETE: claimerUSERID doesnt exist!");
-
-                    //posted food item has not been claimed by anyone, no email necessary
-                    io.emit('delete return', (itemID));
-                  } else {
-
-                    // posted food item has been claimed
-                    // query for claimer's information so we can send an automated email
-                    var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
-                    connection.query(claimerQuery, [claimerUserID], (error, row, field) => {
-                      if (error) {
-                        console.log(new Date(Date.now()), "Error checking for role of user:", error);
-                      } else {
-                        console.log("Successfully inquired for claimer's information.")
-                        claimerEmail = row[0].email;
-                        claimerFirstName = row[0].firstName;
-                        claimerSuiteNumber = row[0].suiteNumber;
-
-                        // sends an email to the claimer of the post 
-                        sendDeleteEmailToClaimer(claimerEmail, claimerFirstName,
-                          foodName, foodDescription, foodExpiryTime, foodImage,
-                          posterFirstName, posterSuiteNumber);
-
-                        io.emit('delete return', (itemID));
-                      }
-                    });
-                  }
-                }
-              });
-            }
-          }
-        });
-      } else {
-        // user is not currently in a session and therefore should'nt be able to delete a post
-        app.get('/nicetrybud');
-      }
-    });
-  });
+    /** Initalizes the stockio-file-upload object */
+    const uploader = new siofu();
+    uploader.dir = path.join(__dirname, '/app/images'); // sets the upload directory
+    uploader.listen(socket); // listens for image uploads
 
 
-  /*************************************************************************
-   * 
-   *         FOOD BOARD CLAIM FEATURE - SERVER SIDE
-   * 
-   *************************************************************************/
+    /*************************************************************************
+     * 
+     *         FOOD BOARD LOAD FEATURE - SERVER SIDE
+     * 
+     * Fired as soon as user is connected to server
+     * 
+     *************************************************************************
+  
+    /**
+     * When the user has a complete loaded page, fetch data from db to print posts
+     * to screen. 
+     */
 
-
-  socket.on('claim item', (claim) => {
-    console.log('Event Claim Item:', claim);
-
-    //Declaring variables needed to generate automated claim email
-    let sessionID = claim.sessionID;
-    let itemID = claim.id;
-
-    let role
-    let posterUserID, posterEmail, posterFirstName;
-    let foodName, foodDescription, foodExpiryTime, foodImage;
-    let claimerUserID, claimerEmail, claimerFirstName, claimerSuiteNumber;
-
-    var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-    connection.query(query, [sessionID], (error, row, fields) => {
-      if (error) {
-        console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
-      }
-
-      if (row.length) {
-
-        claimerUserID = row[0].Users_userID;
-
-        var setClaimerID = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ?`;
-        connection.query(setClaimerID, [claimerUserID, itemID], (error, row, field) => {
-          if (error) {
-            //return error if update claimerID into failed
-            console.log(new Date(Date.now()), "Error updating claimerID into FoodItem table: ", error);
-          } else {
-            // else return the updated table
-            console.log("Successfully updated claimerID into FoodItem table.");
-
-            var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
-            connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
+    socket.on('page loaded', (session) => {
+      console.log('Server: page loaded')
+      var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
+      connection.query(query, [session.sessionID], (error, rows, fields) => {
+        if (error) {
+          slackcmd.log(`Event: Page loaded ${query}.`, error);
+          console.log(new Date(Date.now()), 'Error selecting sessionID in load feature: ', error);
+        } else {
+          if (rows.length) {
+            // check to see if the user is an admin
+            var userID = rows[0].Users_userID;
+            console.log("PAGE HAS BEEN lOADED FIRST QUERY, USERID:", userID, session.sessionID);
+            var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
+            connection.query(checkRole, [userID], (error, row, field) => {
               if (error) {
-                //error occured while attempting to query FoodItem Table
-                console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
+                slackcmd.log(`Event: Page loaded ${query}.`, error);
+
+                console.log(new Date(Date.now()), "Error checking for role of user:", error);
               } else {
-                console.log("Successfully obtained Poster's userID from FoodItem Table", row);
-                posterUserID = row[0].Users_userID;
-                foodName = row[0].foodName;
-                foodDescription = row[0].foodDescription;
-                foodExpiryTime = row[0].foodExpiryTime;
-                foodImage = row[0].foodImage;
-
-                var usersTableQuery = "SELECT * FROM users WHERE userID = ? OR userID = ? LIMIT 2";
-                connection.query(usersTableQuery, [posterUserID, claimerUserID], (error, row, field) => {
+                var role = row[0].role;
+                // load all posts to be filtered later in boardpage.js
+                var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
+                connection.query(allFoodboardItems, (error, rows, fields) => {
                   if (error) {
-                    //return error if selection fail
-                    console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
+                    slackcmd.log(`Event: Page loaded ${query}.`, error);
+
+                    console.log(new Date(Date.now()), "Error grabbing food items");
+                  } else if (rows.length == 0) {
+                    console.log("Database is empty.");
                   } else {
-                    //else return the users information
-                    console.log("Successfully grabbed user of claimed item. ", row);
-                    posterEmail = row[0].email;
-                    posterFirstName = row[0].firstName;
-                    claimerEmail = row[1].email;
-
-                    console.log("POSTER EMAIL", posterEmail);
-                    console.log("CLAIMER EMAIL", claimerEmail);
-
-
-                    claimerFirstName = row[1].firstName;
-                    claimerSuiteNumber = row[1].suiteNumber;
-                    console.log("EMAIL IS HERE LOOK", claimerEmail);
-
-                    sendClaimEmailToPoster(claimerEmail, claimerFirstName,
-                      foodName, foodDescription, foodExpiryTime, foodImage,
-                      posterEmail, posterFirstName, claimerSuiteNumber);
-
-                    console.log(itemID);
-                    io.emit('claim return', (itemID));
+                    console.log("Successfully grabbed food items.");
+                    console.log(rows);
+                    console.log("PAGE HAS BEEN lOADED SECOND QUERY, USERID:", userID, session.sessionID);
+                    var sessionID = session.sessionID;
+                    /* Sends list of food items to the client to print to browser */
+                    socket.emit('load foodboard', {
+                      rows: rows,
+                      userID: userID,
+                      sessionID: sessionID,
+                      role: role
+                    });
                   }
                 });
               }
             });
           }
-        });
-      } else {
-        app.get('/nicetrybud');
-      }
+        }
+      });
     });
-  });
-  socket.on("my claims", (claim) => {
-    console.log("my Claims:", claim);
 
-    let sessionID = claim.sessionID;
-    let claimerUserID;
+    /*************************************************************************
+     * 
+     *         FOOD BOARD MYPOSTS FEATURE - SERVER SIDE
+     * 
+     * 
+     *************************************************************************/
+    socket.on('my posts', (session) => {
+      var query = `SELECT * FROM Sessions WHERE sessionID = '${session.sessionID}' LIMIT 1`;
+      console.log('I AM EMITTING MY POSTS');
+      connection.query(query, (error, rows, fields) => {
+        if (error) {
+          slackcmd.log(`Event: My posts ${query}.`, error);
+          console.log(new Date(Date.now()), "Error selecting sessionID in 'myposts' feature:", error);
+        } else {
+          if (rows.length) {
+            var userID = rows[0].Users_userID;
+            //Query for user info for current user
+            var userInfo = "SELECT * FROM FoodItem WHERE Users_userID = ?";
+            connection.query(userInfo, [userID], (error, rows, fields) => {
+              if (error) {
+                slackcmd.log(`Event: My posts. ${query}.`, error);
+                console.log(new Date(Date.now()), "Error selecting User's posts in 'myposts' feature:", error);
+              } else if (rows.length === 0) {
+                console.log("This user has no posts to load in 'myposts' page.");
+              } else {
+                console.log("Successfully loading the users posts.");
+                socket.emit('load my posts', {
+                  rows: rows,
+                  userID: userID,
+                });
+              }
+            });
+          }
+        }
+      });
+    });
 
-    var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-    connection.query(query, [sessionID], (error, row, fields) => {
-      if (error) {
-        console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID", );
-      } else {
+    /*************************************************************************
+     * 
+     *         FOOD BOARD POST FEATURE - SERVER SIDE
+     * 
+     *************************************************************************/
+
+    /** Handles 'post item' event that is fired from the index.html.  */
+    socket.on('post item', (item) => {
+
+      let userID;
+      var query = `SELECT sessionID, Users_userID FROM Sessions WHERE sessionID = '${item.sessionID}' LIMIT 1`;
+      connection.query(query, (error, rows, fields) => {
+        if (error) {
+          slackcmd.log(`Event: Post item ${query}.`, error);
+          console.log(new Date(Date.now()), "Error selecting sessionID in post feature", error);
+        }
+
+        if (rows.length) {
+
+          let foodName = item.name;
+          let foodDescription = item.description;
+          let foodGroup = item.foodgrouping;
+          let dateLocalTime = item.dateTime;
+          let foodImage = item.image;
+          let itemID;
+          let sessionID = item.sessionID;
+          userID = rows[0].Users_userID;
+
+          /** Inserts data into database */
+          var foodItem = "INSERT INTO FoodItem (foodName, foodDescription, foodGroup,  foodExpiryTime, foodImage, Users_userID, Users_claimerUserID) VALUES (?, ?, ?, ?, ?, ?, ?)";
+          connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage, userID, null], (error, rows, field) => {
+            if (error) {
+              // return error if insertion fail
+              slackcmd.log(`Event: Post item ${query}.`, error);
+              console.log(new Date(Date.now()), "Error inserting" + error);
+              console.log(error);
+            } else {
+              // else return the updated table
+              console.log("Successful insertion:");
+              itemID = rows.insertId;
+            }
+          });
+
+          /* Once image transfer has complete, tell client to create it's card */
+          uploader.once('complete', () => {
+            console.log('File Transfer Completed...');
+            io.emit('post item return', {
+              sessionID: sessionID,
+              id: itemID,
+              name: foodName,
+              description: foodDescription,
+              dateTime: dateLocalTime,
+              foodgrouping: foodGroup,
+              image: foodImage,
+            });
+          });
+        } else {
+          app.get('/nicetrybud');
+        }
+      });
+    });
+
+    /*************************************************************************
+     * 
+     *         FOOD BOARD DELETE FEATURE - SERVER SIDE
+     * 
+     *************************************************************************/
+    socket.on('delete item', (deletion) => {
+      console.log("Event Delete Item:", deletion);
+
+      //Declaring variables needed to generate automated delete email
+      let sessionID = deletion.sessionID;
+      let itemID = deletion.id;
+
+      let role
+      let posterUserID, posterFirstName, posterSuiteNumber;
+      let foodName, foodDescription, foodExpiryTime, foodImage;
+      let claimerUserID, claimerEmail, claimerFirstName;
+
+      // first check if the person deleting the post is currently in a session
+      var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
+      connection.query(query, [sessionID], (error, row, fields) => {
+        if (error) {
+          slackcmd.log(`Event: Delete item. ${query}.`, error);
+          console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
+        }
         if (row.length) {
+
+          let posterUserID = row[0].Users_userID;
+
+          // check to see if the user is an admin or poaster, no email is sent if a post is deleted by an admin
+          var checkRole = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+          connection.query(checkRole, [posterUserID], (error, row, field) => {
+            if (error) {
+              console.log(new Date(Date.now()), "Error checking for role of user:", error);
+            } else {
+              slackcmd.log(`Event: Delete item. ${query}.`, error);
+              console.log("Successfully inquired for poster's information: ", row);
+              role = row[0].role;
+              posterFirstName = row[0].firstName;
+              posterSuiteNumber = row[0].suiteNumber;
+
+              if (role === 0) {
+
+                // user is an admin, simply delete the post from all tables no email necessary
+                deleteFoodItem(itemID);
+
+                io.emit('delete return', (itemID));
+              } else {
+
+                // user is the poster of the food item
+                // next query for the food item information as well as the claimerID if there is one.
+                var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
+                connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
+                  if (error) {
+                    slackcmd.log(`Event: Delete item. ${query}.`, error);
+                    console.log(new Date(Date.now()), "Error querying from FoodItem Table: ", error);
+                  } else {
+                    console.log("Successfully obtained food item info from FoodItem Table");
+                    foodName = row[0].foodName;
+                    foodDescription = row[0].foodDescription;
+                    foodExpiryTime = row[0].foodExpiryTime;
+                    foodImage = row[0].foodImage;
+                    claimerUserID = row[0].Users_claimerUserID;
+
+                    // item can now be deleted from fooditem table, we have all relevant information
+                    deleteFoodItem(itemID);
+
+                    if (!claimerUserID) {
+                      console.log("TEST DELETE: claimerUSERID doesnt exist!");
+
+                      //posted food item has not been claimed by anyone, no email necessary
+                      io.emit('delete return', (itemID));
+                    } else {
+
+                      // posted food item has been claimed
+                      // query for claimer's information so we can send an automated email
+                      var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+                      connection.query(claimerQuery, [claimerUserID], (error, row, field) => {
+                        if (error) {
+                          slackcmd.log(`Event: Delete item. ${query}.`, error);
+                          console.log(new Date(Date.now()), "Error checking for role of user:", error);
+                        } else {
+                          console.log("Successfully inquired for claimer's information.")
+                          claimerEmail = row[0].email;
+                          claimerFirstName = row[0].firstName;
+                          claimerSuiteNumber = row[0].suiteNumber;
+
+                          // sends an email to the claimer of the post 
+                          sendDeleteEmailToClaimer(claimerEmail, claimerFirstName,
+                            foodName, foodDescription, foodExpiryTime, foodImage,
+                            posterFirstName, posterSuiteNumber);
+
+                          io.emit('delete return', (itemID));
+                        }
+                      });
+                    }
+                  }
+                });
+              }
+            }
+          });
+        } else {
+          // user is not currently in a session and therefore should'nt be able to delete a post
+          app.get('/nicetrybud');
+        }
+      });
+    });
+
+
+    /*************************************************************************
+     * 
+     *         FOOD BOARD CLAIM FEATURE - SERVER SIDE
+     * 
+     *************************************************************************/
+
+
+    socket.on('claim item', (claim) => {
+      console.log('Event Claim Item:', claim);
+
+      //Declaring variables needed to generate automated claim email
+      let sessionID = claim.sessionID;
+      let itemID = claim.id;
+
+      let role
+      let posterUserID, posterEmail, posterFirstName;
+      let foodName, foodDescription, foodExpiryTime, foodImage;
+      let claimerUserID, claimerEmail, claimerFirstName, claimerSuiteNumber;
+
+      var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
+      connection.query(query, [sessionID], (error, row, fields) => {
+        if (error) {
+          slackcmd.log(`Event: Claim item. ${query}.`, error);
+          console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
+        }
+
+        if (row.length) {
+
           claimerUserID = row[0].Users_userID;
 
-          var userInfo = "SELECT * FROM FoodItem WHERE Users_claimerUserID = ?";
-          connection.query(userInfo, [claimerUserID], (error, rows, fields) => {
+          var setClaimerID = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ?`;
+          connection.query(setClaimerID, [claimerUserID, itemID], (error, row, field) => {
             if (error) {
-              console.log(new Date(Date.now()), "Error selecting user's claims in my claims feature:", error);
-            } else if (rows.length === 0) {
-              console.log("There are no claimed posts");
+              //return error if update claimerID into failed
+              slackcmd.log(`Event: Claim item. ${query}.`, error);
+              console.log(new Date(Date.now()), "Error updating claimerID into FoodItem table: ", error);
             } else {
-              socket.emit('my claims return', {
-                rows: rows,
-                claimerUserID: claimerUserID,
+              // else return the updated table
+              console.log("Successfully updated claimerID into FoodItem table.");
+
+              var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
+              connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
+                if (error) {
+                  //error occured while attempting to query FoodItem Table
+                  slackcmd.log(`Event: Claim item. ${query}.`, error);
+                  console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
+                } else {
+                  console.log("Successfully obtained Poster's userID from FoodItem Table", row);
+                  posterUserID = row[0].Users_userID;
+                  foodName = row[0].foodName;
+                  foodDescription = row[0].foodDescription;
+                  foodExpiryTime = row[0].foodExpiryTime;
+                  foodImage = row[0].foodImage;
+
+                  var usersTableQuery = "SELECT * FROM users WHERE userID = ? OR userID = ? LIMIT 2";
+                  connection.query(usersTableQuery, [posterUserID, claimerUserID], (error, row, field) => {
+                    if (error) {
+                      //return error if selection fail
+                      slackcmd.log(`Event: Claim item. ${query}.`, error);
+                      console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
+                    } else {
+                      //else return the users information
+                      console.log("Successfully grabbed user of claimed item. ", row);
+                      posterEmail = row[0].email;
+                      posterFirstName = row[0].firstName;
+                      claimerEmail = row[1].email;
+
+                      console.log("POSTER EMAIL", posterEmail);
+                      console.log("CLAIMER EMAIL", claimerEmail);
+
+
+                      claimerFirstName = row[1].firstName;
+                      claimerSuiteNumber = row[1].suiteNumber;
+                      console.log("EMAIL IS HERE LOOK", claimerEmail);
+
+                      sendClaimEmailToPoster(claimerEmail, claimerFirstName,
+                        foodName, foodDescription, foodExpiryTime, foodImage,
+                        posterEmail, posterFirstName, claimerSuiteNumber);
+
+                      console.log(itemID);
+                      io.emit('claim return', (itemID));
+                    }
+                  });
+                }
               });
             }
           });
+        } else {
+          app.get('/nicetrybud');
         }
-      }
+      });
+    });
+    socket.on("my claims", (claim) => {
+      console.log("my Claims:", claim);
+
+      let sessionID = claim.sessionID;
+      let claimerUserID;
+
+      var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
+      connection.query(query, [sessionID], (error, row, fields) => {
+        if (error) {
+          slackcmd.log(`Event: My claims. ${query}.`, error);
+          console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID", );
+        } else {
+          if (row.length) {
+            claimerUserID = row[0].Users_userID;
+
+            var userInfo = "SELECT * FROM FoodItem WHERE Users_claimerUserID = ?";
+            connection.query(userInfo, [claimerUserID], (error, rows, fields) => {
+              if (error) {
+                slackcmd.log(`Event: My claims. ${query}.`, error);
+                console.log(new Date(Date.now()), "Error selecting user's claims in my claims feature:", error);
+              } else if (rows.length === 0) {
+                console.log("There are no claimed posts");
+              } else {
+                socket.emit('my claims return', {
+                  rows: rows,
+                  claimerUserID: claimerUserID,
+                });
+              }
+            });
+          }
+        }
+      });
+    });
+
+    /************************************************************************
+     * 
+     *          MY CLAIMS - UNCLAIM FEATURE - SERVER SIDE
+     * 
+     * 
+     ***********************************************************************/
+
+    socket.on('unclaim item', (cardID) => {
+      console.log("unclaim this item");
+      let postID = cardID.cardID;
+      console.log("postID", postID);
+
+      var query = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ${postID}`;
+      connection.query(query, [null], (error, rows, field) => {
+        if (error) {
+          slackcmd.log(`Event: Unclaim item. ${query}.`, error);
+          console.log(new Date(Date.now()), "Error changing claim status of food item", error);
+        } else if (rows.length) {
+          console.log("Claim status updated");
+          socket.emit('unclaim item return', {
+            cardID: postID,
+          });
+        }
+      });
     });
   });
 
-  /************************************************************************
-   * 
-   *          MY CLAIMS - UNCLAIM FEATURE - SERVER SIDE
-   * 
-   * 
-   ***********************************************************************/
 
-   socket.on('unclaim item', (cardID) => {
-    console.log("unclaim this item");
-    let postID = cardID.cardID;
-    console.log("postID", postID);
-
-    var query = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ${postID}`;
-    connection.query(query, [null], (error, rows, field) => {
-      if (error) {
-        console.log(new Date( Date.now()), "Error changing claim status of food item", error);
-      } else if (rows.length) {
-        console.log("Claim status updated");
-        socket.emit('unclaim item return', {
-          cardID: postID,
-        });
+  /*************************************************************************
+   * 
+   *     MISCELLANEOUS FUNCTIONS USED IN FEATURES: DELETE, CLAIM
+   * 
+   *************************************************************************/
+  function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, foodDescription, foodExpiryTime, foodImage, posterEmail, posterFirstName, posterSuiteNumber) {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'foodboardcanada@gmail.com',
+        pass: 'darkthemesonly'
+      },
+      tls: {
+        rejectUnauthorized: false
       }
     });
-   });
-});
 
-
-/*************************************************************************
- * 
- *     MISCELLANEOUS FUNCTIONS USED IN FEATURES: DELETE, CLAIM
- * 
- *************************************************************************/
-function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, foodDescription, foodExpiryTime, foodImage, posterEmail, posterFirstName, posterSuiteNumber) {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'foodboardcanada@gmail.com',
-      pass: 'darkthemesonly'
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
-
-  // setup email data with unicode symbols
-  let mailOptions = {
-    from: `foodboardcanada@gmail.com`, // sender address
-    to: claimerEmail, // list of receivers
-    subject: 'FoodBoard: The food item you claimed is no longer available.', // Subject line
-    text: `Hello ${claimerFirstName},
+    // setup email data with unicode symbols
+    let mailOptions = {
+      from: `foodboardcanada@gmail.com`, // sender address
+      to: claimerEmail, // list of receivers
+      subject: 'FoodBoard: The food item you claimed is no longer available.', // Subject line
+      text: `Hello ${claimerFirstName},
 
     Unfortunately, your neighbor ${posterFirstName} from Apartment Suite ${posterSuiteNumber} has deleted their posted food item.
     Here's a reminder of what their post looked like.
@@ -577,7 +604,7 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
     Food Expiry: ${foodExpiryTime}
     
     Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // plain text body
-    html: `Hello ${claimerFirstName},<br/>
+      html: `Hello ${claimerFirstName},<br/>
     <br/>
     Unfortunately, your neighbor ${posterFirstName} from Apartment Suite ${posterSuiteNumber} has deleted their posted food item.<br/>
     Here's a reminder of what their post looked like.<br/>
@@ -590,49 +617,50 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
     <img src="cid:donotreply@foodboard.ca"/><br/>
     <br/>
     Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // html body
-    attachments: [{
-      filename: `foodboard_${foodImage}`,
-      path: `./app/images/${foodImage}`,
-      cid: 'donotreply@foodboard.ca'
-    }]
-  };
+      attachments: [{
+        filename: `foodboard_${foodImage}`,
+        path: `./app/images/${foodImage}`,
+        cid: 'donotreply@foodboard.ca'
+      }]
+    };
 
-  // send mail with defined transport object
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log("Error occured sending delete email", error);
-    } else {
-      // Preview only available when sending through an Ethereal account
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        slackcmd.log(`Event: Send Mail. ${query}.`, error);
+        console.log("Error occured sending delete email", error);
+      } else {
+        // Preview only available when sending through an Ethereal account
 
-      // If successful, should print the following to the console:
-      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-      // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-      console.log('Delete message sent: %s', info.messageId);
-      // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    }
-  });
-}
+        // If successful, should print the following to the console:
+        // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+        // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+        console.log('Delete message sent: %s', info.messageId);
+        // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+      }
+    });
+  }
 
-function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerEmail, claimerFirstName, claimerSuiteNumber) { //may also include: claimerEmail, claimerFirstName,
-  //claimerSuiteNumber, postingFoodName, 
-  //postingDescription, postingExpiryDate
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'foodboardcanada@gmail.com',
-      pass: 'darkthemesonly'
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
+  function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerEmail, claimerFirstName, claimerSuiteNumber) { //may also include: claimerEmail, claimerFirstName,
+    //claimerSuiteNumber, postingFoodName, 
+    //postingDescription, postingExpiryDate
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'foodboardcanada@gmail.com',
+        pass: 'darkthemesonly'
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
 
-  // setup email data with unicode symbols
-  let mailOptions = {
-    from: `foodboardcanada@gmail.com`, // sender address
-    to: posterEmail, // list of receivers
-    subject: 'FoodBoard: Your food item has been claimed', // Subject line
-    text: `Hello ${posterFirstName},
+    // setup email data with unicode symbols
+    let mailOptions = {
+      from: `foodboardcanada@gmail.com`, // sender address
+      to: posterEmail, // list of receivers
+      subject: 'FoodBoard: Your food item has been claimed', // Subject line
+      text: `Hello ${posterFirstName},
 
     Your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can 
     let ${claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.
@@ -644,7 +672,7 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
     Food Expiry: ${foodExpiryTime}
     
     Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // plain text body
-    html: `<p>Hello ${posterFirstName},<br/>
+      html: `<p>Hello ${posterFirstName},<br/>
     <br/>
     Your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can 
     let ${claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.<br/>
@@ -659,81 +687,86 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
     <img src="cid:donotreply@foodboard.ca"/><br/>
     <br/>
     Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // html body
-    attachments: [{
-      filename: `foodboard_${foodImage}`,
-      path: `./app/images/${foodImage}`,
-      cid: 'donotreply@foodboard.ca'
-    }]
+      attachments: [{
+        filename: `foodboard_${foodImage}`,
+        path: `./app/images/${foodImage}`,
+        cid: 'donotreply@foodboard.ca'
+      }]
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        slackcmd.log(`Event: Send Mail. ${query}.`, error);
+        console.log("Error occured sending claim email", error);
+      } else {
+        // Preview only available when sending through an Ethereal account
+
+        // If successful, should print the following to the console:
+        // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+        // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+        console.log('Claim message sent: %s', info.messageId);
+        // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+      }
+    });
   };
 
-  // send mail with defined transport object
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log("Error occured sending claim email", error);
-    } else {
-      // Preview only available when sending through an Ethereal account
+  function deleteFoodItem(itemID) {
+    var deletePost = `DELETE FROM FoodItem WHERE itemID = ? LIMIT 1`;
+    connection.query(deletePost, [itemID], (error, row, field) => {
+      if (error) {
 
-      // If successful, should print the following to the console:
-      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-      // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-      console.log('Claim message sent: %s', info.messageId);
-      // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    }
-  });
-};
-
-function deleteFoodItem(itemID) {
-  var deletePost = `DELETE FROM FoodItem WHERE itemID = ? LIMIT 1`;
-  connection.query(deletePost, [itemID], (error, row, field) => {
-    if (error) {
-      // return error if insertion fail
-      console.log("Error occured when attempting to delete post: ", error);
-    } else {
-      // else return the updated table
-      console.log("Successful deletion of claimed food item.");
-    }
-  });
-};
-
-function deleteFromClaimedPosts(itemID) {
-  var deleteFromClaimedPostsTable = "DELETE FROM ClaimedPosts WHERE FoodItem_itemID = ? LIMIT 1";
-  connection.query(deleteFromClaimedPostsTable, [itemID], (error, row, field) => {
-    if (error) {
-      console.log(new Date(Date.now()), 'Error:', error);
-    } else {
-      console.log("Successful deletion from ClaimedPosts table.")
-    }
-  });
-}
-
-
-/*************************************************************************
- * 
- *     MYSQL HANDLE DISCONNECT
- * 
- *************************************************************************/
-
-
-// The port we are listening on
-server.listen(port, () => {
-  console.log(`We are on port ${port}`);
-});
-
-function getSessionID(clientSessionID) {
-  var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-  var sessionID = connection.query(query, [clientSessionID], (error, rows, fields) => {
-    if (error) {
-      console.log(new Date(Date.now()), 'Error:', error);
-    } else {
-      if (rows.length) {
-        console.log('QUERY TRUE');
-        return true;
+        // return error if insertion fail
+        slackcmd.log(`Event: Delete food item. ${query}.`, error);
+        console.log("Error occured when attempting to delete post: ", error);
       } else {
-        console.log('QUERY FALSE');
-        return false;
+        // else return the updated table
+        console.log("Successful deletion of claimed food item.");
       }
-    }
+    });
+  };
+
+  function deleteFromClaimedPosts(itemID) {
+    var deleteFromClaimedPostsTable = "DELETE FROM ClaimedPosts WHERE FoodItem_itemID = ? LIMIT 1";
+    connection.query(deleteFromClaimedPostsTable, [itemID], (error, row, field) => {
+      if (error) {
+        slackcmd.log(`Event: Delete from claimed posts. ${query}.`, error);
+        console.log(new Date(Date.now()), 'Error:', error);
+      } else {
+        console.log("Successful deletion from ClaimedPosts table.")
+      }
+    });
+  }
+
+
+  /*************************************************************************
+   * 
+   *     MYSQL HANDLE DISCONNECT
+   * 
+   *************************************************************************/
+
+
+  // The port we are listening on
+  server.listen(port, () => {
+    console.log(`We are on port ${port}`);
   });
 
-  return sessionID;
-};
+  function getSessionID(clientSessionID) {
+    var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
+    var sessionID = connection.query(query, [clientSessionID], (error, rows, fields) => {
+      if (error) {
+        slackcmd.log(`Event: Get sessionID. ${query}.`, error);
+        console.log(new Date(Date.now()), 'Error:', error);
+      } else {
+        if (rows.length) {
+          console.log('QUERY TRUE');
+          return true;
+        } else {
+          console.log('QUERY FALSE');
+          return false;
+        }
+      }
+    });
+
+    return sessionID;
+  };
