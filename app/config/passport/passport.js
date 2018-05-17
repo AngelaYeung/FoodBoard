@@ -2,7 +2,7 @@
 var bCrypt = require('bcrypt-nodejs');
 const mysqlconnection = require('../../public/js/mysqlconnection');
 var connection = mysqlconnection.handleDisconnect();
-
+var slackcmd = require('../../public/js/slackcommands');
 
 module.exports = function (passport, user) {
 
@@ -34,6 +34,7 @@ module.exports = function (passport, user) {
       var userSelect = "SELECT userID FROM users WHERE email = ? LIMIT 1";
       connection.query(userSelect, [register_email], (error, results) => {
         if (error) {
+          slackcmd.log(`Event: Passport. ${query}.`, error);
           console.log(new Date(Date.now()), 'Error:', error);
           return done(error);
         }
