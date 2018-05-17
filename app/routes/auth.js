@@ -64,7 +64,7 @@ var validate = (app, passport) => {
         var query = `SELECT * FROM Sessions WHERE sessionID = '${req.sessionID}' LIMIT 1`;
         connection.query(query, (error, rows, fields) => {
             if (error) {
-                console.log(error);
+                console.log(new Date(Date.now()), "Error selecting userID from accounts:", error);
             } else {
                 if (rows.length) {
                     console.log("THIS IS THE COMPLETE SESION RETURNED:", rows);
