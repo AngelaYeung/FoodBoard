@@ -10,19 +10,21 @@ const passport = require('passport'); // for authentication
 const session = require('express-session'); // for session handling
 const env = require('dotenv').load();
 const exphbs = require('express-handlebars'); // for rendering dynamic templates
-const nodemailer = require('nodemailer');
 
-/** FOR SENDING AUTOMATED EMAILS 
-const nodemailer = require('nodemailer'); // for sending automated emails
+
+
+/** FOR SENDING AUTOMATED EMAILS */
+const nodemailer = require('nodemailer');
+const inlineCss = require('nodemailer-juice'); // allows for inline css styling in nodemailer email
 const ses = require('node-ses'), client = ses.createClient({key: '', secret: ''}); // for creating a client key
-const ejs = require('ejs');
-*/
+
 
 /** Exports made */
 var models = require("./app/models"); // tells the server to require these routes 
 var authRoute = require('./app/routes/auth.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
 var bCrypt = require('bcrypt-nodejs'); // decrypting/encrypting passwords server side
+var slackcmd = require('./app/public/js/slackcommands');
 
 var connection = mysqlconnection.handleDisconnect();
 
@@ -73,23 +75,9 @@ app.engine('handlebars',
 
 app.set('view engine', 'handlebars');
 
-/**
- * Renders the homepage when you first open the port
- */
-// app.get('/', (req, res) => {
-//   res.render('home.handlebars');
-// });
 
 app.get('/snake', (req, res) => {
   res.render('snake');
-});
-
-app.get('/boardpagero', (req, res) => {
-  res.render('boardpagero');
-});
-
-app.get('/boardpagero_home', (req, res) => {
-  res.render('boardpagero_home');
 });
 
 app.get('/', (req, res) => {
@@ -107,13 +95,22 @@ app.get('/', (req, res) => {
       }
     }
   });
+});
+
+app.post('/slack/command/new', (req, res) => {
+  console.log('CMD:', req.body);
+
+  if (req.body.token === slackcmd.token) {
+    slackcmd.newItems(req, res); 
+  } else {
+    console.log('Incorrect slack token');
+  }
 
 });
 
 /*************************************************************************
  * 
- *         FOOD BOARD ACCOUNT SETTINGS FEATURE - SERVER SIDE
- * 
+ *         FOOD BOARD ACCOUNT PAGE FEATURE - SERVER SIDE
  * 
  *************************************************************************/
 app.get('/account', (req, res) => {
@@ -130,9 +127,9 @@ app.get('/account', (req, res) => {
         var userInfo = "SELECT * FROM Users WHERE userID = ?";
         connection.query(userInfo, [userID], (error, rows, field) => {
           if (error) {
-            console.log("error");
+            console.log(new Date(Date.now()), "Error querying for user information for account settings feature.");
           } else {
-            console.log("successful");
+            console.log("Successful query for user information in account settings feature.");
             var name = rows[0].firstName + " " + rows[0].lastName;
             var email = rows[0].email;
             var suiteNum = rows[0].suiteNumber;
@@ -146,9 +143,6 @@ app.get('/account', (req, res) => {
         });
       }
     }
-    /*
-    GET NAME, EMAIL, Suite #, current password
-    */
   });
 });
 
@@ -175,7 +169,7 @@ app.post('/changepassword', (req, res) => {
         userID = rows[0].Users_userID;
 
         // the user is confirmed to be in a session, now grab the old password tied to the user ID from the database
-        var verifyOldPassword = "SELECT password FROM Users WHERE userID = ?";
+        var verifyOldPassword = "SELECT password FROM users WHERE userID = ?";
         connection.query(verifyOldPassword, [userID], (error, rows, field) => {
           if (error) {
             console.log(new Date(Date.now()), "Error querying for old password in the Users Table: ", error);
@@ -202,7 +196,7 @@ app.post('/changepassword', (req, res) => {
               newPassword = generateHash(req.body.newPW); // hashed password
 
               // updates the old password with the new password in the Users table
-              queryChangePassword = "UPDATE Users SET password = ? WHERE userID = ?";
+              queryChangePassword = "UPDATE users SET password = ? WHERE userID = ?";
               connection.query(queryChangePassword, [newPassword, userID], (error, rows, field) => {
                 if (error) {
                   console.log(new Date(Date.now()), "Error occured while trying to change password:", error);
@@ -229,12 +223,12 @@ app.post('/changepassword', (req, res) => {
    *************************************************************************/
 
 app.post("/changesuitenumber", (req, res) => {
-
+  console.log("Entered change suite number event.");
   let sessionID = req.sessionID;
   let newSuiteNumber = req.body.newSuiteNumber;
   let passwordNotHashed = req.body.currentPW;
   let userID, passwordHashed;
-
+  console.log("Session ID: ", sessionID);
   // first check if the user is in a session
   var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
   connection.query(query, [sessionID], (error, rows, fields) => {
@@ -244,10 +238,10 @@ app.post("/changesuitenumber", (req, res) => {
       userID = rows[0].Users_userID;
 
       // the user is confirmed to be in a session, now grab the old password tied to the userID from the database
-      var verifyOldPassword = "SELECT password, FROM Users WHERE userID = ?";
+      var verifyOldPassword = "SELECT password FROM users WHERE userID = ?";
       connection.query(verifyOldPassword, [userID], (error, rows, field) => {
         if (error) {
-          console.log(new Date(Date.now()), "Error querying for old password in the Users Table: ", error);
+          console.log(new Date(Date.now()), "Error querying for old password in the users Table: ", error);
         } else {
           if (rows.length) {
 
@@ -261,21 +255,21 @@ app.post("/changesuitenumber", (req, res) => {
             if (!isValidPassword(passwordHashed, passwordNotHashed)) {
               // the call back function can send data back to auth.js
               res.render('account', {
-                passwordMessage: "Not a valid password" //renders an invalid password message using handlebars onto account page
+                suiteMessage: "Not a valid password" //renders an invalid password message using handlebars onto account page
               });
 
             } else {
 
-              // updates the old email with the new email in the Users table
-              queryChangeEmail = "UPDATE Users SET suiteNumber = ? WHERE userID = ?";
+              // updates the suite number with the new suite number in the users table
+              queryChangeEmail = "UPDATE users SET suiteNumber = ? WHERE userID = ?";
               connection.query(queryChangeEmail, [newSuiteNumber, userID], (error, rows, field) => {
                 if (error) {
-                  console.log(new Date(Date.now()), "Error occured while trying to change email:", error);
+                  console.log(new Date(Date.now()), "Error occured while trying to change suiteNumber:", error);
                 } else {
                   console.log("Successfully changed suite number.");
 
                   res.render('account', {
-                    passwordMessage: "Your suite number has been changed!"
+                    suiteMessage: "Your suite number has been changed!"
                   });
                 }
               });
@@ -312,9 +306,8 @@ models.sequelize.sync().then(() => {
 /*************************************************************************
   * 
   *         FOOD BOARD REGISTRATION FEATURE - SERVER SIDE
- 
- 
-/**
+  *
+/*************************************************************************
 * Socketio detects that connection has been made to the server.
 * The connection event is fired, whenever anyone goes to foodboard.ca.
 */
@@ -333,8 +326,7 @@ io.on('connection', (socket) => {
    * 
    * Fired as soon as user is connected to server
    * 
-   *************************************************************************/
-
+   *************************************************************************
 
   /**
    * When the user has a complete loaded page, fetch data from db to print posts
@@ -352,7 +344,7 @@ io.on('connection', (socket) => {
 
           // check to see if the user is an admin
           var userID = rows[0].Users_userID;
-          var checkRole = "SELECT role FROM Users WHERE userID = ? LIMIT 1";
+          var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
           connection.query(checkRole, [userID], (error, row, field) => {
             if (error) {
               console.log(new Date(Date.now()), "Error checking for role of user:", error);
@@ -385,7 +377,41 @@ io.on('connection', (socket) => {
     });
   });
 
-
+  /*************************************************************************
+   * 
+   *         FOOD BOARD MYPOSTS FEATURE - SERVER SIDE
+   * 
+   * 
+   *************************************************************************/
+  socket.on('my posts', (session) => {
+    var sessionID = session.sessionID;
+    var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
+    console.log('I AM EMITTING MY POSTS');
+    connection.query(query, (error, rows, fields) => {
+      if (error) {
+        console.log(new Date(Date.now()), "Error selecting sessionID in 'myposts' feature:", error);
+      } else {
+        if (rows.length) {
+          var userID = rows[0].Users_userID;
+          //Query for user info for current user
+          var userInfo = "SELECT * FROM FoodItem WHERE Users_userID = ?";
+          connection.query(userInfo, [userID], (error, rows, fields) => {
+            if (error) {
+              console.log(new Date(Date.now()), "Error selecting User's posts in 'myposts' feature:", error);
+            } else if (rows.length === 0) {
+              console.log("This user has no posts to load in 'myposts' page.");
+            } else {
+              console.log("Successfully loading the users posts.");
+              socket.emit('load my posts', {
+                rows: rows,
+                userID: userID,
+              });
+            }
+          });
+        }
+      }
+    });
+  });
 
   /*************************************************************************
    * 
@@ -473,7 +499,7 @@ io.on('connection', (socket) => {
         let posterUserID = rows[0].Users_userID;
 
         // check to see if the user is an admin or poaster, no email is sent if a post is deleted by an admin
-        var checkRole = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
+        var checkRole = "SELECT * FROM users WHERE userID = ? LIMIT 1";
         connection.query(checkRole, [posterUserID], (error, rows, field) => {
           if (error) {
             console.log(new Date(Date.now()), "Error checking for role of user:", error);
@@ -516,7 +542,7 @@ io.on('connection', (socket) => {
 
                     // posted food item has been claimed
                     // query for claimer's information so we can send an automated email
-                    var claimerQuery = "SELECT * FROM Users WHERE userID = ? LIMIT 1";
+                    var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
                     connection.query(claimerQuery, [claimerUserID], (error, rows, field) => {
                       if (error) {
                         console.log(new Date(Date.now()), "Error checking for role of user:", error);
@@ -596,7 +622,7 @@ io.on('connection', (socket) => {
                 foodExpiryTime = rows[0].foodExpiryTime;
                 foodImage = rows[0].foodImage;
 
-                var usersTableQuery = "SELECT * FROM Users WHERE userID = ? OR userID = ? LIMIT 2";
+                var usersTableQuery = "SELECT * FROM users WHERE userID = ? OR userID = ? LIMIT 2";
                 connection.query(usersTableQuery, [posterUserID, claimerUserID], (error, rows, field) => {
                   if (error) {
                     //return error if selection fail
@@ -610,9 +636,9 @@ io.on('connection', (socket) => {
                     claimerFirstName = rows[1].firstName;
                     claimerSuiteNumber = rows[1].suiteNumber;
 
-                    sendClaimEmailToPoster(posterEmail, posterFirstName,
+                    sendClaimEmailToPoster(claimerEmail, claimerFirstName,
                       foodName, foodDescription, foodExpiryTime, foodImage,
-                      claimerEmail, claimerFirstName, claimerSuiteNumber);
+                      posterEmail, posterFirstName, claimerSuiteNumber);
 
                     console.log(itemID);
                     io.emit('claim return', (itemID));
@@ -629,6 +655,24 @@ io.on('connection', (socket) => {
   });
 });
 
+ 
+// socket.on("user claims", (claim) => {
+//   console.log("User Claims:", claim);
+
+//   let sessionID = claim.sessionID;
+//   let claimerUserID;
+
+//   var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID =?) LIMIT 1`;
+//   connection.query(query, [sessionID], (error, row, fields) => {
+//     if (error) {
+//       console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID",);
+//     }
+
+//     if (row.length) {
+//       claimerUserID = row[0].Users_userID;
+//     } 
+//   });
+// });
 
 /*************************************************************************
  * 
@@ -637,21 +681,21 @@ io.on('connection', (socket) => {
  *************************************************************************/
 function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, foodDescription, foodExpiryTime, foodImage, posterEmail, posterFirstName, posterSuiteNumber) {
   const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    service: 'gmail',
     auth: {
-      user: 'de5kzppbkaumnfhu@ethereal.email',
-      pass: 'wNmg25t9fqKXZ8wVUF'
+      user: 'foodboardcanada@gmail.com',
+      pass: 'darkthemesonly'
     },
-    // tls: {
-    //     rejectUnauthorized:false
-    // }
+    tls: {
+      rejectUnauthorized: false
+    }
   });
+
+  transporter.use('compile', inlineCss()); // allows for inline styling within emails
 
   // setup email data with unicode symbols
   let mailOptions = {
-    from: claimerEmail, // sender address
+    from: `foodboardcanada@gmail.com`, // sender address
     to: claimerEmail, // list of receivers
     subject: 'FoodBoard: The food item you claimed is no longer available.', // Subject line
     text: `Hello ${claimerFirstName},
@@ -664,23 +708,52 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
     Food Expiry: ${foodExpiryTime}
     
     Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // plain text body
-    html: `Hello ${claimerFirstName},<br/>
-    <br/>
-    Unfortunately, your neighbor ${posterFirstName} from Apartment Suite ${posterSuiteNumber} has deleted their posted food item.<br/>
-    Here's a reminder of what their post looked like.<br/>
-    <br/>
-    Food Name: ${foodName}<br/>
-    Food Description: ${foodDescription}<br/>
-    Food Expiry: ${foodExpiryTime}<br/>
-    Food Image: <br/>
-    <br/>
-    <img src="cid:donotreply@foodboard.ca"/><br/>
-    <br/>
-    Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // html body
+    html:
+      `<div style="background: #DDE5E5" id="email-container">
+          <div style="text-align: center;" id="homepage-body">
+            <img style="width: 60%" src="cid:foodboardlogo" alt="FoodBoard logo"/>
+            <p style="font-size: 12pt; margin-top: 10px"><i>Share More, Waste Less</i></p>
+          </div>
+          <div style="font-size: 10pt" id="email-body">
+            <p style="text-align: left;">Hello ${claimerFirstName},</p>
+            <p style="text-align: left;">Unfortunately, your neighbor ${posterFirstName} from Apartment Suite ${posterSuiteNumber} has deleted their posted food item.
+            Here's a reminder of what their post looked like.</p>
+          </div>
+          <div style="width: 100%;" id="email-food-table">
+            <table style="margin: 0 auto; font-size: 10pt"><br/>
+              <tr>
+                <td style="width: 30%">Food Name:</td>
+                <td style="width: 70%">${foodName}</td>
+              </tr>
+              <tr>
+                <td style="width: 30%">Food Description:</td>
+                <td style="width: 70%">${foodDescription}</td>
+              </tr>
+              <tr>
+                <td style="width: 30%">Food Expiry:</td>
+                <td style="width: 70%">${foodExpiryTime}</td>
+              </tr>
+            </table><br/>
+          </div>
+          <div>
+            <p style="text-align: center; font-size: 10pt">Food Image:</p>
+          </div>
+          <div style="width: 100%; text-align: center;" id="email-image">
+            <img style="display: margin-right: auto; display: margin-left: auto" src="cid:donotreply@foodboard.ca"/><br/>
+          </div>
+          <div>
+            <p style="text-align: center; font-size: 10pt">Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!<p>
+          </div>
+        </div>`, // html body
     attachments: [{
       filename: `foodboard_${foodImage}`,
       path: `./app/images/${foodImage}`,
       cid: 'donotreply@foodboard.ca'
+    },
+    {
+      filename: 'foodboard_logo',
+      path: './app/Pictures/largelogo-text-transparent.png',
+      cid: 'foodboardlogo'
     }]
   };
 
@@ -695,7 +768,7 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
       console.log('Delete message sent: %s', info.messageId);
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+      // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
   });
 }
@@ -704,21 +777,23 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
   //claimerSuiteNumber, postingFoodName, 
   //postingDescription, postingExpiryDate
   const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
+    host: 'gmail',
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: 'de5kzppbkaumnfhu@ethereal.email',
-      pass: 'wNmg25t9fqKXZ8wVUF'
+      user: 'foodboardcanada@gmail.com',
+      pass: 'darkthemesonly'
     },
-    // tls: {
-    //     rejectUnauthorized:false
-    // }
+    tls: {
+        rejectUnauthorized:false
+    }
   });
+
+  transporter.use('compile', inlineCss()); // allows for inline styling within emails
 
   // setup email data with unicode symbols
   let mailOptions = {
-    from: posterEmail, // sender address
+    from: `foodboardcanada@gmail.com`, // sender address
     to: posterEmail, // list of receivers
     subject: 'FoodBoard: Your food item has been claimed', // Subject line
     text: `Hello ${posterFirstName},
@@ -733,25 +808,52 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
     Food Expiry: ${foodExpiryTime}
     
     Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // plain text body
-    html: `<p>Hello ${posterFirstName},<br/>
-    <br/>
-    Your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can 
-    let ${claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.<br/>
-    <br/>
-    Here's a reminder of what you posted on foodboard.ca.<br/>
-    <br/>
-    Food Name: ${foodName}<br/>
-    Food Description: ${foodDescription}<br/>
-    Food Expiry: ${foodExpiryTime}<br/>
-    Food Image: <br/>
-    <br/>
-    <img src="cid:donotreply@foodboard.ca"/><br/>
-    <br/>
-    Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // html body
+    html:
+      `<div style="background: #DDE5E5" id="email-container">
+          <div style="text-align: center;" id="homepage-body">
+            <img style="width: 60%" src="cid:foodboardlogo" alt="FoodBoard logo"/>
+            <p style="font-size: 12pt; margin-top: 10px"><i>Share More, Waste Less</i></p>
+          </div>
+          <div style="font-size: 10pt" id="email-body">
+            <p style="text-align: left;">Hello ${posterFirstName},</p>
+            <p style="text-align: left;">Your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can 
+              let ${claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.</p>
+          </div>
+          <div style="width: 100%;" id="email-food-table">
+            <table style="margin: 0 auto; font-size: 10pt"><br/>
+              <tr>
+                <td style="width: 30%">Food Name:</td>
+                <td style="width: 70%">${foodName}</td>
+              </tr>
+              <tr>
+                <td style="width: 30%">Food Description:</td>
+                <td style="width: 70%">${foodDescription}</td>
+              </tr>
+              <tr>
+                <td style="width: 30%">Food Expiry:</td>
+                <td style="width: 70%">${foodExpiryTime}</td>
+              </tr>
+            </table><br/>
+          </div>
+          <div>
+            <p style="text-align: center; font-size: 10pt">Food Image:</p>
+          </div>
+          <div style="width: 100%; text-align: center;" id="email-image">
+            <img style="display: margin-right: auto; display: margin-left: auto" src="cid:donotreply@foodboard.ca"/><br/>
+          </div>
+          <div>
+            <p style="text-align: center; font-size: 10pt">Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!<p>
+          </div>
+        </div>`, // html body
     attachments: [{
       filename: `foodboard_${foodImage}`,
       path: `./app/images/${foodImage}`,
       cid: 'donotreply@foodboard.ca'
+    },
+    {
+      filename: 'foodboard_logo',
+      path: './app/Pictures/largelogo-text-transparent.png',
+      cid: 'foodboardlogo'
     }]
   };
 
