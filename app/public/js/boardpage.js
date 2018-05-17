@@ -392,14 +392,6 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   $('#postForm').trigger('reset');
 }
 
-function formatDate(dateTime) {
-  var expiryDate = new Date(dateTime);
-  console.log('Expiry date', expiryDate);
-  var today = new Date(Date.now());
-  console.log('today', today);
-  var formatedDate = moment(expiryDate).fromNow();
-  return formatedDate;
-};
 /**
  * Creates Card from FoodItem Table without a 'Delete' Button.
  * @param {*} id 
@@ -482,6 +474,15 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
   /** Clearing Forms */
   $('#postForm').trigger('reset');
 }
+
+function formatDate(dateTime) {
+  var expiryDate = new Date(dateTime);
+  console.log('Expiry date', expiryDate);
+  var today = new Date(Date.now());
+  console.log('today', today);
+  var formatedDate = moment(expiryDate).fromNow();
+  return formatedDate;
+};
 
 // Creates a thumbnail when an image has been uploaded
 // function handleFileSelect(evt) {
