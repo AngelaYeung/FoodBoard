@@ -269,3 +269,17 @@ a#color-change {
   outline:none;
   margin-top: 80%;
 }
+
+/** Styles the text for invalid time input **/
+.invalid-feedback {
+  display: none;
+  color: red;
+}
+
+/** Styles the input box for invalid time input **/
+.invalid-input {
+    -moz-box-shadow: 0 0 2px 2px rgb(199, 108, 108);
+    -webkit-box-shadow: 0 0 2px 2px rgb(199, 108, 108);
+    box-shadow: 0 0 2px 2px rgb(199, 108, 108);
+}
+
