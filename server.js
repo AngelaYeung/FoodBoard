@@ -514,6 +514,7 @@ io.on('connection', (socket) => {
           });
         });
       } else {
+        slackcmd.log('NICE TRY BUD!', '');
         app.get('/nicetrybud');
       }
     });
@@ -621,6 +622,7 @@ io.on('connection', (socket) => {
         });
       } else {
         // user is not currently in a session and therefore should'nt be able to delete a post
+        slackcmd.log('NICE TRY BUD!', '');
         app.get('/nicetrybud');
       }
     });
@@ -715,6 +717,7 @@ io.on('connection', (socket) => {
           }
         });
       } else {
+        slackcmd.log('NICE TRY BUD!', '');
         app.get('/nicetrybud');
       }
     });
@@ -915,6 +918,7 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
+      slackcmd.log(`Event: Send Delete Mail ${info}`, error);
       console.log("Error occured sending claim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
@@ -1014,6 +1018,7 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
+      slackcmd.log(`Event: Send Claim Mail ${info}`, error);
       console.log("Error occured sending claim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
@@ -1113,7 +1118,8 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log("Error occured sending claim email", error);
+      slackcmd.log(`Event: Send Unclaim Mail ${info}`, error);
+      console.log("Error occured sending unclaim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
 
