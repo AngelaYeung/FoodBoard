@@ -60,8 +60,11 @@ body {
 #game-controller table {
     margin: 0 auto;
     padding: 0;
-    align-content: center;
-    justify-content: center;
+    -ms-flex-line-pack: center;
+        align-content: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
     border-collapse: collapse;
 }
 
