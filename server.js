@@ -124,7 +124,7 @@ app.get('/account', (req, res) => {
       if (rows.length) {
         var userID = rows[0].Users_userID;
         //Query for user info for current user
-        var userInfo = "SELECT * FROM Users WHERE userID = ?";
+        var userInfo = "SELECT * FROM users WHERE userID = ?";
         connection.query(userInfo, [userID], (error, rows, field) => {
           if (error) {
             console.log(new Date(Date.now()), "Error querying for user information for account settings feature.");
