@@ -276,6 +276,7 @@ io.on('connection', (socket) => {
         uploader.once('complete', () => {
           console.log('File Transfer Completed...');
           io.emit('post item return', {
+            userID: userID,
             id: itemID,
             name: foodName,
             description: foodDescription,
