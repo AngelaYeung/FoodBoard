@@ -198,9 +198,10 @@ $(document).ready(function () {
     console.log("LOAD: ROWS: ", rows);
     for (var i = 0; i < rows.length; i++) {
       console.log('userID: ', userID);
+      console.log('role', typeof role);
       console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
       if (role === 0) {
-        if (rows[i].Users_userID === userID) {
+        if (rows[i].Users_userID == userID) {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         } else {
@@ -208,7 +209,7 @@ $(document).ready(function () {
             rows[i].foodGroup, rows[i].foodImage);
         }
       } else {
-        if (rows[i].Users_userID === userID) {
+        if (rows[i].Users_userID == userID) {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         } else {
