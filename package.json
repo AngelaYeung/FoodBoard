@@ -16,7 +16,6 @@
     "node-ses": "^2.1.0",
     "nodemailer": "^4.6.4",
     "nodemailer-juice": "^1.0.0",
-    "nodemon": "^1.17.4",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "sequelize": "^3.30.1",
