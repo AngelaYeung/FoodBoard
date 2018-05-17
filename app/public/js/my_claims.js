@@ -117,8 +117,10 @@ function setPostImage(foodCategory, imgName) {
 
 function unclaimItem(cardID) {
   console.log("The cardID is:", cardID);
+  let sessionID = getSessionID('connect.sid');
   socket.emit('unclaim item', {
     cardID: cardID,
+    sessionID: sessionID
   });
   $(`#card${cardID}`).remove();
 }
