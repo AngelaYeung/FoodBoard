@@ -363,6 +363,7 @@ io.on('connection', (socket) => {
 
   socket.on('page loaded', (session) => {
     console.log('Server: page loaded')
+    console.log("PAGE LOADED: SESSION.SESSIONID ", session.sessionID);
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [session.sessionID], (error, rows, fields) => {
       if (error) {

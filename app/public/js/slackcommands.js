@@ -5,8 +5,8 @@ var connection = mysqlconnection.handleDisconnect();
 const token = 'pbvEgpojkg1eEkIdv03G9SRA';
 
 const options = {
-    host: 'https://hooks.slack.com',
-    port: '80',
+    host: 'hooks.slack.com',
+    port: '443',
     path: '/services/TAPJCHR5G/BARUPCJJZ/SixLycbd5dQtcvAdMHdLfnJH',
     method: 'POST',
     headers: {
@@ -19,8 +19,8 @@ const options = {
 function log(msg) {
     var timeStamp = new Date(Date.now());
     
-    var post_data = JSON.stringify({
-        text: `${timeStamp}, Message: ${msg}`,
+    var postData = JSON.stringify({
+        text: `\`\`\`${timeStamp}, Message: ${JSON.stringify(msg, undefined, 3)}\`\`\``,
     });
 
 
@@ -33,8 +33,8 @@ function log(msg) {
         console.log(new Date(Date.now()), 'Slack response: ', res);
     });
 
-    req.write(postData);
-    req.end();
+    post_req.write(postData);
+    post_req.end();
 };
 
 

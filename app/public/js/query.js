@@ -7,7 +7,7 @@ var connection = mysqlconnection.handleDisconnect();
  * @param {string} clientSessionID session ID from the server
  */
 function getSessionID(clientSessionID) {
-    var query = 'SELECT sessionID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?)';
+    var query = 'SELECT sessionID FROM Sessions WHERE sessionID = ?)';
     var sessionID = connection.query(query, [clientSessionID], (error, rows, fields) => {
         if (error) {
             console.log('Error', error)
