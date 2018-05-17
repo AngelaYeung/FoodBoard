@@ -23,7 +23,7 @@
 
     </div>
 
-    <div class="container">
+    <div class="account-settings-container">
         <div class="row">
             <div class="col-xs-4">
                 Name
@@ -51,12 +51,13 @@
                 <div class="col-xs-4">
                     <a class="btn-xs btn-primary edit-info" data-toggle="collapse" href="#pw-form">Edit Info</a>
                 </div>
+                 {{passwordMessage}}
             </div>
         </div>
         <div class="row">
 
             <div id="pw-form" class="collapse">
-                <form id="changePWForm" action="/changePassword" method="POST">
+                <form id="changePWForm" action="/changepassword" method="POST">
                     <p class="text-center">Change password</p>
                     <div class="form-group text-center">
                         <input id="currentPW" name="currentPW" type="password" value="" placeholder="Current Password" required>
@@ -68,7 +69,7 @@
                         <input id="confirmPW" name="confirmPW" type="password" placeholder="Confirm new password">
                     </div>
                     <div class="form-group text-center">
-                        <button id="pw-submit" class="btn btn-primary disabled" type="button">Save Changes</button>
+                        <button id="pw-submit" class="btn btn-primary disabled" type="submit">Save Changes</button>
                         <button class="btn btn-danger" type="button" data-toggle="collapse" data-target="#pw-form">Cancel</button>
                     </div>
                 </form>
@@ -85,11 +86,12 @@
             <div class="col-xs-4">
                 <a class="btn-xs btn-primary edit-info" data-toggle="collapse" href="#suite-form">Edit Info</a>
             </div>
+           {{suiteMessage}}
         </div>
         <div class="row">
 
             <div id="suite-form" class="collapse">
-                <form id="changeSuiteForm" action="/changeSuite" method="POST">
+                <form id="changeSuiteForm" action="/changesuitenumber" method="POST">
                     <p class="text-center">Change Suite Number</p>
 
                     <div class="form-group text-center">
@@ -99,7 +101,7 @@
                         <input id="newSuite" name="newSuite" type="text" placeholder="Enter new Suite Number">
                     </div>
                     <div class="form-group text-center">
-                        <button id="suite-submit" class="btn btn-primary disabled" type="button">Save Changes</button>
+                        <button id="suite-submit" class="btn btn-primary disabled" type="submit">Save Changes</button>
                         <button class="btn btn-danger" type="button" data-target="#suite-form" data-toggle="collapse">Cancel</button>
                     </div>
                 </form>

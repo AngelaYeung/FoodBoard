@@ -1,12 +1,12 @@
-const http = require('http');
+const http = require('https');
 
 const mysqlconnection = require('./mysqlconnection.js');
 var connection = mysqlconnection.handleDisconnect();
 const token = 'pbvEgpojkg1eEkIdv03G9SRA';
 
 const options = {
-    host: 'https://hooks.slack.com',
-    port: '80',
+    host: 'hooks.slack.com',
+    port: '443',
     path: '/services/TAPJCHR5G/BARUPCJJZ/SixLycbd5dQtcvAdMHdLfnJH',
     method: 'POST',
     headers: {
@@ -16,15 +16,15 @@ const options = {
 };
 
 
-function log(msg) {
+function log(msg, error) {
     var timeStamp = new Date(Date.now());
     
-    var post_data = JSON.stringify({
-        text: `${timeStamp}, Message: ${msg}`,
+    var postData = JSON.stringify({
+        text: `\`\`\`${timeStamp}, ${msg}: ${JSON.stringify(error, undefined, 3)}\`\`\``,
     });
 
 
-    var post_req = http.request(options, (res) => {
+    var postReq = http.request(options, (res) => {
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
             console.log(`BODY: ${chunk}`);
@@ -33,8 +33,8 @@ function log(msg) {
         console.log(new Date(Date.now()), 'Slack response: ', res);
     });
 
-    req.write(postData);
-    req.end();
+    postReq.write(postData);
+    postReq.end();
 };
 
 

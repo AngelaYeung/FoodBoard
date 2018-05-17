@@ -10,13 +10,20 @@ const passport = require('passport'); // for authentication
 const session = require('express-session'); // for session handling
 const env = require('dotenv').load();
 const exphbs = require('express-handlebars'); // for rendering dynamic templates
-const nodemailer = require('nodemailer'); // for sending automated emails
+
+
+
+/** FOR SENDING AUTOMATED EMAILS */
+const nodemailer = require('nodemailer');
+const inlineCss = require('nodemailer-juice'); // allows for inline css styling in nodemailer email
+const ses = require('node-ses'), client = ses.createClient({ key: '', secret: '' }); // for creating a client key
 
 
 /** Exports made */
 var models = require("./app/models"); // tells the server to require these routes 
 var authRoute = require('./app/routes/auth.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
+var bCrypt = require('bcrypt-nodejs'); // decrypting/encrypting passwords server side
 var slackcmd = require('./app/public/js/slackcommands');
 
 var connection = mysqlconnection.handleDisconnect();
@@ -103,7 +110,209 @@ app.post('/slack/command/new', (req, res) => {
 
 /*************************************************************************
  * 
+ *         FOOD BOARD ACCOUNT PAGE FEATURE - SERVER SIDE
+ * 
+ *************************************************************************/
+app.get('/account', (req, res) => {
+  var sessionID = req.sessionID;
+  var query = `SELECT * FROM Sessions WHERE sessionID = '${sessionID}' LIMIT 1`;
+  connection.query(query, (error, rows, fields) => {
+    if (error) {
+      console.log(new Date(Date.now()), 'Error grabbing userID from Sessions table: ', error);
+    } else {
+
+      if (rows.length) {
+        var userID = rows[0].Users_userID;
+        //Query for user info for current user
+        var userInfo = "SELECT * FROM users WHERE userID = ?";
+        connection.query(userInfo, [userID], (error, rows, field) => {
+          if (error) {
+            console.log(new Date(Date.now()), "Error querying for user information for account settings feature.");
+          } else {
+            console.log("Successful query for user information in account settings feature.");
+            var name = rows[0].firstName + " " + rows[0].lastName;
+            var email = rows[0].email;
+            var suiteNum = rows[0].suiteNumber;
+
+            res.render('account', {
+              name: name,
+              email: email,
+              suiteNum: suiteNum,
+            });
+          }
+        });
+      }
+    }
+  });
+});
+
+/*************************************************************************
+   * 
+   *         FOOD BOARD VERIFY AND CHANGE PASSWORD COMBINED - SERVER SIDE
+   * 
+   *************************************************************************/
+app.post('/changepassword', (req, res) => {
+  console.log("Entered change password event.");
+
+  let sessionID = req.sessionID;
+  let passwordNotHashed = req.body.currentPW;
+  let userID;
+  let passwordHashed;
+  let newPassword;
+  let name;
+  let email;
+  let suiteNumber;
+
+  // first check if the user is in a session
+  var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
+  connection.query(query, [sessionID], (error, rows, fields) => {
+    if (error) {
+      console.log(new Date(Date.now()), 'Error grabbing userID from Sessions table: ', error);
+    } else {
+      console.log("Successfully queried for userID.");
+      if (rows.length) {
+        userID = rows[0].Users_userID;
+
+        // the user is confirmed to be in a session, now grab the old password tied to the user ID from the database
+        var verifyOldPassword = "SELECT * FROM users WHERE userID = ?";
+        connection.query(verifyOldPassword, [userID], (error, rows, field) => {
+          if (error) {
+            console.log(new Date(Date.now()), "Error querying for old password in the Users Table: ", error);
+          } else if (rows.length) {
+
+            passwordHashed = rows[0].password;
+            name = rows[0].firstName + " " + rows[0].lastName;
+            email = rows[0].email;
+            suiteNumber = rows[0].suiteNumber;
+            // the old password was contained in the database, now verify the old password matches the hashed password contained in the database
+            var isValidPassword = (formalHashed, formalNotHashed) => {
+              return bCrypt.compareSync(formalNotHashed, formalHashed);
+            }
+            // function compares the password to determine if they match
+            if (!isValidPassword(passwordHashed, passwordNotHashed)) {
+              // the call back function can send data back to auth.js
+              res.render('account', {
+                passwordMessage: "Not a valid password", //renders an invalid password message using handlebars onto account page
+                name: name,
+                email: email,
+                suiteNum: suiteNumber
+              });
+
+            } else {
+
+              // the password is valid and matches what was found in the database, continue with changing the password
+              var generateHash = (password) => {
+                return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
+              };
+              newPassword = generateHash(req.body.newPW); // hashed password
+
+              // updates the old password with the new password in the Users table
+              queryChangePassword = "UPDATE users SET password = ? WHERE userID = ?";
+              connection.query(queryChangePassword, [newPassword, userID], (error, rows, field) => {
+                if (error) {
+                  console.log(new Date(Date.now()), "Error occured while trying to change password:", error);
+                } else {
+                  console.log("Successfully changed password.");
+
+                  res.render('account', {
+                    passwordMessage: "Your password has been changed!",
+                    name: name,
+                    email: email,
+                    suiteNum: suiteNumber
+                  });
+                }
+              });
+            }
+          }
+        });
+      }
+    }
+  });
+});
+
+/*************************************************************************
+   * 
+   *         FOOD BOARD VERIFY PASSWORD/CHANGE SUITE NUMBER COMBINED - SERVER SIDE
+   * 
+   *************************************************************************/
+
+app.post("/changesuitenumber", (req, res) => {
+  console.log("Entered change suite number event.");
+  let sessionID = req.sessionID;
+  let newSuiteNumber = req.body.newSuite;
+  let passwordNotHashed = req.body.currentPW;
+  let userID;
+  let passwordHashed;
+  let name;
+  let email;
+  let oldSuiteNumber;
+
+  console.log("Session ID: ", sessionID);
+  // first check if the user is in a session
+  var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
+  connection.query(query, [sessionID], (error, rows, fields) => {
+    if (error) {
+      console.log(new Date(Date.now()), 'Error grabbing userID from Sessions table: ', error);
+    } else if (rows.length) {
+      userID = rows[0].Users_userID;
+
+      // the user is confirmed to be in a session, now grab the old password tied to the userID from the database
+      var verifyOldPassword = "SELECT * FROM users WHERE userID = ?";
+      connection.query(verifyOldPassword, [userID], (error, rows, field) => {
+        if (error) {
+          console.log(new Date(Date.now()), "Error querying for old password in the users Table: ", error);
+        } else {
+          if (rows.length) {
+
+            passwordHashed = rows[0].password;
+            name = rows[0].firstName + " " + rows[0].lastName;
+            email = rows[0].email;
+            oldSuiteNumber = rows[0].suiteNumber;
+            // the old password was contained in the database, now verify the old password matches the hashed password contained in the database
+            var isValidPassword = (formalHashed, formalNotHashed) => {
+              return bCrypt.compareSync(formalNotHashed, formalHashed);
+            }
+
+            // function compares the password to determine if they match
+            if (!isValidPassword(passwordHashed, passwordNotHashed)) {
+              // the call back function can send data back to auth.js
+              res.render('account', {
+                suiteMessage: "Not a valid password", //renders an invalid password message using handlebars onto account page
+                suiteNum: oldSuiteNumber,
+                name: name,
+                email: email
+              });
+
+            } else {
+
+              // updates the suite number with the new suite number in the users table
+              queryChangeEmail = "UPDATE users SET suiteNumber = ? WHERE userID = ?";
+              connection.query(queryChangeEmail, [newSuiteNumber, userID], (error, rows, field) => {
+                if (error) {
+                  console.log(new Date(Date.now()), "Error occured while trying to change suiteNumber:", error);
+                } else {
+                  console.log("Successfully changed suite number.");
+
+                  res.render('account', {
+                    suiteMessage: "Your suite number has been changed!",
+                    suiteNum: newSuiteNumber,
+                    name: name,
+                    email: email
+                  });
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+  });
+});
+
+/*************************************************************************
+ * 
  *         FOOD BOARD LOGIN/REGISTER FEATURE - SERVER SIDE
+ * 
  * 
  *************************************************************************/
 
@@ -132,7 +341,15 @@ models.sequelize.sync().then(() => {
 */
 io.on('connection', (socket) => {
   console.log('User connected');
-  slackcmd.log('User connected.');
+  var query = `SELECT * FROM Sessions`;
+  connection.query(query, (error, rows, fields) => {
+    if (error) {
+      slackcmd.log(`Event: Connection ${query}.`, error);
+      console.log(new Date(Date.now()), 'Connection: ', error);
+    } else {
+      slackcmd.log('Number of active sessions', rows.length);
+    }
+  });
 
   /** Initalizes the stockio-file-upload object */
   const uploader = new siofu();
@@ -147,7 +364,7 @@ io.on('connection', (socket) => {
    * Fired as soon as user is connected to server
    * 
    *************************************************************************
-
+ 
   /**
    * When the user has a complete loaded page, fetch data from db to print posts
    * to screen. 
@@ -158,7 +375,7 @@ io.on('connection', (socket) => {
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [session.sessionID], (error, rows, fields) => {
       if (error) {
-        slackcmd.log(error);
+        slackcmd.log(`Event: Page loaded ${query}.`, error);
         console.log(new Date(Date.now()), 'Error selecting sessionID in load feature: ', error);
       } else {
         if (rows.length) {
@@ -168,6 +385,8 @@ io.on('connection', (socket) => {
           var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
           connection.query(checkRole, [userID], (error, row, field) => {
             if (error) {
+              slackcmd.log(`Event: Page loaded ${query}.`, error);
+
               console.log(new Date(Date.now()), "Error checking for role of user:", error);
             } else {
               var role = row[0].role;
@@ -175,6 +394,8 @@ io.on('connection', (socket) => {
               var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
               connection.query(allFoodboardItems, (error, rows, fields) => {
                 if (error) {
+                  slackcmd.log(`Event: Page loaded ${query}.`, error);
+
                   console.log(new Date(Date.now()), "Error grabbing food items");
                 } else if (rows.length == 0) {
                   console.log("Database is empty.");
@@ -210,6 +431,7 @@ io.on('connection', (socket) => {
     console.log('I AM EMITTING MY POSTS');
     connection.query(query, (error, rows, fields) => {
       if (error) {
+        slackcmd.log(`Event: My posts ${query}.`, error);
         console.log(new Date(Date.now()), "Error selecting sessionID in 'myposts' feature:", error);
       } else {
         if (rows.length) {
@@ -218,6 +440,7 @@ io.on('connection', (socket) => {
           var userInfo = "SELECT * FROM FoodItem WHERE Users_userID = ?";
           connection.query(userInfo, [userID], (error, rows, fields) => {
             if (error) {
+              slackcmd.log(`Event: My posts. ${query}.`, error);
               console.log(new Date(Date.now()), "Error selecting User's posts in 'myposts' feature:", error);
             } else if (rows.length === 0) {
               console.log("This user has no posts to load in 'myposts' page.");
@@ -247,6 +470,7 @@ io.on('connection', (socket) => {
     var query = `SELECT sessionID, Users_userID FROM Sessions WHERE sessionID = '${item.sessionID}' LIMIT 1`;
     connection.query(query, (error, rows, fields) => {
       if (error) {
+        slackcmd.log(`Event: Post item ${query}.`, error);
         console.log(new Date(Date.now()), "Error selecting sessionID in post feature", error);
       }
 
@@ -266,6 +490,7 @@ io.on('connection', (socket) => {
         connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage, userID, null], (error, rows, field) => {
           if (error) {
             // return error if insertion fail
+            slackcmd.log(`Event: Post item ${query}.`, error);
             console.log(new Date(Date.now()), "Error inserting" + error);
             console.log(error);
           } else {
@@ -315,6 +540,7 @@ io.on('connection', (socket) => {
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [sessionID], (error, row, fields) => {
       if (error) {
+        slackcmd.log(`Event: Delete item. ${query}.`, error);
         console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
       }
       if (row.length) {
@@ -327,6 +553,7 @@ io.on('connection', (socket) => {
           if (error) {
             console.log(new Date(Date.now()), "Error checking for role of user:", error);
           } else {
+            slackcmd.log(`Event: Delete item. ${query}.`, error);
             console.log("Successfully inquired for poster's information: ", row);
             role = row[0].role;
             posterFirstName = row[0].firstName;
@@ -345,6 +572,7 @@ io.on('connection', (socket) => {
               var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
               connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
                 if (error) {
+                  slackcmd.log(`Event: Delete item. ${query}.`, error);
                   console.log(new Date(Date.now()), "Error querying from FoodItem Table: ", error);
                 } else {
                   console.log("Successfully obtained food item info from FoodItem Table");
@@ -369,6 +597,7 @@ io.on('connection', (socket) => {
                     var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
                     connection.query(claimerQuery, [claimerUserID], (error, row, field) => {
                       if (error) {
+                        slackcmd.log(`Event: Delete item. ${query}.`, error);
                         console.log(new Date(Date.now()), "Error checking for role of user:", error);
                       } else {
                         console.log("Successfully inquired for claimer's information.")
@@ -420,6 +649,7 @@ io.on('connection', (socket) => {
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [sessionID], (error, row, fields) => {
       if (error) {
+        slackcmd.log(`Event: Claim item. ${query}.`, error);
         console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
       }
 
@@ -428,45 +658,48 @@ io.on('connection', (socket) => {
         claimerUserID = row[0].Users_userID;
 
         var setClaimerID = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ?`;
-        connection.query(setClaimerID, [claimerUserID, itemID], (error, row, field) => {
+        connection.query(setClaimerID, [claimerUserID, itemID], (error, rows, field) => {
           if (error) {
             //return error if update claimerID into failed
+            slackcmd.log(`Event: Claim item. ${query}.`, error);
             console.log(new Date(Date.now()), "Error updating claimerID into FoodItem table: ", error);
           } else {
             // else return the updated table
             console.log("Successfully updated claimerID into FoodItem table.");
 
             var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
-            connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
+            connection.query(queryFoodItemTable, [itemID], (error, rows, field) => {
               if (error) {
                 //error occured while attempting to query FoodItem Table
+                slackcmd.log(`Event: Claim item. ${query}.`, error);
                 console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
               } else {
                 console.log("Successfully obtained Poster's userID from FoodItem Table", row);
-                posterUserID = row[0].Users_userID;
-                foodName = row[0].foodName;
-                foodDescription = row[0].foodDescription;
-                foodExpiryTime = row[0].foodExpiryTime;
-                foodImage = row[0].foodImage;
+                posterUserID = rows[0].Users_userID;
+                foodName = rows[0].foodName;
+                foodDescription = rows[0].foodDescription;
+                foodExpiryTime = rows[0].foodExpiryTime;
+                foodImage = rows[0].foodImage;
 
                 var usersTableQuery = "SELECT * FROM users WHERE userID = ? OR userID = ? LIMIT 2";
-                connection.query(usersTableQuery, [posterUserID, claimerUserID], (error, row, field) => {
+                connection.query(usersTableQuery, [posterUserID, claimerUserID], (error, rows, field) => {
                   if (error) {
                     //return error if selection fail
+                    slackcmd.log(`Event: Claim item. ${query}.`, error);
                     console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
                   } else {
                     //else return the users information
-                    console.log("Successfully grabbed user of claimed item. ", row);
-                    posterEmail = row[0].email;
-                    posterFirstName = row[0].firstName;
-                    claimerEmail = row[1].email;
+                    console.log("Successfully grabbed user of claimed item. ", rows);
+                    posterEmail = rows[0].email;
+                    posterFirstName = rows[0].firstName;
+                    claimerEmail = rows[1].email;
 
                     console.log("POSTER EMAIL", posterEmail);
                     console.log("CLAIMER EMAIL", claimerEmail);
 
 
-                    claimerFirstName = row[1].firstName;
-                    claimerSuiteNumber = row[1].suiteNumber;
+                    claimerFirstName = rows[1].firstName;
+                    claimerSuiteNumber = rows[1].suiteNumber;
                     console.log("EMAIL IS HERE LOOK", claimerEmail);
 
                     sendClaimEmailToPoster(claimerEmail, claimerFirstName,
@@ -486,6 +719,7 @@ io.on('connection', (socket) => {
       }
     });
   });
+
   socket.on("my claims", (claim) => {
     console.log("my Claims:", claim);
 
@@ -493,16 +727,18 @@ io.on('connection', (socket) => {
     let claimerUserID;
 
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-    connection.query(query, [sessionID], (error, row, fields) => {
+    connection.query(query, [sessionID], (error, rows, fields) => {
       if (error) {
+        slackcmd.log(`Event: My claims. ${query}.`, error);
         console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID", );
       } else {
-        if (row.length) {
-          claimerUserID = row[0].Users_userID;
+        if (rows.length) {
+          claimerUserID = rows[0].Users_userID;
 
           var userInfo = "SELECT * FROM FoodItem WHERE Users_claimerUserID = ?";
           connection.query(userInfo, [claimerUserID], (error, rows, fields) => {
             if (error) {
+              slackcmd.log(`Event: My claims. ${query}.`, error);
               console.log(new Date(Date.now()), "Error selecting user's claims in my claims feature:", error);
             } else if (rows.length === 0) {
               console.log("There are no claimed posts");
@@ -525,107 +761,189 @@ io.on('connection', (socket) => {
    * 
    ***********************************************************************/
 
-   socket.on('unclaim item', (cardID) => {
-    console.log("unclaim this item");
-    let postID = cardID.cardID;
-    console.log("postID", postID);
 
-    var query = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ${postID}`;
-    connection.query(query, [null], (error, rows, field) => {
+  socket.on('unclaim item', (cardID) => {
+    console.log("Entered Unclaim Item Event");
+    let postID = cardID.cardID;
+    let sessionID = cardID.sessionID;
+    let posterUserID, posterEmail, posterFirstName;
+    let foodName, foodDescription, foodExpiryTime, foodImage;
+    let claimerUserID, claimerFirstName, claimerSuiteNumber;
+
+    var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
+    connection.query(query, [sessionID], (error, rows, fields) => {
       if (error) {
-        console.log(new Date( Date.now()), "Error changing claim status of food item", error);
-      } else if (rows.length) {
-        console.log("Claim status updated");
-        socket.emit('unclaim item return', {
-          cardID: postID,
-        });
+        console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID", error);
+      } else {
+        console.log("User is logged in and can unclaim the fooditem.");
+        if (rows.length) {
+
+          claimerUserID = rows[0].Users_userID;
+
+          var queryForInformation = "SELECT * FROM FoodItem WHERE itemID = ?";
+          connection.query(queryForInformation, [postID], (error, rows, field) => {
+            if (error) {
+              console.log(new Date(Date.now()), "Error querying for food item information in unclaim event", error);
+            } else {
+              console.log("Successfully obtained food item information in unclaim event.");
+              foodName = rows[0].foodName;
+              foodDescription = rows[0].foodDescription;
+              foodExpiryTime = rows[0].foodExpiryTime;
+              foodImage = rows[0].foodImage;
+              posterUserID = rows[0].Users_userID;
+
+              var queryUpdateUnclaim = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ${postID}`;
+              connection.query(queryUpdateUnclaim, [null], (error, rows, field) => {
+                if (error) {
+                  slackcmd.log(`Event: Unclaim item. ${query}.`, error);
+                  console.log(new Date(Date.now()), "Error changing claim status of food item", error);
+                } else {
+                  console.log("Successfully unclaimed food item.");
+
+                  var queryPosterAndClaimerInformation = `SELECT * FROM users WHERE userID = ? OR userID = ?`;
+                  connection.query(queryPosterAndClaimerInformation, [posterUserID, claimerUserID], (error, rows, field) => {
+                    if (error) {
+                      console.log(new Date(Date.now()), "Error inquiring for poster and claimer information in unclaim event: ", error);
+                    } else if (rows.length) {
+                      console.log("Successfully inquired for poster and claimer information in unclaim event.");
+                      posterEmail = rows[0].email;
+                      posterFirstName = rows[0].firstName;
+                      claimerFirstName = rows[1].firstName;
+                      claimerSuiteNumber = rows[1].suiteNumber;
+
+                      // Send email to poster that their food item has been unclaimed.
+                      sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber);
+                      socket.emit('unclaim item return', {
+                        cardID: postID,
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
       }
     });
-   });
+  });
 });
-
 
 /*************************************************************************
  * 
- *     MISCELLANEOUS FUNCTIONS USED IN FEATURES: DELETE, CLAIM
+ *     MISCELLANEOUS FUNCTIONS USED IN FEATURES: DELETE, CLAIM, UNCLAIM
  * 
  *************************************************************************/
-function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, foodDescription, foodExpiryTime, foodImage, posterEmail, posterFirstName, posterSuiteNumber) {
+function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, foodDescription, foodExpiryTime, foodImage, posterFirstName, posterSuiteNumber) {
+
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'gmail', //'smtp.ethereal.email'
+    //port: 587,
+    //secure: false, // true for 465, false for other ports
     auth: {
-      user: 'foodboardcanada@gmail.com',
-      pass: 'darkthemesonly'
+      user: 'foodboardcanada@gmail.com', //'de5kzppbkaumnfhu@ethereal.email'
+      pass: 'darkthemesonly' //'wNmg25t9fqKXZ8wVUF'
     },
     tls: {
       rejectUnauthorized: false
     }
   });
 
-  // setup email data with unicode symbols
+  transporter.use('compile', inlineCss()); // allows for inline styling within emails
+
   let mailOptions = {
     from: `foodboardcanada@gmail.com`, // sender address
     to: claimerEmail, // list of receivers
     subject: 'FoodBoard: The food item you claimed is no longer available.', // Subject line
     text: `Hello ${claimerFirstName},
 
-    Unfortunately, your neighbor ${posterFirstName} from Apartment Suite ${posterSuiteNumber} has deleted their posted food item.
+  Unfortunately, your neighbor ${ posterFirstName} from Apartment Suite ${posterSuiteNumber} has deleted their posted food item.
     Here's a reminder of what their post looked like.
-           
-    Food Name: ${foodName}
-    Food Description: ${foodDescription}
-    Food Expiry: ${foodExpiryTime}
-    
-    Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // plain text body
-    html: `Hello ${claimerFirstName},<br/>
-    <br/>
-    Unfortunately, your neighbor ${posterFirstName} from Apartment Suite ${posterSuiteNumber} has deleted their posted food item.<br/>
-    Here's a reminder of what their post looked like.<br/>
-    <br/>
-    Food Name: ${foodName}<br/>
-    Food Description: ${foodDescription}<br/>
-    Food Expiry: ${foodExpiryTime}<br/>
-    Food Image: <br/>
-    <br/>
-    <img src="cid:donotreply@foodboard.ca"/><br/>
-    <br/>
-    Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // html body
+
+  Food Name: ${ foodName}
+  Food Description: ${ foodDescription}
+  Food Expiry: ${ foodExpiryTime}
+
+  Thanks for using FoodBoard.We love that you're just as committed to reducing food-waste as we are!`, // plain text body
+    html:
+      `<div style="background: #DDE5E5" id="email-container">
+          <div style="text-align: center;" id="homepage-body">
+            <img style="width: 60%" src="cid:foodboardlogo" alt="FoodBoard logo"/>
+            <p style="font-size: 12pt; margin-top: 10px"><i>Share More, Waste Less</i></p>
+          </div>
+          <div style="font-size: 10pt" id="email-body">
+            <p style="text-align: left;">Hello ${claimerFirstName},</p>
+            <p style="text-align: left;">Unfortunately, your neighbor ${posterFirstName} from Apartment Suite ${posterSuiteNumber} has deleted their posted food item.
+            Here's a reminder of what their post looked like.</p>
+          </div>
+          <div style="width: 100%;" id="email-food-table">
+            <table style="margin: 0 auto; font-size: 10pt"><br/>
+              <tr>
+                <td style="width: 30%">Food Name:</td>
+                <td style="width: 70%">${foodName}</td>
+              </tr>
+              <tr>
+                <td style="width: 30%">Food Description:</td>
+                <td style="width: 70%">${foodDescription}</td>
+              </tr>
+              <tr>
+                <td style="width: 30%">Food Expiry:</td>
+                <td style="width: 70%">${foodExpiryTime}</td>
+              </tr>
+            </table><br/>
+          </div>
+          <div>
+            <p style="text-align: center; font-size: 10pt">Food Image:</p>
+          </div>
+          <div style="width: 100%; text-align: center;" id="email-image">
+            <img style="display: margin-right: auto; display: margin-left: auto" src="cid:donotreply@foodboard.ca"/><br/>
+          </div>
+          <div>
+            <p style="text-align: center; font-size: 10pt">Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!<p>
+          </div>
+        </div>`, // html body
     attachments: [{
       filename: `foodboard_${foodImage}`,
       path: `./app/images/${foodImage}`,
       cid: 'donotreply@foodboard.ca'
+    },
+    {
+      filename: 'foodboard_logo',
+      path: './app/Pictures/largelogo-text-transparent.png',
+      cid: 'foodboardlogo'
     }]
   };
-
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log("Error occured sending delete email", error);
+      console.log("Error occured sending claim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
 
       // If successful, should print the following to the console:
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-      console.log('Delete message sent: %s', info.messageId);
-      // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+      console.log('Claim message sent: %s', info.messageId);
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
   });
-}
+};
 
-function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerEmail, claimerFirstName, claimerSuiteNumber) { //may also include: claimerEmail, claimerFirstName,
-  //claimerSuiteNumber, postingFoodName, 
-  //postingDescription, postingExpiryDate
+function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerEmail, claimerFirstName, claimerSuiteNumber) {
+
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'gmail', //'smtp.ethereal.email'
+    //port: 587,
+    //secure: false, // true for 465, false for other ports
     auth: {
-      user: 'foodboardcanada@gmail.com',
-      pass: 'darkthemesonly'
+      user: 'foodboardcanada@gmail.com', //'de5kzppbkaumnfhu@ethereal.email'
+      pass: 'darkthemesonly' //'wNmg25t9fqKXZ8wVUF'
     },
     tls: {
       rejectUnauthorized: false
     }
   });
+
+  transporter.use('compile', inlineCss()); // allows for inline styling within emails
 
   // setup email data with unicode symbols
   let mailOptions = {
@@ -634,35 +952,62 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
     subject: 'FoodBoard: Your food item has been claimed', // Subject line
     text: `Hello ${posterFirstName},
 
-    Your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can 
-    let ${claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.
+  Your neighbor ${ claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can
+  let ${ claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.
 
     Here's a reminder of what you posted on foodboard.ca.
-           
-    Food Name: ${foodName}
-    Food Description: ${foodDescription}
-    Food Expiry: ${foodExpiryTime}
-    
-    Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // plain text body
-    html: `<p>Hello ${posterFirstName},<br/>
-    <br/>
-    Your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can 
-    let ${claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.<br/>
-    <br/>
-    Here's a reminder of what you posted on foodboard.ca.<br/>
-    <br/>
-    Food Name: ${foodName}<br/>
-    Food Description: ${foodDescription}<br/>
-    Food Expiry: ${foodExpiryTime}<br/>
-    Food Image: <br/>
-    <br/>
-    <img src="cid:donotreply@foodboard.ca"/><br/>
-    <br/>
-    Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // html body
+
+  Food Name: ${ foodName}
+  Food Description: ${ foodDescription}
+  Food Expiry: ${ foodExpiryTime}
+
+  Thanks for using FoodBoard.We love that you're just as committed to reducing food-waste as we are!`, // plain text body
+    html:
+      `<div style="background: #DDE5E5" id="email-container">
+          <div style="text-align: center;" id="homepage-body">
+            <img style="width: 60%" src="cid:foodboardlogo" alt="FoodBoard logo"/>
+            <p style="font-size: 12pt; margin-top: 10px"><i>Share More, Waste Less</i></p>
+          </div>
+          <div style="font-size: 10pt" id="email-body">
+            <p style="text-align: left;">Hello ${posterFirstName},</p>
+            <p style="text-align: left;">Your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has claimed your food item! You can 
+              let ${claimerFirstName} know what time is best to pick up your food item by contacting him or her at ${claimerEmail}.</p>
+          </div>
+          <div style="width: 100%;" id="email-food-table">
+            <table style="margin: 0 auto; font-size: 10pt"><br/>
+              <tr>
+                <td style="width: 30%">Food Name:</td>
+                <td style="width: 70%">${foodName}</td>
+              </tr>
+              <tr>
+                <td style="width: 30%">Food Description:</td>
+                <td style="width: 70%">${foodDescription}</td>
+              </tr>
+              <tr>
+                <td style="width: 30%">Food Expiry:</td>
+                <td style="width: 70%">${foodExpiryTime}</td>
+              </tr>
+            </table><br/>
+          </div>
+          <div>
+            <p style="text-align: center; font-size: 10pt">Food Image:</p>
+          </div>
+          <div style="width: 100%; text-align: center;" id="email-image">
+            <img style="display: margin-right: auto; display: margin-left: auto" src="cid:donotreply@foodboard.ca"/><br/>
+          </div>
+          <div>
+            <p style="text-align: center; font-size: 10pt">Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!<p>
+          </div>
+        </div>`, // html body
     attachments: [{
       filename: `foodboard_${foodImage}`,
       path: `./app/images/${foodImage}`,
       cid: 'donotreply@foodboard.ca'
+    },
+    {
+      filename: 'foodboard_logo',
+      path: './app/Pictures/largelogo-text-transparent.png',
+      cid: 'foodboardlogo'
     }]
   };
 
@@ -677,7 +1022,106 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
       console.log('Claim message sent: %s', info.messageId);
-      // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    }
+  });
+};
+
+function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber) {
+
+  const transporter = nodemailer.createTransport({
+    host: 'gmail', //'smtp.ethereal.email'
+    //port: 587,
+    //secure: false, // true for 465, false for other ports
+    auth: {
+      user: 'foodboardcanada@gmail.com', //'de5kzppbkaumnfhu@ethereal.email'
+      pass: 'darkthemesonly' //'wNmg25t9fqKXZ8wVUF'
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+
+  transporter.use('compile', inlineCss()); // allows for inline styling within emails
+
+  // setup email data with unicode symbols
+  let mailOptions = {
+    from: `foodboardcanada@gmail.com`, // sender address
+    to: posterEmail, // list of receivers
+    subject: 'FoodBoard: Your food item has been claimed', // Subject line
+    text: `Hello ${posterFirstName},
+
+    Unfortunately, your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has unclaimed your food item. 
+    Here's a reminder of what your post looks like.
+
+    Here's a reminder of what you posted on foodboard.ca.
+           
+    Food Name: ${foodName}
+    Food Description: ${foodDescription}
+    Food Expiry: ${foodExpiryTime}
+    
+    Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!`, // plain text body
+    html:
+      `<div style="background: #DDE5E5" id="email-container">
+          <div style="text-align: center;" id="homepage-body">
+            <img style="width: 60%" src="cid:foodboardlogo" alt="FoodBoard logo"/>
+            <p style="font-size: 12pt; margin-top: 10px"><i>Share More, Waste Less</i></p>
+          </div>
+          <div style="font-size: 10pt" id="email-body">
+            <p style="text-align: left;">Hello ${posterFirstName},</p>
+            <p style="text-align: left;">Unfortunately, your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has unclaimed your food item. 
+            Here's a reminder of what your post looks like.</p>
+          </div>
+          <div style="width: 100%;" id="email-food-table">
+            <table style="margin: 0 auto; font-size: 10pt"><br/>
+              <tr>
+                <td style="width: 30%">Food Name:</td>
+                <td style="width: 70%">${foodName}</td>
+              </tr>
+              <tr>
+                <td style="width: 30%">Food Description:</td>
+                <td style="width: 70%">${foodDescription}</td>
+              </tr>
+              <tr>
+                <td style="width: 30%">Food Expiry:</td>
+                <td style="width: 70%">${foodExpiryTime}</td>
+              </tr>
+            </table><br/>
+          </div>
+          <div>
+            <p style="text-align: center; font-size: 10pt">Food Image:</p>
+          </div>
+          <div style="width: 100%; text-align: center;" id="email-image">
+            <img style="display: margin-right: auto; display: margin-left: auto" src="cid:donotreply@foodboard.ca"/><br/>
+          </div>
+          <div>
+            <p style="text-align: center; font-size: 10pt">Thanks for using FoodBoard. We love that you're just as committed to reducing food-waste as we are!<p>
+          </div>
+        </div>`, // html body
+    attachments: [{
+      filename: `foodboard_${foodImage}`,
+      path: `./app/images/${foodImage}`,
+      cid: 'donotreply@foodboard.ca'
+    },
+    {
+      filename: 'foodboard_logo',
+      path: './app/Pictures/largelogo-text-transparent.png',
+      cid: 'foodboardlogo'
+    }]
+  };
+
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log("Error occured sending claim email", error);
+    } else {
+      // Preview only available when sending through an Ethereal account
+
+      // If successful, should print the following to the console:
+      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+      // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+      console.log('Unclaim message sent: %s', info.messageId);
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
   });
 };
@@ -686,7 +1130,9 @@ function deleteFoodItem(itemID) {
   var deletePost = `DELETE FROM FoodItem WHERE itemID = ? LIMIT 1`;
   connection.query(deletePost, [itemID], (error, row, field) => {
     if (error) {
+
       // return error if insertion fail
+      slackcmd.log(`Event: Delete food item. ${query}.`, error);
       console.log("Error occured when attempting to delete post: ", error);
     } else {
       // else return the updated table
@@ -695,16 +1141,6 @@ function deleteFoodItem(itemID) {
   });
 };
 
-function deleteFromClaimedPosts(itemID) {
-  var deleteFromClaimedPostsTable = "DELETE FROM ClaimedPosts WHERE FoodItem_itemID = ? LIMIT 1";
-  connection.query(deleteFromClaimedPostsTable, [itemID], (error, row, field) => {
-    if (error) {
-      console.log(new Date(Date.now()), 'Error:', error);
-    } else {
-      console.log("Successful deletion from ClaimedPosts table.")
-    }
-  });
-}
 
 
 /*************************************************************************
@@ -723,6 +1159,7 @@ function getSessionID(clientSessionID) {
   var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
   var sessionID = connection.query(query, [clientSessionID], (error, rows, fields) => {
     if (error) {
+      slackcmd.log(`Event: Get sessionID. ${query}.`, error);
       console.log(new Date(Date.now()), 'Error:', error);
     } else {
       if (rows.length) {

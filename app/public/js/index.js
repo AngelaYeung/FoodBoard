@@ -90,11 +90,6 @@ $(document).ready(function () {
     });
   });
 
-
-
-
-
-
   //Change password field red if password is incorrect
   $("#register_pwd_confirm").on('change', (e) => {
     if (validatePassword()) {
@@ -118,6 +113,8 @@ $(document).ready(function () {
   });
 
 });
+
+
 
 //validate the password
 function validatePassword() {
