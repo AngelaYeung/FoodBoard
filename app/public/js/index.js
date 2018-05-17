@@ -1,3 +1,10 @@
+$(window).on('load', () => {
+  var screenHeight = screen.height;
+  var navbarHeight = $('.navbar-brand-sm').outerHeight();
+  var sum = screenHeight + navbarHeight;
+  $('#background-sm img').css('height', `${sum}`);
+})
+
 $(document).ready(function () {
 
   // add scrollspy onto body of the page for about link
@@ -76,11 +83,6 @@ $(document).ready(function () {
     });
   });
 
-
-
-
-
-
   //Change password field red if password is incorrect
   $("#register_pwd_confirm").on('change', (e) => {
     if (validatePassword()) {
@@ -104,6 +106,8 @@ $(document).ready(function () {
   });
 
 });
+
+
 
 //validate the password
 function validatePassword() {
