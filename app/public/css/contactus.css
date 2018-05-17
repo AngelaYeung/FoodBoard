@@ -1,28 +1,26 @@
 h1 {
-text-align: center;
-
+    text-align: center;
 }
 
-.logodiv > img {
-width: 20%;
-display:block;
-margin: 0 auto;
+.logodiv>img {
+    width: 20%;
+    display: block;
+    margin: 0 auto;
 }
 
-.logodiv{
+.logodiv {
     margin-bottom: 5%;
-    
 }
 
-#boldEmail{
+#boldEmail {
     font-weight: bold;
-}   
+}
 
-p{
+p {
     padding-left: 4%;
     padding-right: 4%;
 }
 
-#credit{
+#credit {
     font-size: 8pt;
 }

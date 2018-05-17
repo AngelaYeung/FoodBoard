@@ -1,3 +1,17 @@
+document.onreadystatechange = function() {
+  var screenHeight = $(window).outerHeight();
+  var navbarHeight = $('.navbar-brand-sm').outerHeight();
+  var sum = screenHeight + navbarHeight;
+  $('#background-sm img, background-lg img').css('height', `${sum}`);
+
+  var sum2 = screenHeight/2;
+  if ($(window).width() <= 900) {
+    $('#homepage-body').css('transform', `translate(0%, -${sum2}%)`);
+  } else {
+    $('#homepage-body').css('transform', `translate(0%, -${sum2/1.75}%)`);
+  }
+}
+
 $(document).ready(function () {
 
   // add scrollspy onto body of the page for about link
