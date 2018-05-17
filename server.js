@@ -101,7 +101,7 @@ app.post('/slack/command/new', (req, res) => {
   console.log('CMD:', req.body);
 
   if (req.body.token === slackcmd.token) {
-    slackcmd.newItems(req, res); 
+    slackcmd.newItems(req, res);
   } else {
     console.log('Incorrect slack token');
   }
@@ -653,26 +653,64 @@ io.on('connection', (socket) => {
       }
     });
   });
+  socket.on("my claims", (claim) => {
+    console.log("my Claims:", claim);
+
+    let sessionID = claim.sessionID;
+    let claimerUserID;
+
+    var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID =?) LIMIT 1`;
+    connection.query(query, [sessionID], (error, row, fields) => {
+      if (error) {
+        console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID", );
+      } else {
+        if (row.length) {
+          claimerUserID = row[0].Users_userID;
+
+          var userInfo = "SELECT * FROM FoodItem WHERE Users_claimerUserID = ?";
+          connection.query(userInfo, [claimerUserID], (error, rows, fields) => {
+            if (error) {
+              console.log(new Date(Date.now()), "Error selecting user's claims in my claims feature:", error);
+            } else if (rows.length === 0) {
+              console.log("There are no claimed posts");
+            } else {
+              socket.emit('my claims return', {
+                rows: rows,
+                claimerUserID: claimerUserID,
+              });
+            }
+          });
+        }
+      }
+    });
+  });
+
+  /************************************************************************
+   * 
+   *          MY CLAIMS - UNCLAIM FEATURE - SERVER SIDE
+   * 
+   * 
+   ***********************************************************************/
+
+   socket.on('unclaim item', (cardID) => {
+    console.log("unclaim this item");
+    let postID = cardID.cardID;
+    console.log("postID", postID);
+
+    var query = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ${postID}`;
+    connection.query(query, [null], (error, rows, field) => {
+      if (error) {
+        console.log(new Date( Date.now()), "Error changing claim status of food item", error);
+      } else if (rows.length) {
+        console.log("Claim status updated");
+        socket.emit('unclaim item return', {
+          cardID: postID,
+        });
+      }
+    });
+   });
 });
 
- 
-// socket.on("user claims", (claim) => {
-//   console.log("User Claims:", claim);
-
-//   let sessionID = claim.sessionID;
-//   let claimerUserID;
-
-//   var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID =?) LIMIT 1`;
-//   connection.query(query, [sessionID], (error, row, fields) => {
-//     if (error) {
-//       console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID",);
-//     }
-
-//     if (row.length) {
-//       claimerUserID = row[0].Users_userID;
-//     } 
-//   });
-// });
 
 /*************************************************************************
  * 

@@ -30,6 +30,8 @@ var validate = (app, passport) => {
 
     app.get('/myposts', isLoggedIn, authController.myposts);
 
+    app.get('/my_claims', isLoggedIn, authController.myclaims);
+
     app.get('/boardpage', isLoggedIn, authController.boardpage);
 
     app.get('/logout', authController.logout);

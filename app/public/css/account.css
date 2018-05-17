@@ -1,9 +1,4 @@
 @media screen and (max-width: 480px) {   
-
-    .account {
-        padding-top: 30px;
-    }
-    
     .form-control{
         width: 85%;
         margin-left: 3em;
@@ -65,4 +60,11 @@
 
 .edit-info {
     border: none;
+}
+
+@media screen and (min-width: 1200px) {
+    .container {
+        width: 480px;
+        margin-top: 18%;
+    }
 }
