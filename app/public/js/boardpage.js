@@ -200,6 +200,7 @@ $(document).ready(function () {
       console.log('userID: ', userID);
       console.log('role', typeof role);
       console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
+      console.log("ROLE: ", role );
       if (role === 0) {
         if (rows[i].Users_userID == userID) {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
@@ -213,6 +214,7 @@ $(document).ready(function () {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         } else {
+          console.log("REGULAR USER LOAD FEATURE: CREATING CARD NO DELETE");
           createCardNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         }
@@ -223,7 +225,9 @@ $(document).ready(function () {
   socket.on('myposts', (items) => {
     let userID = items.userID;
     let rows = items.rows;
+    console.log("MY POSTS: userID: ", userID);
     for (let i = 0; i < rows.length; i++) {
+      console.log("CREATING CARD NO CLAIM");
       createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime, rows[i].foodGroup, rows[i].foodImage);
     }
   });
