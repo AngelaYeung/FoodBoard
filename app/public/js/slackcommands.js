@@ -33,8 +33,8 @@ function log(msg) {
         console.log(new Date(Date.now()), 'Slack response: ', res);
     });
 
-    req.write(postData);
-    req.end();
+    post_req.write(postData);
+    post_req.end();
 };
 
 
