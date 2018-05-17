@@ -20,7 +20,7 @@ function log(msg) {
     var timeStamp = new Date(Date.now());
     
     var post_data = JSON.stringify({
-        text: `${timeStamp}, Error: ${msg}`,
+        text: `${timeStamp}, Message: ${msg}`,
     });
 
 

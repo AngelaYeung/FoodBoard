@@ -78,7 +78,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
             <p>${description}</p>
             <form class="claim-form"
                 action="javascript:void(0);">
-                <input id="${id}" class="delete-button" type="button" value="Unclaim" onclick="unclaimItem(this.id)">
+                <input id="${id}" class="delete-button" type="button" value="UNCLAIM" onclick="unclaimItem(this.id)">
             </form>
             <p></p>
         </div>
