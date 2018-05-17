@@ -370,16 +370,7 @@ function validateDate(dateInput) {
 
 
 //#region create card functions
-/**
- * Creates Card from FoodItem Table with both buttons.
- * @param {*} id 
- * @param {*} name 
- * @param {*} description 
- * @param {*} dateTime 
- * @param {*} foodGroup 
- * @param {*} img 
- */
-
+ 
 /**
  * Creates Card from FoodItem Table without a 'Delete' Button.
  * @param {*} id 
@@ -421,7 +412,17 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
   /** Clearing Forms */
   $('#postForm').trigger('reset');
 }
-function createCardBothButtons(id, name, description, dateTime, foodGroup, img) {
+
+/**
+ * Creates Card from FoodItem Table without a 'Delete' Button.
+ * @param {*} id 
+ * @param {*} name 
+ * @param {*} description 
+ * @param {*} dateTime 
+ * @param {*} foodGroup 
+ * @param {*} img 
+ */
+function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
   $('#card-list').prepend(`
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
@@ -498,10 +499,7 @@ function formatDate(dateTime) {
   var expiryDate = new Date(dateTime);
   console.log('Expiry date', expiryDate);
   var today = new Date(Date.now());
-  console.log('date time variable to milliseconds', expiryDate.getTime());
-  console.log("date time variable", dateTime);
   console.log('today', today);
-  console.log("date.now()", Date.now());
   var formatedDate = moment(expiryDate).fromNow();
   return formatedDate;
 };
