@@ -5,9 +5,6 @@ $(window).on('load', () => {
   window.scroll(0, 5);
 });
 $(document).ready(function () {
-  var sessionID = getSessionID('connect.sid');
-  console.log('sessionID', sessionID);
-
   socket = io();
   const uploader = new SocketIOFileUpload(socket);
   var image_name;
@@ -149,14 +146,21 @@ $(document).ready(function () {
         dateTime: $('#datetimepicker').val(),
         foodgrouping: $('input[name=foodgrouping]:checked').val(),
         image: `${image_name}.png`,
-        sessionID: sessionID,
+        sessionID: getSessionID('connect.sid'),
       });
+      $('#postForm').trigger('reset');
     }
     return false;
   });
 
   socket.on('post item return', (item) => {
-    createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
+    console.log("postitemreturn item.sessionID:", item.sessionID);
+    console.log("postitemreturn active sessionID:", getSessionID('connect.sid'));
+    if (getSessionID('connect.sid') === item.sessionID) {
+      createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
+    } else {
+      createCardNoDelete(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
+    }
   });
 
   /*************************************************************************
@@ -170,17 +174,17 @@ $(document).ready(function () {
    * from the data base. 
    */
   $(window).on('load', () => {
-
-    console.log('Client: page loaded:', sessionID);
+    console.log('Client: page loaded:', getSessionID('connect.sid'));
     socket.emit('page loaded', {
-      sessionID: sessionID,
+      sessionID: getSessionID('connect.sid'),
     });
   });
 
   socket.on('load foodboard', (items) => {
     var role = items.role; // their role as administrator or user
-    var userID = items.userID; // whos logged in
+    var userID = items.userID; // whos logged in the active session 
     var rows = items.rows;
+    console.log("SESSIONID OF THE USER WHO IS LOADING:", items.sessionID);
     console.log("LOAD: ROWS: ", rows);
     for (var i = 0; i < rows.length; i++) {
       console.log('userID: ', userID);
@@ -257,13 +261,13 @@ $(document).ready(function () {
   $(window).on('scroll', () => {
     if ($(window).scrollTop() < 2) {
       $('#search-bar-container').slideDown(150);
-      $('#card-list').animate({ 'margin-top': '2%', 'padding-top' : '0%' }, 25, 'linear');
-      $('#search-bar-container').animate({'padding-top' : '15%'}, 25, 'linear');
+      $('#card-list').animate({ 'margin-top': '2%', 'padding-top': '0%' }, 25, 'linear');
+      $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
 
     } else {
       $('#search-bar-container').slideUp(150);
-      $('#search-bar-container').animate({'padding-top' : '15%'}, 25, 'linear');
-      $('#card-list').animate({ 'margin-top': '10%', 'padding-top' : '2%' }, 25, 'linear');
+      $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
+      $('#card-list').animate({ 'margin-top': '10%', 'padding-top': '2%' }, 25, 'linear');
     }
   });
 
@@ -387,8 +391,6 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
             <p></p>
         </div>
     </div>`);
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
 }
 
 /**
@@ -429,8 +431,6 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
             <p></p>
         </div>
     </div>`);
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
 }
 
 /**
@@ -453,6 +453,7 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
             <div class="col-xs-10">
                 <h4>${name}</h4>
                 <p>Expires ${formatDate(dateTime)}</p>
+            </div>
             <div class="col-xs-2">
                 <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
                     aria-expanded="false"></button>
@@ -470,8 +471,6 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
             <p></p>
         </div>
     </div>`);
-  /** Clearing Forms */
-  $('#postForm').trigger('reset');
 }
 
 function formatDate(dateTime) {

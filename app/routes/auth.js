@@ -53,44 +53,45 @@ var validate = (app, passport) => {
     });
 
 
-/*************************************************************************
- * 
- *         FOOD BOARD ACCOUNT SETTINGS FEATURE - SERVER SIDE
- * 
- * 
- *************************************************************************/
-app.get('/account', isLoggedIn, (req, res) => {
-    var sessionID = req.sessionID;
-    var query = `SELECT * FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = '${sessionID}') LIMIT 1`;
-    connection.query(query, (error, rows, fields) => {
-      if (error) {
-        console.log(error);
-      } else {
-  
-        if (rows.length) {
-          var userID = rows[0].Users_userID;
-          //Query for user info for current user
-          var userInfo = "SELECT * FROM users WHERE userID = ?";
-          connection.query(userInfo, [userID], (error, result, field) => {
+    /*************************************************************************
+     * 
+     *         FOOD BOARD ACCOUNT SETTINGS FEATURE - SERVER SIDE
+     * 
+     * 
+     *************************************************************************/
+    app.get('/account', isLoggedIn, (req, res) => {
+        console.log("SESSIONID FOR MYACCOUNT:", req.sessionID);
+        var query = `SELECT * FROM Sessions WHERE sessionID = '${req.sessionID}' LIMIT 1`;
+        connection.query(query, (error, rows, fields) => {
             if (error) {
-              console.log("error");
+                console.log(error);
             } else {
-              console.log("successful");
-              var name = result[0].firstName + " " + result[0].lastName;
-              var email = result[0].email;
-              var suiteNum = result[0].suiteNumber;
-  
-              res.render('account', {
-                name: name,
-                email: email,
-                suiteNum: suiteNum,
-              });
+                if (rows.length) {
+                    console.log("THIS IS THE COMPLETE SESION RETURNED:", rows);
+                    var userID = rows[0].Users_userID;
+                    console.log("USERID FOR MYACCOUNT:", userID);
+                    //Query for user info for current user
+                    var userInfo = "SELECT * FROM users WHERE userID = ?";
+                    connection.query(userInfo, [userID], (error, result, field) => {
+                        if (error) {
+                            console.log("error");
+                        } else {
+                            console.log("successful");
+                            var name = result[0].firstName + " " + result[0].lastName;
+                            var email = result[0].email;
+                            var suiteNum = result[0].suiteNumber;
+
+                            res.render('account', {
+                                name: name,
+                                email: email,
+                                suiteNum: suiteNum,
+                            });
+                        }
+                    });
+                }
             }
-          });
-        }
-      }
+        });
     });
-  });
 
     function isLoggedIn(req, res, next) {
         if (req.isAuthenticated())
