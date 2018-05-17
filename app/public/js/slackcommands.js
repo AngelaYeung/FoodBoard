@@ -1,4 +1,4 @@
-const http = require('http');
+const http = require('https');
 
 const mysqlconnection = require('./mysqlconnection.js');
 var connection = mysqlconnection.handleDisconnect();
@@ -16,15 +16,15 @@ const options = {
 };
 
 
-function log(msg) {
+function log(msg, error) {
     var timeStamp = new Date(Date.now());
     
     var postData = JSON.stringify({
-        text: `\`\`\`${timeStamp}, Message: ${JSON.stringify(msg, undefined, 3)}\`\`\``,
+        text: `\`\`\`${timeStamp}, ${msg}: ${JSON.stringify(error, undefined, 3)}\`\`\``,
     });
 
 
-    var post_req = http.request(options, (res) => {
+    var postReq = http.request(options, (res) => {
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
             console.log(`BODY: ${chunk}`);
@@ -33,8 +33,8 @@ function log(msg) {
         console.log(new Date(Date.now()), 'Slack response: ', res);
     });
 
-    post_req.write(postData);
-    post_req.end();
+    postReq.write(postData);
+    postReq.end();
 };
 
 
