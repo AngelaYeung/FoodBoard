@@ -156,27 +156,34 @@ app.post('/changepassword', (req, res) => {
 
   let sessionID = req.sessionID;
   let passwordNotHashed = req.body.currentPW;
-  let userID, passwordHashed, newPassword;
-
+  let userID;
+  let passwordHashed;
+  let newPassword; 
+  let name; 
+  let email;
+  let suiteNumber;
 
   // first check if the user is in a session
   var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
   connection.query(query, [sessionID], (error, rows, fields) => {
     if (error) {
-      console.log(Date.now(), 'Error grabbing userID from Sessions table: ', error);
+      console.log(new Date(Date.now()),  'Error grabbing userID from Sessions table: ', error);
     } else {
       if (rows.length) {
         userID = rows[0].Users_userID;
 
         // the user is confirmed to be in a session, now grab the old password tied to the user ID from the database
-        var verifyOldPassword = "SELECT password FROM users WHERE userID = ?";
+        var verifyOldPassword = "SELECT * FROM users WHERE userID = ?";
         connection.query(verifyOldPassword, [userID], (error, rows, field) => {
           if (error) {
             console.log(new Date(Date.now()), "Error querying for old password in the Users Table: ", error);
           } else if (rows.length) {
 
-            // the old password was contained in the database, now verify the old password matches the hashed password contained in the database
             passwordHashed = rows[0].password;
+            name = rows[0].firstName + " " + rows[0].lastName;
+            email = rows[0].email;
+            suiteNumber = rows[0].suiteNumber;
+            // the old password was contained in the database, now verify the old password matches the hashed password contained in the database
             var isValidPassword = (formalHashed, formalNotHashed) => {
               return bCrypt.compareSync(formalNotHashed, formalHashed);
             }
@@ -184,7 +191,10 @@ app.post('/changepassword', (req, res) => {
             if (!isValidPassword(passwordHashed, passwordNotHashed)) {
               // the call back function can send data back to auth.js
               res.render('account', {
-                passwordMessage: "Not a valid password" //renders an invalid password message using handlebars onto account page
+                passwordMessage: "Not a valid password", //renders an invalid password message using handlebars onto account page
+                name: name,
+                email: email,
+                suiteNum: suiteNumber
               });
 
             } else {
@@ -204,7 +214,10 @@ app.post('/changepassword', (req, res) => {
                   console.log("Successfully changed password.");
 
                   res.render('account', {
-                    passwordMessage: "Your password has been changed!"
+                    passwordMessage: "Your password has been changed!",
+                    name: name,
+                    email: email,
+                    suiteNum: suiteNumber
                   });
                 }
               });
@@ -225,9 +238,14 @@ app.post('/changepassword', (req, res) => {
 app.post("/changesuitenumber", (req, res) => {
   console.log("Entered change suite number event.");
   let sessionID = req.sessionID;
-  let newSuiteNumber = req.body.newSuiteNumber;
+  let newSuiteNumber = req.body.newSuite;
   let passwordNotHashed = req.body.currentPW;
-  let userID, passwordHashed;
+  let userID;
+  let passwordHashed; 
+  let name; 
+  let email;
+  let oldSuiteNumber;
+
   console.log("Session ID: ", sessionID);
   // first check if the user is in a session
   var query = `SELECT Users_userID FROM Sessions WHERE exists (SELECT * from Sessions where sessionID = ?) LIMIT 1`;
@@ -238,15 +256,18 @@ app.post("/changesuitenumber", (req, res) => {
       userID = rows[0].Users_userID;
 
       // the user is confirmed to be in a session, now grab the old password tied to the userID from the database
-      var verifyOldPassword = "SELECT password FROM users WHERE userID = ?";
+      var verifyOldPassword = "SELECT * FROM users WHERE userID = ?";
       connection.query(verifyOldPassword, [userID], (error, rows, field) => {
         if (error) {
           console.log(new Date(Date.now()), "Error querying for old password in the users Table: ", error);
         } else {
           if (rows.length) {
 
-            // the old password was contained in the database, now verify the old password matches the hashed password contained in the database
             passwordHashed = rows[0].password;
+            name = rows[0].firstName + " " + rows[0].lastName;
+            email = rows[0].email;
+            oldSuiteNumber = rows[0].suiteNumber;
+            // the old password was contained in the database, now verify the old password matches the hashed password contained in the database
             var isValidPassword = (formalHashed, formalNotHashed) => {
               return bCrypt.compareSync(formalNotHashed, formalHashed);
             }
@@ -255,7 +276,10 @@ app.post("/changesuitenumber", (req, res) => {
             if (!isValidPassword(passwordHashed, passwordNotHashed)) {
               // the call back function can send data back to auth.js
               res.render('account', {
-                suiteMessage: "Not a valid password" //renders an invalid password message using handlebars onto account page
+                suiteMessage: "Not a valid password", //renders an invalid password message using handlebars onto account page
+                suiteNum: oldSuiteNumber,
+                name: name,
+                email: email
               });
 
             } else {
@@ -269,7 +293,10 @@ app.post("/changesuitenumber", (req, res) => {
                   console.log("Successfully changed suite number.");
 
                   res.render('account', {
-                    suiteMessage: "Your suite number has been changed!"
+                    suiteMessage: "Your suite number has been changed!",
+                    suiteNum: newSuiteNumber,
+                    name: name,
+                    email: email
                   });
                 }
               });
@@ -717,21 +744,23 @@ io.on('connection', (socket) => {
  *     MISCELLANEOUS FUNCTIONS USED IN FEATURES: DELETE, CLAIM
  * 
  *************************************************************************/
-function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, foodDescription, foodExpiryTime, foodImage, posterEmail, posterFirstName, posterSuiteNumber) {
+function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, foodDescription, foodExpiryTime, foodImage, posterFirstName, posterSuiteNumber) {
+  
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'gmail', //'smtp.ethereal.email'
+    //port: 587,
+    //secure: false, // true for 465, false for other ports
     auth: {
-      user: 'foodboardcanada@gmail.com',
-      pass: 'darkthemesonly'
+      user: 'foodboardcanada@gmail.com', //'de5kzppbkaumnfhu@ethereal.email'
+      pass: 'darkthemesonly' //'wNmg25t9fqKXZ8wVUF'
     },
     tls: {
-      rejectUnauthorized: false
+        rejectUnauthorized: false
     }
   });
 
   transporter.use('compile', inlineCss()); // allows for inline styling within emails
 
-  // setup email data with unicode symbols
   let mailOptions = {
     from: `foodboardcanada@gmail.com`, // sender address
     to: claimerEmail, // list of receivers
@@ -806,24 +835,23 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
       console.log('Delete message sent: %s', info.messageId);
-      // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
   });
 }
 
 function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerEmail, claimerFirstName, claimerSuiteNumber) { //may also include: claimerEmail, claimerFirstName,
-  //claimerSuiteNumber, postingFoodName, 
-  //postingDescription, postingExpiryDate
+ 
   const transporter = nodemailer.createTransport({
-    host: 'gmail',
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    host: 'gmail', //'smtp.ethereal.email'
+    //port: 587,
+    //secure: false, // true for 465, false for other ports
     auth: {
-      user: 'foodboardcanada@gmail.com',
-      pass: 'darkthemesonly'
+      user: 'foodboardcanada@gmail.com', //'de5kzppbkaumnfhu@ethereal.email'
+      pass: 'darkthemesonly' //'wNmg25t9fqKXZ8wVUF'
     },
     tls: {
-        rejectUnauthorized:false
+        rejectUnauthorized: false
     }
   });
 
