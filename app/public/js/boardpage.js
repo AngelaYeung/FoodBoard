@@ -201,7 +201,7 @@ $(document).ready(function () {
       console.log('role', typeof role);
       console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
       console.log("ROLE: ", role );
-      if (role === 0) {
+      if (role == 0) {
         if (rows[i].Users_userID == userID) {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
