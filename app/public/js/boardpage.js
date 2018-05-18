@@ -1,9 +1,9 @@
 // needs to be declared as a global variable to be in same scope as claimItem(), deleteItem()
 var socket;
 
-$(window).on('load', () => {
-  window.scroll(0, 5);
-});
+// $(window).on('load', () => {
+//   window.scroll(0, 5);
+// });
 $(document).ready(function () {
   socket = io();
   const uploader = new SocketIOFileUpload(socket);
@@ -264,35 +264,35 @@ $(document).ready(function () {
   /**
    * Handles search bar clear button toggle
    */
-  $('#search-bar').on('keyup', (event) => {
-    console.log('searchbar');
-    if ($('#search-bar').val() !== '') {
-      $('#search-bar-btn-reset').show();
-    } else {
-      $('#search-bar-btn-reset').hide();
-    }
-  });
+  // $('#search-bar').on('keyup', (event) => {
+  //   console.log('searchbar');
+  //   if ($('#search-bar').val() !== '') {
+  //     $('#search-bar-btn-reset').show();
+  //   } else {
+  //     $('#search-bar-btn-reset').hide();
+  //   }
+  // });
 
-  $('#search-bar-btn-reset').on('click', () => {
-    $('#search-bar-btn-reset').hide();
-  });
+  // $('#search-bar-btn-reset').on('click', () => {
+  //   $('#search-bar-btn-reset').hide();
+  // });
 
-  $(window).on('scroll', () => {
-    if ($(window).scrollTop() < 2) {
-      $('#search-bar-container').slideDown(150);
-      $('#card-list').animate({ 'margin-top': '2%', 'padding-top': '0%' }, 25, 'linear');
-      $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
+  // $(window).on('scroll', () => {
+  //   if ($(window).scrollTop() < 2) {
+  //     $('#search-bar-container').slideDown(150);
+  //     $('#card-list').animate({ 'margin-top': '2%', 'padding-top': '0%' }, 25, 'linear');
+  //     $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
 
-    } else {
-      $('#search-bar-container').slideUp(150);
-      $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
-      $('#card-list').animate({ 'margin-top': '10%', 'padding-top': '2%' }, 25, 'linear');
-    }
-  });
+  //   } else {
+  //     $('#search-bar-container').slideUp(150);
+  //     $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
+  //     $('#card-list').animate({ 'margin-top': '10%', 'padding-top': '2%' }, 25, 'linear');
+  //   }
+  // });
 
-  $('#search-bar-form').on('submit', (event) => {
-    event.preventDefault();
-  });
+  // $('#search-bar-form').on('submit', (event) => {
+  //   event.preventDefault();
+  // });
 });
 //#endregion search feature
 
