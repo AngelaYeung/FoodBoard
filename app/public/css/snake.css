@@ -1,7 +1,8 @@
 body {
-    text-align: center;
+  text-align: center;
   font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
+
 #game-menu {
     display: inline-block;
 } 
@@ -11,8 +12,8 @@ body {
 
 .start-menu {
     position: relative;
+    padding-top: 100%;
     font-size: 16pt;
-    top: 50%;
 }
 #stage {
     display: none;
@@ -59,8 +60,11 @@ body {
 #game-controller table {
     margin: 0 auto;
     padding: 0;
-    align-content: center;
-    justify-content: center;
+    -ms-flex-line-pack: center;
+        align-content: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
     border-collapse: collapse;
 }
 

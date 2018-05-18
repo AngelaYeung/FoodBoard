@@ -106,8 +106,10 @@
 
 .nav>li>a:focus, .nav>li>a:hover {
   background-color: transparent;
-  animation-name: underline-animation;
-  animation-duration: 2s;
+  -webkit-animation-name: underline-animation;
+          animation-name: underline-animation;
+  -webkit-animation-duration: 2s;
+          animation-duration: 2s;
   color:white;
 }
 
@@ -127,14 +129,17 @@
   background-color: white;
   visibility: hidden;
   -webkit-transform: scaleX(0);
-  transform: scaleX(0);
+  -ms-transform: scaleX(0);
+      transform: scaleX(0);
   -webkit-transition: all 0.4s ease-in-out 0s;
+  -o-transition: all 0.4s ease-in-out 0s;
   transition: all 0.4s ease-in-out 0s;
 }
 .navbar-right-custom>li>a:hover:before {
   visibility: visible;
   -webkit-transform: scaleX(1);
-  transform: scaleX(1);
+  -ms-transform: scaleX(1);
+      transform: scaleX(1);
 }
 
 
@@ -152,4 +157,3 @@
   font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size:14pt; 
 }
-

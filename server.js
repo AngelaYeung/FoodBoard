@@ -383,13 +383,13 @@ io.on('connection', (socket) => {
           var userID = rows[0].Users_userID;
           console.log("PAGE HAS BEEN lOADED FIRST QUERY, USERID:", userID, session.sessionID);
           var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
-          connection.query(checkRole, [userID], (error, row, field) => {
+          connection.query(checkRole, [userID], (error, rows, field) => {
             if (error) {
               slackcmd.log(`Event: Page loaded ${query}.`, error);
 
               console.log(new Date(Date.now()), "Error checking for role of user:", error);
             } else {
-              var role = row[0].role;
+              var role = rows[0].role;
               // load all posts to be filtered later in boardpage.js
               var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
               connection.query(allFoodboardItems, (error, rows, fields) => {
@@ -442,7 +442,7 @@ io.on('connection', (socket) => {
             if (error) {
               slackcmd.log(`Event: My posts. ${query}.`, error);
               console.log(new Date(Date.now()), "Error selecting User's posts in 'myposts' feature:", error);
-            } else if (rows.length === 0) {
+            } else if (rows.length == 0) {
               console.log("This user has no posts to load in 'myposts' page.");
             } else {
               console.log("Successfully loading the users posts.");
@@ -514,6 +514,7 @@ io.on('connection', (socket) => {
           });
         });
       } else {
+        slackcmd.log('NICE TRY BUD!', '');
         app.get('/nicetrybud');
       }
     });
@@ -621,6 +622,7 @@ io.on('connection', (socket) => {
         });
       } else {
         // user is not currently in a session and therefore should'nt be able to delete a post
+        slackcmd.log('NICE TRY BUD!', '');
         app.get('/nicetrybud');
       }
     });
@@ -655,7 +657,8 @@ io.on('connection', (socket) => {
 
       if (rows.length) {
 
-        claimerUserID = rows[0].Users_userID;
+        claimerUserID = rows[0].Users_userID; // ID of the user in the session
+        console.log("CLAIMERUSERID:", claimerUserID);
 
         var setClaimerID = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ?`;
         connection.query(setClaimerID, [claimerUserID, itemID], (error, rows, field) => {
@@ -666,6 +669,7 @@ io.on('connection', (socket) => {
           } else {
             // else return the updated table
             console.log("Successfully updated claimerID into FoodItem table.");
+            console.log("PRINTING THE UPDATED FIELD OF FOODITEM TABLE WITH CLAIMER ID:", rows);
 
             var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
             connection.query(queryFoodItemTable, [itemID], (error, rows, field) => {
@@ -674,15 +678,17 @@ io.on('connection', (socket) => {
                 slackcmd.log(`Event: Claim item. ${query}.`, error);
                 console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
               } else {
-                console.log("Successfully obtained Poster's userID from FoodItem Table", row);
+                console.log("Successfully obtained Poster's userID from FoodItem Table", rows);
                 posterUserID = rows[0].Users_userID;
                 foodName = rows[0].foodName;
                 foodDescription = rows[0].foodDescription;
                 foodExpiryTime = rows[0].foodExpiryTime;
                 foodImage = rows[0].foodImage;
+                console.log("THIS IS THE POSTER USER ID:", posterUserID);
+                console.log("THIS IS THE CLAIMER USER ID:", claimerUserID);
 
-                var usersTableQuery = "SELECT * FROM users WHERE userID = ? OR userID = ? LIMIT 2";
-                connection.query(usersTableQuery, [posterUserID, claimerUserID], (error, rows, field) => {
+                var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+                connection.query(claimerQuery, [claimerUserID], (error, rows, field) => {
                   if (error) {
                     //return error if selection fail
                     slackcmd.log(`Event: Claim item. ${query}.`, error);
@@ -690,24 +696,36 @@ io.on('connection', (socket) => {
                   } else {
                     //else return the users information
                     console.log("Successfully grabbed user of claimed item. ", rows);
-                    posterEmail = rows[0].email;
-                    posterFirstName = rows[0].firstName;
-                    claimerEmail = rows[1].email;
+                    claimerFirstName = rows[0].firstName;
+                    claimerEmail = rows[0].email;
+                    claimerSuiteNumber = rows[0].suiteNumber;
 
-                    console.log("POSTER EMAIL", posterEmail);
-                    console.log("CLAIMER EMAIL", claimerEmail);
+                    var posterQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+                    connection.query(posterQuery, [posterUserID], (error, rows, field) => {
+                      if (error) {
+                        //return error if selection fail
+                        slackcmd.log(`Event: Claim item. ${query}.`, error);
+                        console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
+                      } else {
+                        console.log("Successfully grabbed user of claimed item. ", rows);
+                        posterFirstName = rows[0].firstName;
+                        posterEmail = rows[0].email;
 
+                        console.log("CLAIMERS FIRST NAME: ", claimerFirstName);
+                        console.log("POSTERS FIRST NAME: ", posterFirstName);
+                        console.log("CLAIMER SUITE NUMBER: ", claimerSuiteNumber);
+                        console.log("CLAIMERUSERID:", claimerUserID);
+                        console.log("POSTER EMAIL", posterEmail);
+                        console.log("CLAIMER EMAIL", claimerEmail);
 
-                    claimerFirstName = rows[1].firstName;
-                    claimerSuiteNumber = rows[1].suiteNumber;
-                    console.log("EMAIL IS HERE LOOK", claimerEmail);
+                        sendClaimEmailToPoster(posterEmail, posterFirstName,
+                          foodName, foodDescription, foodExpiryTime, foodImage,
+                          claimerEmail, claimerFirstName, claimerSuiteNumber);
 
-                    sendClaimEmailToPoster(claimerEmail, claimerFirstName,
-                      foodName, foodDescription, foodExpiryTime, foodImage,
-                      posterEmail, posterFirstName, claimerSuiteNumber);
-
-                    console.log(itemID);
-                    io.emit('claim return', (itemID));
+                        console.log(itemID);
+                        io.emit('claim return', (itemID));
+                      }
+                    });
                   }
                 });
               }
@@ -715,6 +733,7 @@ io.on('connection', (socket) => {
           }
         });
       } else {
+        slackcmd.log('NICE TRY BUD!', '');
         app.get('/nicetrybud');
       }
     });
@@ -740,7 +759,7 @@ io.on('connection', (socket) => {
             if (error) {
               slackcmd.log(`Event: My claims. ${query}.`, error);
               console.log(new Date(Date.now()), "Error selecting user's claims in my claims feature:", error);
-            } else if (rows.length === 0) {
+            } else if (rows.length == 0) {
               console.log("There are no claimed posts");
             } else {
               socket.emit('my claims return', {
@@ -800,21 +819,43 @@ io.on('connection', (socket) => {
                 } else {
                   console.log("Successfully unclaimed food item.");
 
-                  var queryPosterAndClaimerInformation = `SELECT * FROM users WHERE userID = ? OR userID = ?`;
-                  connection.query(queryPosterAndClaimerInformation, [posterUserID, claimerUserID], (error, rows, field) => {
+                  var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+                  connection.query(claimerQuery, [claimerUserID], (error, rows, field) => {
                     if (error) {
-                      console.log(new Date(Date.now()), "Error inquiring for poster and claimer information in unclaim event: ", error);
-                    } else if (rows.length) {
-                      console.log("Successfully inquired for poster and claimer information in unclaim event.");
-                      posterEmail = rows[0].email;
-                      posterFirstName = rows[0].firstName;
-                      claimerFirstName = rows[1].firstName;
-                      claimerSuiteNumber = rows[1].suiteNumber;
+                      //return error if selection fail
+                      slackcmd.log(`Event: Claim item. ${query}.`, error);
+                      console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
+                    } else {
+                      //else return the users information
+                      console.log("Successfully grabbed user of claimed item. ", rows);
+                      claimerFirstName = rows[0].firstName;
+                      claimerEmail = rows[0].email;
+                      claimerSuiteNumber = rows[0].suiteNumber;
 
-                      // Send email to poster that their food item has been unclaimed.
-                      sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber);
-                      socket.emit('unclaim item return', {
-                        cardID: postID,
+                      var posterQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+                      connection.query(posterQuery, [posterUserID], (error, rows, field) => {
+                        if (error) {
+                          //return error if selection fail
+                          slackcmd.log(`Event: Claim item. ${query}.`, error);
+                          console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
+                        } else {
+                          console.log("Successfully grabbed user of claimed item. ", rows);
+                          posterFirstName = rows[0].firstName;
+                          posterEmail = rows[0].email;
+
+                          console.log("CLAIMERS FIRST NAME: ", claimerFirstName);
+                          console.log("POSTERS FIRST NAME: ", posterFirstName);
+                          console.log("CLAIMER SUITE NUMBER: ", claimerSuiteNumber);
+                          console.log("CLAIMERUSERID:", claimerUserID);
+                          console.log("POSTER EMAIL", posterEmail);
+                          console.log("CLAIMER EMAIL", claimerEmail);
+
+                          // Send email to poster that their food item has been unclaimed.
+                          sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber);
+                          socket.emit('unclaim item return', {
+                            cardID: postID,
+                          });
+                        }
                       });
                     }
                   });
@@ -836,9 +877,9 @@ io.on('connection', (socket) => {
 function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, foodDescription, foodExpiryTime, foodImage, posterFirstName, posterSuiteNumber) {
 
   const transporter = nodemailer.createTransport({
-    host: 'gmail', //'smtp.ethereal.email'
-    //port: 587,
-    //secure: false, // true for 465, false for other ports
+    service: 'gmail', //'smtp.ethereal.email'
+    // port: 587,
+    // secure: false, // true for 465, false for other ports
     auth: {
       user: 'foodboardcanada@gmail.com', //'de5kzppbkaumnfhu@ethereal.email'
       pass: 'darkthemesonly' //'wNmg25t9fqKXZ8wVUF'
@@ -915,6 +956,7 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
+      slackcmd.log(`Event: Send Delete Mail ${info}`, error);
       console.log("Error occured sending claim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
@@ -922,7 +964,7 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
       // If successful, should print the following to the console:
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-      console.log('Claim message sent: %s', info.messageId);
+      console.log('Delete message sent: %s', info.messageId);
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
   });
@@ -931,9 +973,9 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
 function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerEmail, claimerFirstName, claimerSuiteNumber) {
 
   const transporter = nodemailer.createTransport({
-    host: 'gmail', //'smtp.ethereal.email'
-    //port: 587,
-    //secure: false, // true for 465, false for other ports
+    service: 'gmail', //'smtp.ethereal.email'
+    // port: 587,
+    // secure: false, // true for 465, false for other ports
     auth: {
       user: 'foodboardcanada@gmail.com', //'de5kzppbkaumnfhu@ethereal.email'
       pass: 'darkthemesonly' //'wNmg25t9fqKXZ8wVUF'
@@ -1014,6 +1056,7 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
+      slackcmd.log(`Event: Send Claim Mail ${info}`, error);
       console.log("Error occured sending claim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
@@ -1030,9 +1073,9 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
 function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber) {
 
   const transporter = nodemailer.createTransport({
-    host: 'gmail', //'smtp.ethereal.email'
-    //port: 587,
-    //secure: false, // true for 465, false for other ports
+    service: 'gmail', //'smtp.ethereal.email'
+    // port: 587,
+    // secure: false, // true for 465, false for other ports
     auth: {
       user: 'foodboardcanada@gmail.com', //'de5kzppbkaumnfhu@ethereal.email'
       pass: 'darkthemesonly' //'wNmg25t9fqKXZ8wVUF'
@@ -1048,7 +1091,7 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
   let mailOptions = {
     from: `foodboardcanada@gmail.com`, // sender address
     to: posterEmail, // list of receivers
-    subject: 'FoodBoard: Your food item has been claimed', // Subject line
+    subject: 'FoodBoard: Your food item has been unclaimed', // Subject line
     text: `Hello ${posterFirstName},
 
     Unfortunately, your neighbor ${claimerFirstName} from Apartment Suite ${claimerSuiteNumber} has unclaimed your food item. 
@@ -1113,7 +1156,8 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log("Error occured sending claim email", error);
+      slackcmd.log(`Event: Send Unclaim Mail ${info}`, error);
+      console.log("Error occured sending unclaim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
 
@@ -1128,7 +1172,7 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
 
 function deleteFoodItem(itemID) {
   var deletePost = `DELETE FROM FoodItem WHERE itemID = ? LIMIT 1`;
-  connection.query(deletePost, [itemID], (error, row, field) => {
+  connection.query(deletePost, [itemID], (error, rows, field) => {
     if (error) {
 
       // return error if insertion fail

@@ -29,8 +29,6 @@ function log(msg, error) {
         res.on('data', (chunk) => {
             console.log(`BODY: ${chunk}`);
         });
-
-        console.log(new Date(Date.now()), 'Slack response: ', res);
     });
 
     postReq.write(postData);

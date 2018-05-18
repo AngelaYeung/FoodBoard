@@ -10,7 +10,8 @@ body {
   background-color: white;
   width: 90%;
   margin: 20px auto;
-  box-shadow: 2px 3px 20px grey;
+  -webkit-box-shadow: 2px 3px 20px grey;
+          box-shadow: 2px 3px 20px grey;
   border-radius: 3px;
 
   }
@@ -115,7 +116,8 @@ body {
     display: inline-block;
     background-color: white;
     margin: 15px;
-    box-shadow: 2px 3px 20px grey;
+    -webkit-box-shadow: 2px 3px 20px grey;
+            box-shadow: 2px 3px 20px grey;
     }
 
     #card-list {
@@ -145,7 +147,8 @@ Styling the location and layout of the expandable text for a card.
 
 .collapsing {
   -webkit-transition-duration: 0.15s !important;
-  transition-duration: 0.15s !important;
+  -o-transition-duration: 0.15s !important;
+     transition-duration: 0.15s !important;
 
 
 }
@@ -165,7 +168,6 @@ Styling the location and layout of the expandable text for a card.
   width: 100%;
   padding: 4%;
   padding-bottom: 1.5%;
-  border-radius: 17px;
 }
 
 
@@ -189,6 +191,9 @@ Styling the location and layout of the expandable text for a card.
   height: 40px;
   padding: 1%;
   border-color: #4EB266;
+  background: -webkit-gradient(linear, left top, left bottom, from(#4EB266), to(#3F9152) );
+  background: -webkit-linear-gradient(top, #4EB266, #3F9152 );
+  background: -o-linear-gradient(top, #4EB266, #3F9152 );
   background: linear-gradient(-180deg, #4EB266, #3F9152 );
   color:white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -207,6 +212,9 @@ Styling the location and layout of the expandable text for a card.
   height: 40px;
   padding: 1%;
   border-color: red;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgb(180, 15, 15)), to(darkred) );
+  background: -webkit-linear-gradient(top, rgb(180, 15, 15), darkred );
+  background: -o-linear-gradient(top, rgb(180, 15, 15), darkred );
   background: linear-gradient(-180deg, rgb(180, 15, 15), darkred );
   color:white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -231,7 +239,8 @@ a#color-change {
 }
 
 .glyphicon-menu-hamburger:active {
-  box-shadow:none;
+  -webkit-box-shadow:none;
+          box-shadow:none;
   outline:none;
 }
 
@@ -278,8 +287,6 @@ a#color-change {
 
 /** Styles the input box for invalid time input **/
 .invalid-input {
-    -moz-box-shadow: 0 0 2px 2px rgb(199, 108, 108);
     -webkit-box-shadow: 0 0 2px 2px rgb(199, 108, 108);
     box-shadow: 0 0 2px 2px rgb(199, 108, 108);
 }
-
