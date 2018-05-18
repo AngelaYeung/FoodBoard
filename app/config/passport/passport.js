@@ -34,7 +34,7 @@ module.exports = function (passport, user) {
       var userSelect = "SELECT userID FROM users WHERE email = ? LIMIT 1";
       connection.query(userSelect, [register_email], (error, results) => {
         if (error) {
-          slacklog.log(`Event: Passport. ${query}.`, error);
+          slacklog.log(`Event: Passport. ${userSelect}.`, error);
           console.log(new Date(Date.now()), 'Error:', error);
           return done(error);
         }
