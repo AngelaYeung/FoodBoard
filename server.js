@@ -537,7 +537,7 @@ io.on('connection', (socket) => {
         /* Once image transfer has complete, tell client to create it's card */
         uploader.once('complete', () => {
           console.log('File Transfer Completed...');
-          slack.log('Item being posted: ', {
+          slacklog.log('Item being posted: ', {
             sessionID: sessionID,
             id: itemID,
             name: foodName,
@@ -900,6 +900,7 @@ io.on('connection', (socket) => {
                           socket.emit('unclaim item return', {
                             cardID: postID,
                           });
+                          next();
                         }
                       });
                     }

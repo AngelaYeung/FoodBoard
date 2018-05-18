@@ -1,9 +1,6 @@
 // needs to be declared as a global variable to be in same scope as claimItem(), deleteItem()
 var socket;
 
-$(window).on('load', () => {
-  window.scroll(0, 10);
-});
 $(document).ready(function () {
   var sessionID = getSessionID('connect.sid');
   console.log('sessionID', sessionID);
