@@ -412,7 +412,7 @@ io.on('connection', (socket) => {
         if (rows.length) {
           // check to see if the user is an admin
           var userID = rows[0].Users_userID;
-          console.log("PAGE HAS BEEN lOADED FIRST QUERY, USERID:", userID, session.sessionID);
+          
           var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
           connection.query(checkRole, [userID], (error, rows, field) => {
             if (error) {
@@ -423,17 +423,19 @@ io.on('connection', (socket) => {
               var role = rows[0].role;
               // load all posts to be filtered later in boardpage.js
               var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
+
               connection.query(allFoodboardItems, (error, rows, fields) => {
                 if (error) {
                   slacklog.log(`Event: Page loaded ${allFoodboardItems}.`, error);
-
                   console.log(new Date(Date.now()), "Error grabbing food items");
+
                 } else if (rows.length == 0) {
                   console.log("Database is empty.");
+                  //TODO generate some kind of user prompt
+
                 } else {
                   console.log("Successfully grabbed food items.");
-                  console.log(rows);
-                  console.log("PAGE HAS BEEN lOADED SECOND QUERY, USERID:", userID, session.sessionID);
+  
                   var sessionID = session.sessionID;
                   /* Sends list of food items to the client to print to browser */
                   socket.emit('load foodboard', {
@@ -459,7 +461,7 @@ io.on('connection', (socket) => {
    *************************************************************************/
   socket.on('my posts', (session) => {
     var query = `SELECT * FROM Sessions WHERE sessionID = '${session.sessionID}' LIMIT 1`;
-    console.log('I AM EMITTING MY POSTS');
+    
     connection.query(query, (error, rows, fields) => {
       if (error) {
         slacklog.log(`Event: My posts ${query}.`, error);
@@ -475,6 +477,7 @@ io.on('connection', (socket) => {
               console.log(new Date(Date.now()), "Error selecting User's posts in 'myposts' feature:", error);
             } else if (rows.length == 0) {
               console.log("This user has no posts to load in 'myposts' page.");
+              //TODO generate some kind of user prompt
             } else {
               console.log("Successfully loading the users posts.");
               socket.emit('load my posts', {
@@ -543,6 +546,7 @@ io.on('connection', (socket) => {
             foodgrouping: foodGroup,
             image: foodImage,
           });
+          
           io.emit('post item return', {
             sessionID: sessionID,
             id: itemID,
