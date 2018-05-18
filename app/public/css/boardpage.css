@@ -1,0 +1,292 @@
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  height:870px;
+}
+
+@media screen and (max-width: 480px) {
+
+  .cardContainer {
+  background-color: white;
+  width: 90%;
+  margin: 20px auto;
+  -webkit-box-shadow: 2px 3px 20px grey;
+          box-shadow: 2px 3px 20px grey;
+  border-radius: 3px;
+
+  }
+
+  .navbar-foodboard > img {
+    padding-top:1.3%;
+    padding-bottom:1%;
+  }
+
+  /** Add spacing from navbar to the top of the first card */
+
+
+  .btn-default{
+    float: right;
+    background-color: #4EB266;
+    border-color: #4EB266;
+    padding: 0;
+    margin-top: -0.7%;
+  }
+  /* Style the 'add item' button */
+  .btn-default:focus{
+    color: #4EB266;
+    background-color: #4EB266;
+    border-color: #4EB266;
+    text-decoration:none;
+  }
+  .btn-default:hover {
+    background-color:#4EB266;
+    border-color: #4EB266;
+  }
+
+  .btn-default:active {
+    color: #4EB266;
+    background-color: #4EB266;
+    border-color: #4EB266;
+    text-decoration:none;
+  }
+  
+  .glyphicon{
+    color:white;
+    top: 6px;  
+  }
+
+  /** Position the hamburger icon. */
+  .glyphicon-menu-hamburger {
+    font-size: 18pt;
+    margin-top: -2.5%;
+    }
+  
+    /** Position the add icon. */
+    .glyphicon-plus {
+      font-size:14pt;
+      margin-top: -100%;
+    }
+
+  #search-bar-container {
+    margin: 0 auto;
+    width: 77%;
+    display:none;
+  }
+  
+  #search-bar {
+    border: 0px;
+    border-bottom: 1px solid #7D7D7D;
+    background: transparent;
+    outline: none;
+    color: #7D7D7D;
+    width: 20em;
+  }
+  
+  #search-bar-btn {
+    border: 0;
+    width: 25px;
+    outline: none;
+    background: transparent;
+  }
+  
+  #search-bar-btn img {
+    width: 100%;
+  }
+  
+  #search-bar-btn-reset {
+    border: 0;
+    width: 20px;
+    outline: none;
+    background: transparent;
+    display: inline-block;
+    margin-left: -20px;
+    display: none;
+  }
+  
+  #search-bar-btn-reset img {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 481px){
+  #board {
+    display: inline-block;
+  }
+  .cardContainer {
+    display: inline-block;
+    background-color: white;
+    margin: 15px;
+    -webkit-box-shadow: 2px 3px 20px grey;
+            box-shadow: 2px 3px 20px grey;
+    }
+
+    #card-list {
+      width: 400px;
+      margin-top:10%;
+    }
+}
+
+#submit {
+  float: right;
+  background: #4EB266;
+  position: relative;
+  top: 17px;
+}
+
+body {
+  background: #DDE5E5;
+}
+
+/**
+Styling the location and layout of the expandable text for a card.
+*/
+
+.contentDiv p {
+  visibility: visible;
+}
+
+.collapsing {
+  -webkit-transition-duration: 0.15s !important;
+  -o-transition-duration: 0.15s !important;
+     transition-duration: 0.15s !important;
+
+
+}
+
+.contentDiv {
+  visibility: visible;
+}
+
+
+/** Styling the navbar icons */
+
+.collapse-button img {
+  height: 20px;
+}
+.food-img {
+  height: 300px;
+  width: 100%;
+  padding: 4%;
+  padding-bottom: 1.5%;
+}
+
+
+.header-Div {
+  height: 60px;
+}
+
+/** Remove outline for buttons on focus. */
+.btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
+  outline: none;
+}
+
+/** Remove background color for '+' (add new item) button. */
+.btn-default:active:focus, .btn-default:active:hover {
+  background-color:inherit;
+}
+
+/** Style for the claim button on individual cards. */
+.claim-button {
+  width: 100%;
+  height: 40px;
+  padding: 1%;
+  border-color: #4EB266;
+  background: -webkit-gradient(linear, left top, left bottom, from(#4EB266), to(#3F9152) );
+  background: -webkit-linear-gradient(top, #4EB266, #3F9152 );
+  background: -o-linear-gradient(top, #4EB266, #3F9152 );
+  background: linear-gradient(-180deg, #4EB266, #3F9152 );
+  color:white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14pt;
+  font-weight: 500;
+  float:right;
+  border:0.8px #333131 solid;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  outline:none;
+
+}
+
+.delete-button {
+  width: 100%;
+  height: 40px;
+  padding: 1%;
+  border-color: red;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgb(180, 15, 15)), to(darkred) );
+  background: -webkit-linear-gradient(top, rgb(180, 15, 15), darkred );
+  background: -o-linear-gradient(top, rgb(180, 15, 15), darkred );
+  background: linear-gradient(-180deg, rgb(180, 15, 15), darkred );
+  color:white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14pt;
+  font-weight: 500;
+  float:right;
+  border:0.8px #333131 solid;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  outline:none;
+}
+
+
+
+/** Remove outline for add glyphicon. */
+.glyphicon-plus {
+  outline:none;
+}
+
+a#color-change {
+  background-color:transparent !important ;
+}
+
+.glyphicon-menu-hamburger:active {
+  -webkit-box-shadow:none;
+          box-shadow:none;
+  outline:none;
+}
+
+/** Style the positioning of the Card description */
+.row {
+  margin-right:0px !important;
+  margin-left:0px !important;
+}
+.claim-form {
+  width:100%;
+  }
+.collapse{
+  padding-left:0%;
+  padding-right:0%;
+}
+.collapsing {
+  padding-left:0%;
+  padding-right:0%;
+}
+
+.collapse p {
+  padding-left:15px;
+  padding-right:15px;
+}
+.collapsing p {
+  padding-left:15px;
+  padding-right:15px;
+}
+
+/** Style the collapse button for the Card Item */
+.glyphicon-option-vertical {
+  color:darkslategrey !important;
+  background:transparent;
+  border: none;
+  outline:none;
+  margin-top: 80%;
+}
+
+/** Styles the text for invalid time input **/
+.invalid-feedback {
+  display: none;
+  color: red;
+}
+
+/** Styles the input box for invalid time input **/
+.invalid-input {
+    -webkit-box-shadow: 0 0 2px 2px rgb(199, 108, 108);
+    box-shadow: 0 0 2px 2px rgb(199, 108, 108);
+}
