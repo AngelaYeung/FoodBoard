@@ -586,10 +586,10 @@ io.on('connection', (socket) => {
             console.log(new Date(Date.now()), "Error checking for role of user:", error);
           } else {
             slacklog.log(`Event: Delete item. ${checkRole}.`, error);
-            console.log("Successfully inquired for poster's information: ", row);
-            role = row[0].role;
-            posterFirstName = row[0].firstName;
-            posterSuiteNumber = row[0].suiteNumber;
+            console.log("Successfully inquired for poster's information: ", rows);
+            role = rows[0].role;
+            posterFirstName = rows[0].firstName;
+            posterSuiteNumber = rows[0].suiteNumber;
 
             if (role === 0) {
 
