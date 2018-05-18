@@ -73,7 +73,7 @@ function getUsers(req, res) {
 
     let slackReqObj = req.body;
 
-    let query = 'SELECT * from Users';
+    let query = 'SELECT * from users';
     connection.query(query, (error, rows, fields) => {
         if (error) {
             slacklog.log('Error: Slack Command - getUsers()', error);
