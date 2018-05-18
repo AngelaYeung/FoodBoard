@@ -24,6 +24,7 @@ var models = require("./app/models"); // tells the server to require these route
 var authRoute = require('./app/routes/auth.js');
 var mysqlconnection = require('./app/public/js/mysqlconnection.js');
 var bCrypt = require('bcrypt-nodejs'); // decrypting/encrypting passwords server side
+var slacklog = require('./app/public/js/slacklogs');
 var slackcmd = require('./app/public/js/slackcommands');
 
 var connection = mysqlconnection.handleDisconnect();
@@ -97,16 +98,46 @@ app.get('/', (req, res) => {
   });
 });
 
-app.post('/slack/command/new', (req, res) => {
+app.post('/slack/command/items', (req, res) => {
   console.log('CMD:', req.body);
 
   if (req.body.token === slackcmd.token) {
-    slackcmd.newItems(req, res);
+    slackcmd.getItems(req,res);
   } else {
+    slacklog.log('Error: Slack requesting new items-  Incorrect Slack token', '');
     console.log('Incorrect slack token');
   }
 
 });
+
+
+app.post('/slack/command/sessions', (req, res) => {
+  slacklog.log('Slack requesting sessions from db:', '');
+
+  if (req.body.token === slackcmd.token) {
+    slackcmd.getSessions(req, res);
+  } else {
+    slacklog.log('Error: Slack requesting sessions -  Incorrect Slack token', '');
+    console.log('Incorrect slack token');
+  }
+
+});
+
+
+app.post('/slack/command/users', (req, res) => {
+  slacklog.log('Slack requesting sessions from db:', '');
+
+  if (req.body.token === slackcmd.token) {
+    slackcmd.getUsers(req, res);
+  } else {
+    slacklog.log('Error: Slack requesting users -  Incorrect Slack token', '');
+    console.log('Incorrect slack token');
+  }
+
+});
+
+
+
 
 /*************************************************************************
  * 
@@ -344,10 +375,10 @@ io.on('connection', (socket) => {
   var query = `SELECT * FROM Sessions`;
   connection.query(query, (error, rows, fields) => {
     if (error) {
-      slackcmd.log(`Event: Connection ${query}.`, error);
+      slacklog.log(`Event: Connection ${query}.`, error);
       console.log(new Date(Date.now()), 'Connection: ', error);
     } else {
-      slackcmd.log('Number of active sessions', rows.length);
+      slacklog.log('Number of active sessions', rows.length);
     }
   });
 
@@ -375,7 +406,7 @@ io.on('connection', (socket) => {
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [session.sessionID], (error, rows, fields) => {
       if (error) {
-        slackcmd.log(`Event: Page loaded ${query}.`, error);
+        slacklog.log(`Event: Page loaded ${query}.`, error);
         console.log(new Date(Date.now()), 'Error selecting sessionID in load feature: ', error);
       } else {
         if (rows.length) {
@@ -385,7 +416,7 @@ io.on('connection', (socket) => {
           var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
           connection.query(checkRole, [userID], (error, row, field) => {
             if (error) {
-              slackcmd.log(`Event: Page loaded ${query}.`, error);
+              slacklog.log(`Event: Page loaded ${query}.`, error);
 
               console.log(new Date(Date.now()), "Error checking for role of user:", error);
             } else {
@@ -394,7 +425,7 @@ io.on('connection', (socket) => {
               var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
               connection.query(allFoodboardItems, (error, rows, fields) => {
                 if (error) {
-                  slackcmd.log(`Event: Page loaded ${query}.`, error);
+                  slacklog.log(`Event: Page loaded ${query}.`, error);
 
                   console.log(new Date(Date.now()), "Error grabbing food items");
                 } else if (rows.length == 0) {
@@ -431,7 +462,7 @@ io.on('connection', (socket) => {
     console.log('I AM EMITTING MY POSTS');
     connection.query(query, (error, rows, fields) => {
       if (error) {
-        slackcmd.log(`Event: My posts ${query}.`, error);
+        slacklog.log(`Event: My posts ${query}.`, error);
         console.log(new Date(Date.now()), "Error selecting sessionID in 'myposts' feature:", error);
       } else {
         if (rows.length) {
@@ -440,7 +471,7 @@ io.on('connection', (socket) => {
           var userInfo = "SELECT * FROM FoodItem WHERE Users_userID = ?";
           connection.query(userInfo, [userID], (error, rows, fields) => {
             if (error) {
-              slackcmd.log(`Event: My posts. ${query}.`, error);
+              slacklog.log(`Event: My posts. ${query}.`, error);
               console.log(new Date(Date.now()), "Error selecting User's posts in 'myposts' feature:", error);
             } else if (rows.length === 0) {
               console.log("This user has no posts to load in 'myposts' page.");
@@ -470,7 +501,7 @@ io.on('connection', (socket) => {
     var query = `SELECT sessionID, Users_userID FROM Sessions WHERE sessionID = '${item.sessionID}' LIMIT 1`;
     connection.query(query, (error, rows, fields) => {
       if (error) {
-        slackcmd.log(`Event: Post item ${query}.`, error);
+        slacklog.log(`Event: Post item ${query}.`, error);
         console.log(new Date(Date.now()), "Error selecting sessionID in post feature", error);
       }
 
@@ -490,7 +521,7 @@ io.on('connection', (socket) => {
         connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage, userID, null], (error, rows, field) => {
           if (error) {
             // return error if insertion fail
-            slackcmd.log(`Event: Post item ${query}.`, error);
+            slacklog.log(`Event: Post item ${query}.`, error);
             console.log(new Date(Date.now()), "Error inserting" + error);
             console.log(error);
           } else {
@@ -514,7 +545,7 @@ io.on('connection', (socket) => {
           });
         });
       } else {
-        slackcmd.log('NICE TRY BUD!', '');
+        slacklog.log('NICE TRY BUD!', '');
         app.get('/nicetrybud');
       }
     });
@@ -541,7 +572,7 @@ io.on('connection', (socket) => {
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [sessionID], (error, row, fields) => {
       if (error) {
-        slackcmd.log(`Event: Delete item. ${query}.`, error);
+        slacklog.log(`Event: Delete item. ${query}.`, error);
         console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
       }
       if (row.length) {
@@ -554,7 +585,7 @@ io.on('connection', (socket) => {
           if (error) {
             console.log(new Date(Date.now()), "Error checking for role of user:", error);
           } else {
-            slackcmd.log(`Event: Delete item. ${query}.`, error);
+            slacklog.log(`Event: Delete item. ${query}.`, error);
             console.log("Successfully inquired for poster's information: ", row);
             role = row[0].role;
             posterFirstName = row[0].firstName;
@@ -573,7 +604,7 @@ io.on('connection', (socket) => {
               var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
               connection.query(queryFoodItemTable, [itemID], (error, row, field) => {
                 if (error) {
-                  slackcmd.log(`Event: Delete item. ${query}.`, error);
+                  slacklog.log(`Event: Delete item. ${query}.`, error);
                   console.log(new Date(Date.now()), "Error querying from FoodItem Table: ", error);
                 } else {
                   console.log("Successfully obtained food item info from FoodItem Table");
@@ -598,7 +629,7 @@ io.on('connection', (socket) => {
                     var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
                     connection.query(claimerQuery, [claimerUserID], (error, row, field) => {
                       if (error) {
-                        slackcmd.log(`Event: Delete item. ${query}.`, error);
+                        slacklog.log(`Event: Delete item. ${query}.`, error);
                         console.log(new Date(Date.now()), "Error checking for role of user:", error);
                       } else {
                         console.log("Successfully inquired for claimer's information.")
@@ -622,7 +653,7 @@ io.on('connection', (socket) => {
         });
       } else {
         // user is not currently in a session and therefore should'nt be able to delete a post
-        slackcmd.log('NICE TRY BUD!', '');
+        slacklog.log('NICE TRY BUD!', '');
         app.get('/nicetrybud');
       }
     });
@@ -651,7 +682,7 @@ io.on('connection', (socket) => {
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [sessionID], (error, row, fields) => {
       if (error) {
-        slackcmd.log(`Event: Claim item. ${query}.`, error);
+        slacklog.log(`Event: Claim item. ${query}.`, error);
         console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
       }
 
@@ -664,7 +695,7 @@ io.on('connection', (socket) => {
         connection.query(setClaimerID, [claimerUserID, itemID], (error, rows, field) => {
           if (error) {
             //return error if update claimerID into failed
-            slackcmd.log(`Event: Claim item. ${query}.`, error);
+            slacklog.log(`Event: Claim item. ${query}.`, error);
             console.log(new Date(Date.now()), "Error updating claimerID into FoodItem table: ", error);
           } else {
             // else return the updated table
@@ -675,7 +706,7 @@ io.on('connection', (socket) => {
             connection.query(queryFoodItemTable, [itemID], (error, rows, field) => {
               if (error) {
                 //error occured while attempting to query FoodItem Table
-                slackcmd.log(`Event: Claim item. ${query}.`, error);
+                slacklog.log(`Event: Claim item. ${query}.`, error);
                 console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
               } else {
                 console.log("Successfully obtained Poster's userID from FoodItem Table", rows);
@@ -691,7 +722,7 @@ io.on('connection', (socket) => {
                 connection.query(usersTableQuery, [claimerUserID, posterUserID], (error, rows, field) => {
                   if (error) {
                     //return error if selection fail
-                    slackcmd.log(`Event: Claim item. ${query}.`, error);
+                    slacklog.log(`Event: Claim item. ${query}.`, error);
                     console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
                   } else {
                     //else return the users information
@@ -721,7 +752,7 @@ io.on('connection', (socket) => {
           }
         });
       } else {
-        slackcmd.log('NICE TRY BUD!', '');
+        slacklog.log('NICE TRY BUD!', '');
         app.get('/nicetrybud');
       }
     });
@@ -736,7 +767,7 @@ io.on('connection', (socket) => {
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     connection.query(query, [sessionID], (error, rows, fields) => {
       if (error) {
-        slackcmd.log(`Event: My claims. ${query}.`, error);
+        slacklog.log(`Event: My claims. ${query}.`, error);
         console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID", );
       } else {
         if (rows.length) {
@@ -745,7 +776,7 @@ io.on('connection', (socket) => {
           var userInfo = "SELECT * FROM FoodItem WHERE Users_claimerUserID = ?";
           connection.query(userInfo, [claimerUserID], (error, rows, fields) => {
             if (error) {
-              slackcmd.log(`Event: My claims. ${query}.`, error);
+              slacklog.log(`Event: My claims. ${query}.`, error);
               console.log(new Date(Date.now()), "Error selecting user's claims in my claims feature:", error);
             } else if (rows.length === 0) {
               console.log("There are no claimed posts");
@@ -802,7 +833,7 @@ io.on('connection', (socket) => {
               var queryUpdateUnclaim = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ${postID}`;
               connection.query(queryUpdateUnclaim, [null], (error, rows, field) => {
                 if (error) {
-                  slackcmd.log(`Event: Unclaim item. ${query}.`, error);
+                  slacklog.log(`Event: Unclaim item. ${query}.`, error);
                   console.log(new Date(Date.now()), "Error changing claim status of food item", error);
                 } else {
                   console.log("Successfully unclaimed food item.");
@@ -922,7 +953,7 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      slackcmd.log(`Event: Send Delete Mail ${info}`, error);
+      slacklog.log(`Event: Send Delete Mail ${info}`, error);
       console.log("Error occured sending claim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
@@ -930,6 +961,8 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
       // If successful, should print the following to the console:
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+      
+      slacklog.log(`Event: Send Delete Mail ${info}`, '');
       console.log('Claim message sent: %s', info.messageId);
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
@@ -1022,7 +1055,7 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      slackcmd.log(`Event: Send Claim Mail ${info}`, error);
+      slacklog.log(`Event: Send Claim Mail ${info}`, error);
       console.log("Error occured sending claim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
@@ -1030,6 +1063,7 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
       // If successful, should print the following to the console:
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+      slacklog.log(`Event: Send Claim Mail ${info}`, '');
       console.log('Claim message sent: %s', info.messageId);
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
@@ -1122,7 +1156,7 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      slackcmd.log(`Event: Send Unclaim Mail ${info}`, error);
+      slacklog.log(`Event: Send Unclaim Mail ${info}`, error);
       console.log("Error occured sending unclaim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
@@ -1130,6 +1164,7 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
       // If successful, should print the following to the console:
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+      slacklog.log(`Event: Send Unclaim Mail ${info}`, '');
       console.log('Unclaim message sent: %s', info.messageId);
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
@@ -1142,7 +1177,7 @@ function deleteFoodItem(itemID) {
     if (error) {
 
       // return error if insertion fail
-      slackcmd.log(`Event: Delete food item. ${query}.`, error);
+      slacklog.log(`Event: Delete food item. ${query}.`, error);
       console.log("Error occured when attempting to delete post: ", error);
     } else {
       // else return the updated table
@@ -1169,7 +1204,7 @@ function getSessionID(clientSessionID) {
   var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
   var sessionID = connection.query(query, [clientSessionID], (error, rows, fields) => {
     if (error) {
-      slackcmd.log(`Event: Get sessionID. ${query}.`, error);
+      slacklog.log(`Event: Get sessionID. ${query}.`, error);
       console.log(new Date(Date.now()), 'Error:', error);
     } else {
       if (rows.length) {
