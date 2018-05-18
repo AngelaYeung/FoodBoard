@@ -900,7 +900,6 @@ io.on('connection', (socket) => {
                           socket.emit('unclaim item return', {
                             cardID: postID,
                           });
-                          next();
                         }
                       });
                     }
