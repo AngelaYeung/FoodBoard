@@ -534,6 +534,15 @@ io.on('connection', (socket) => {
         /* Once image transfer has complete, tell client to create it's card */
         uploader.once('complete', () => {
           console.log('File Transfer Completed...');
+          slack.log('Item being posted: ', {
+            sessionID: sessionID,
+            id: itemID,
+            name: foodName,
+            description: foodDescription,
+            dateTime: dateLocalTime,
+            foodgrouping: foodGroup,
+            image: foodImage,
+          });
           io.emit('post item return', {
             sessionID: sessionID,
             id: itemID,
@@ -1098,7 +1107,7 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
       // If successful, should print the following to the console:
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-      slacklog.log(`Event: Send Claim Mail ${info}`, '');
+      slacklog.log(`Event: Send Claim Mail ${JSON.stringify(info, undefined, 3)}`, '');
       console.log('Claim message sent: %s', info.messageId);
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
@@ -1191,7 +1200,7 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      slacklog.log(`Event: Send Unclaim Mail ${info}`, error);
+      slacklog.log(`Event: Send Unclaim Mail ${JSON.stringify(info, undefined, 3)}`, error);
       console.log("Error occured sending unclaim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
@@ -1199,7 +1208,7 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
       // If successful, should print the following to the console:
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-      slacklog.log(`Event: Send Unclaim Mail ${info}`, '');
+      slacklog.log(`Event: Send Unclaim Mail ${JSON.stringify(info, undefined, 3)}`, '');
       console.log('Unclaim message sent: %s', info.messageId);
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
