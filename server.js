@@ -416,7 +416,7 @@ io.on('connection', (socket) => {
           var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
           connection.query(checkRole, [userID], (error, rows, field) => {
             if (error) {
-              slacklog.log(`Event: Page loaded ${query}.`, error);
+              slacklog.log(`Event: Page loaded ${checkRole}.`, error);
 
               console.log(new Date(Date.now()), "Error checking for role of user:", error);
             } else {
@@ -425,7 +425,7 @@ io.on('connection', (socket) => {
               var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
               connection.query(allFoodboardItems, (error, rows, fields) => {
                 if (error) {
-                  slacklog.log(`Event: Page loaded ${query}.`, error);
+                  slacklog.log(`Event: Page loaded ${allFoodboardItems}.`, error);
 
                   console.log(new Date(Date.now()), "Error grabbing food items");
                 } else if (rows.length == 0) {
@@ -471,7 +471,7 @@ io.on('connection', (socket) => {
           var userInfo = "SELECT * FROM FoodItem WHERE Users_userID = ?";
           connection.query(userInfo, [userID], (error, rows, fields) => {
             if (error) {
-              slacklog.log(`Event: My posts. ${query}.`, error);
+              slacklog.log(`Event: My posts. ${userInfo}.`, error);
               console.log(new Date(Date.now()), "Error selecting User's posts in 'myposts' feature:", error);
             } else if (rows.length == 0) {
               console.log("This user has no posts to load in 'myposts' page.");
@@ -521,7 +521,7 @@ io.on('connection', (socket) => {
         connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage, userID, null], (error, rows, field) => {
           if (error) {
             // return error if insertion fail
-            slacklog.log(`Event: Post item ${query}.`, error);
+            slacklog.log(`Event: Post item ${foodItem}.`, error);
             console.log(new Date(Date.now()), "Error inserting" + error);
             console.log(error);
           } else {
@@ -855,7 +855,7 @@ io.on('connection', (socket) => {
                   connection.query(claimerQuery, [claimerUserID], (error, rows, field) => {
                     if (error) {
                       //return error if selection fail
-                      slackcmd.log(`Event: Claim item. ${query}.`, error);
+                      slackcmd.log(`Event: Claim item. ${claimerQuery}.`, error);
                       console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
                     } else {
                       //else return the users information
