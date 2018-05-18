@@ -6,6 +6,10 @@ body {
 
 @media screen and (max-width: 480px) {
 
+  /** Style the positioning of the card list */
+  #card-list {
+    padding-top:12%;
+  }
   .cardContainer {
   background-color: white;
   width: 90%;
