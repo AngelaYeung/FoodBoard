@@ -35,6 +35,13 @@ $(document).ready(function () {
     }, 500);
   });
 
+  // add scrollspy onto body of the page for contact us link
+  $("#contact-us").click(function () {
+    $('html, body').animate({
+      scrollTop: $("#contact").offset().top
+    }, 500);
+  });
+
   // add scrollspy onto body of the page for login link
   $("#about-link").click(function () {
     $('html, body').animate({
