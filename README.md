@@ -11,7 +11,11 @@
 |Angela Yeung | A00942641| [angelayeung](https://github.com/AngelaYeung) | https://www.linkedin.com/in/angela-sy-yeung/ |
 | Michael Yu | A01041867| [michaelmhyu1013](https://github.com/michaelmhyu1013) | https://www.linkedin.com/in/michael-mh-yu/| 
 
-**Completion: 85%**
+**Completion: 90%**
 
 ## Known bugs
-- [ ] email automation does not work
+- [x] email automation does not work
+- [ ] board page is buggy on apple products
+- [ ] does not automatically load cards when no images 
+- [ ] function to handle mysql timeout does not solve the problem
+- [ ] image uploaded from iphone cameras are rotated

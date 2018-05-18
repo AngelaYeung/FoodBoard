@@ -894,7 +894,7 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
   let mailOptions = {
     from: `foodboardcanada@gmail.com`, // sender address
     to: claimerEmail, // list of receivers
-    subject: 'FoodBoard: The food item you claimed is no longer available.', // Subject line
+    subject: 'FoodBoard: The food item you claimed is no longer available', // Subject line
     text: `Hello ${claimerFirstName},
 
   Unfortunately, your neighbor ${ posterFirstName} from Apartment Suite ${posterSuiteNumber} has deleted their posted food item.
