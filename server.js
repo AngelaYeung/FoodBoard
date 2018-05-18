@@ -585,7 +585,7 @@ io.on('connection', (socket) => {
           if (error) {
             console.log(new Date(Date.now()), "Error checking for role of user:", error);
           } else {
-            slacklog.log(`Event: Delete item. ${query}.`, error);
+            slacklog.log(`Event: Delete item. ${checkRole}.`, error);
             console.log("Successfully inquired for poster's information: ", row);
             role = row[0].role;
             posterFirstName = row[0].firstName;
@@ -604,7 +604,7 @@ io.on('connection', (socket) => {
               var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
               connection.query(queryFoodItemTable, [itemID], (error, rows, field) => {
                 if (error) {
-                  slacklog.log(`Event: Delete item. ${query}.`, error);
+                  slacklog.log(`Event: Delete item. ${queryFoodItemTable}.`, error);
                   console.log(new Date(Date.now()), "Error querying from FoodItem Table: ", error);
                 } else {
                   console.log("Successfully obtained food item info from FoodItem Table");
@@ -629,7 +629,7 @@ io.on('connection', (socket) => {
                     var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
                     connection.query(claimerQuery, [claimerUserID], (error, rows, field) => {
                       if (error) {
-                        slacklog.log(`Event: Delete item. ${query}.`, error);
+                        slacklog.log(`Event: Delete item. ${claimerQuery}.`, error);
                         console.log(new Date(Date.now()), "Error checking for role of user:", error);
                       } else {
                         console.log("Successfully inquired for claimer's information.")
@@ -695,7 +695,7 @@ io.on('connection', (socket) => {
         connection.query(setClaimerID, [claimerUserID, itemID], (error, rows, field) => {
           if (error) {
             //return error if update claimerID into failed
-            slacklog.log(`Event: Claim item. ${query}.`, error);
+            slacklog.log(`Event: Claim item. ${setClaimerID}.`, error);
             console.log(new Date(Date.now()), "Error updating claimerID into FoodItem table: ", error);
           } else {
             // else return the updated table
@@ -706,7 +706,7 @@ io.on('connection', (socket) => {
             connection.query(queryFoodItemTable, [itemID], (error, rows, field) => {
               if (error) {
                 //error occured while attempting to query FoodItem Table
-                slacklog.log(`Event: Claim item. ${query}.`, error);
+                slacklog.log(`Event: Claim item. ${queryFoodItemTable}.`, error);
                 console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
               } else {
                 console.log("Successfully obtained Poster's userID from FoodItem Table", rows);
@@ -722,7 +722,7 @@ io.on('connection', (socket) => {
                 connection.query(claimerQuery, [claimerUserID], (error, rows, field) => {
                   if (error) {
                     //return error if selection fail
-                    slacklog.log(`Event: Claim item. ${query}.`, error);
+                    slacklog.log(`Event: Claim item. ${claimerQuery}.`, error);
                     console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
                   } else {
                     //else return the users information
@@ -735,7 +735,7 @@ io.on('connection', (socket) => {
                     connection.query(posterQuery, [posterUserID], (error, rows, field) => {
                       if (error) {
                         //return error if selection fail
-                        slackcmd.log(`Event: Claim item. ${query}.`, error);
+                        slackcmd.log(`Event: Claim item. ${posterQuery}.`, error);
                         console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
                       } else {
                         console.log("Successfully grabbed user of claimed item. ", rows);
@@ -788,7 +788,7 @@ io.on('connection', (socket) => {
           var userInfo = "SELECT * FROM FoodItem WHERE Users_claimerUserID = ?";
           connection.query(userInfo, [claimerUserID], (error, rows, fields) => {
             if (error) {
-              slacklog.log(`Event: My claims. ${query}.`, error);
+              slacklog.log(`Event: My claims. ${userInfo}.`, error);
               console.log(new Date(Date.now()), "Error selecting user's claims in my claims feature:", error);
             } else if (rows.length == 0) {
               console.log("There are no claimed posts");
@@ -833,6 +833,7 @@ io.on('connection', (socket) => {
           var queryForInformation = "SELECT * FROM FoodItem WHERE itemID = ?";
           connection.query(queryForInformation, [postID], (error, rows, field) => {
             if (error) {
+              slacklog.log(`Event: Unclaim item. ${queryForInformation}.`, error);
               console.log(new Date(Date.now()), "Error querying for food item information in unclaim event", error);
             } else {
               console.log("Successfully obtained food item information in unclaim event.");
@@ -845,7 +846,7 @@ io.on('connection', (socket) => {
               var queryUpdateUnclaim = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ${postID}`;
               connection.query(queryUpdateUnclaim, [null], (error, rows, field) => {
                 if (error) {
-                  slacklog.log(`Event: Unclaim item. ${query}.`, error);
+                  slacklog.log(`Event: Unclaim item. ${queryUpdateUnclaim}.`, error);
                   console.log(new Date(Date.now()), "Error changing claim status of food item", error);
                 } else {
                   console.log("Successfully unclaimed food item.");
@@ -867,7 +868,7 @@ io.on('connection', (socket) => {
                       connection.query(posterQuery, [posterUserID], (error, rows, field) => {
                         if (error) {
                           //return error if selection fail
-                          slackcmd.log(`Event: Claim item. ${query}.`, error);
+                          slackcmd.log(`Event: Claim item. ${posterQuery}.`, error);
                           console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
                         } else {
                           console.log("Successfully grabbed user of claimed item. ", rows);
@@ -1211,7 +1212,7 @@ function deleteFoodItem(itemID) {
     if (error) {
 
       // return error if insertion fail
-      slacklog.log(`Event: Delete food item. ${query}.`, error);
+      slacklog.log(`Event: Delete food item. ${deletePost}.`, error);
       console.log("Error occured when attempting to delete post: ", error);
     } else {
       // else return the updated table
