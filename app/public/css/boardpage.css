@@ -19,6 +19,10 @@ body {
     padding-bottom:1%;
   }
 
+  #desktop-navbar {
+    display: none;
+  }
+
   /** Add spacing from navbar to the top of the first card */
 
 
@@ -109,6 +113,7 @@ body {
 @media screen and (min-width: 481px){
   #board {
     display: inline-block;
+    width: 100%;
   }
   .cardContainer {
     background-color: white;
@@ -119,7 +124,20 @@ body {
 
     #card-list {
       width: 400px;
-      margin-top:10%;
+      margin: 0 auto;
+      padding-top: 1%;
+    }
+
+    #desktop-add-button {
+      padding-right:2%;
+      font-size:18pt;
+      float:right;
+      background-color: #4EB266;
+      border-color: #4EB266;
+    }
+
+    .glyphicon-plus {
+      color:white;
     }
 
 }
