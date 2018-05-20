@@ -1,7 +1,6 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  height:870px;
 }
 
 @media screen and (max-width: 480px) {
@@ -13,7 +12,6 @@ body {
   -webkit-box-shadow: 2px 3px 20px grey;
           box-shadow: 2px 3px 20px grey;
   border-radius: 3px;
-
   }
 
   .navbar-foodboard > img {
@@ -113,7 +111,6 @@ body {
     display: inline-block;
   }
   .cardContainer {
-    display: inline-block;
     background-color: white;
     margin: 15px;
     -webkit-box-shadow: 2px 3px 20px grey;
@@ -123,8 +120,8 @@ body {
     #card-list {
       width: 400px;
       margin-top:10%;
-
     }
+
 }
 
 #submit {

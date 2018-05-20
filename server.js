@@ -412,7 +412,7 @@ io.on('connection', (socket) => {
         if (rows.length) {
           // check to see if the user is an admin
           var userID = rows[0].Users_userID;
-          console.log("PAGE HAS BEEN lOADED FIRST QUERY, USERID:", userID, session.sessionID);
+          
           var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
           connection.query(checkRole, [userID], (error, rows, field) => {
             if (error) {
@@ -423,17 +423,19 @@ io.on('connection', (socket) => {
               var role = rows[0].role;
               // load all posts to be filtered later in boardpage.js
               var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
+
               connection.query(allFoodboardItems, (error, rows, fields) => {
                 if (error) {
                   slacklog.log(`Event: Page loaded ${allFoodboardItems}.`, error);
-
                   console.log(new Date(Date.now()), "Error grabbing food items");
+
                 } else if (rows.length == 0) {
                   console.log("Database is empty.");
+                  //TODO generate some kind of user prompt
+
                 } else {
                   console.log("Successfully grabbed food items.");
-                  console.log(rows);
-                  console.log("PAGE HAS BEEN lOADED SECOND QUERY, USERID:", userID, session.sessionID);
+  
                   var sessionID = session.sessionID;
                   /* Sends list of food items to the client to print to browser */
                   socket.emit('load foodboard', {
@@ -459,7 +461,7 @@ io.on('connection', (socket) => {
    *************************************************************************/
   socket.on('my posts', (session) => {
     var query = `SELECT * FROM Sessions WHERE sessionID = '${session.sessionID}' LIMIT 1`;
-    console.log('I AM EMITTING MY POSTS');
+    
     connection.query(query, (error, rows, fields) => {
       if (error) {
         slacklog.log(`Event: My posts ${query}.`, error);
@@ -475,6 +477,7 @@ io.on('connection', (socket) => {
               console.log(new Date(Date.now()), "Error selecting User's posts in 'myposts' feature:", error);
             } else if (rows.length == 0) {
               console.log("This user has no posts to load in 'myposts' page.");
+              //TODO generate some kind of user prompt
             } else {
               console.log("Successfully loading the users posts.");
               socket.emit('load my posts', {
@@ -534,6 +537,16 @@ io.on('connection', (socket) => {
         /* Once image transfer has complete, tell client to create it's card */
         uploader.once('complete', () => {
           console.log('File Transfer Completed...');
+          slacklog.log('Item being posted: ', {
+            sessionID: sessionID,
+            id: itemID,
+            name: foodName,
+            description: foodDescription,
+            dateTime: dateLocalTime,
+            foodgrouping: foodGroup,
+            image: foodImage,
+          });
+          
           io.emit('post item return', {
             sessionID: sessionID,
             id: itemID,
@@ -586,10 +599,10 @@ io.on('connection', (socket) => {
             console.log(new Date(Date.now()), "Error checking for role of user:", error);
           } else {
             slacklog.log(`Event: Delete item. ${checkRole}.`, error);
-            console.log("Successfully inquired for poster's information: ", row);
-            role = row[0].role;
-            posterFirstName = row[0].firstName;
-            posterSuiteNumber = row[0].suiteNumber;
+            console.log("Successfully inquired for poster's information: ", rows);
+            role = rows[0].role;
+            posterFirstName = rows[0].firstName;
+            posterSuiteNumber = rows[0].suiteNumber;
 
             if (role === 0) {
 
@@ -1098,7 +1111,7 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
       // If successful, should print the following to the console:
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-      slacklog.log(`Event: Send Claim Mail ${info}`, '');
+      slacklog.log(`Event: Send Claim Mail ${JSON.stringify(info, undefined, 3)}`, '');
       console.log('Claim message sent: %s', info.messageId);
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }
@@ -1191,7 +1204,7 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      slacklog.log(`Event: Send Unclaim Mail ${info}`, error);
+      slacklog.log(`Event: Send Unclaim Mail ${JSON.stringify(info, undefined, 3)}`, error);
       console.log("Error occured sending unclaim email", error);
     } else {
       // Preview only available when sending through an Ethereal account
@@ -1199,7 +1212,7 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
       // If successful, should print the following to the console:
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-      slacklog.log(`Event: Send Unclaim Mail ${info}`, '');
+      slacklog.log(`Event: Send Unclaim Mail ${JSON.stringify(info, undefined, 3)}`, '');
       console.log('Unclaim message sent: %s', info.messageId);
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     }

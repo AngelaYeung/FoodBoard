@@ -1,9 +1,6 @@
 // needs to be declared as a global variable to be in same scope as claimItem(), deleteItem()
 var socket;
 
-// $(window).on('load', () => {
-//   window.scroll(0, 5);
-// });
 $(document).ready(function () {
   socket = io();
   const uploader = new SocketIOFileUpload(socket);
