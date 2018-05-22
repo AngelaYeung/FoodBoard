@@ -24,13 +24,23 @@
 
 <body>
   {{>acc_navbar}}
-  <div class="container" id="claims">
-    <br>
-    <br>
-    <h3 class='text-center'>My Claims</h3>
-    <div id="card-list">
-
+  <div id="board">
+    <div id="boardpage-background" class="container-fluid">
+      <!-- background image for mobile -->
+      <div id="background-sm" class="container-fluid-custom boardpage-background-sm">
+        <img class="background-small" src="../Pictures/treewoodmobile.jpg" alt="background">
+      </div>
+      <!-- background image for desktop -->
+      <div id="background-lg" class="container-fluid-custom boardpage-background-lg">
+        <img class="background-large" src="../Pictures/treewooddesktop.jpg" alt="background">
+      </div>
     </div>
+    <br>
+    <br>
+    <div id="myclaims" class="text-center ">
+      <img class="img-responsive" src="../Pictures/myclaimswhitetitle.png" alt="myclaims">
+    </div>
+    <div id="card-list-claims" class="list-mobile"></div>
   </div>
 
 </body>

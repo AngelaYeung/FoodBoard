@@ -5,13 +5,63 @@ body {
 
 @media screen and (max-width: 480px) {
 
+  /* Everything to do with the background image */
+  #board {
+    display: inline-block;
+    width: 100%;
+  }
+
+  #boardpage-background {
+    padding: 0;
+  }
+
+  #boardpage-background img {
+    /* -webkit-filter: blur(3px);
+            filter: blur(3px);
+    opacity: 0.9; */
+    height: 100%;
+    z-index: -1;
+    position: fixed;
+  }
+
+  #background-lg {
+    display:none;
+  }
+
+  /* My Claims and My Posts Title */
+  #myposts {
+    width: 30%;
+    margin: 0 auto;
+    padding-top: 40px;
+  }
+
+  #myclaims {
+    width: 35%;
+    margin: 0 auto;
+    padding-top: 40px;
+  }
+
+  /* Everything to do with the cards  */
   .cardContainer {
   background-color: white;
-  width: 90%;
+  width: 80%;
   margin: 20px auto;
-  -webkit-box-shadow: 2px 3px 20px grey;
-          box-shadow: 2px 3px 20px grey;
+  -webkit-box-shadow: 1px 1px 10px grey;
+          box-shadow: 1px 1px 10px grey;
   border-radius: 3px;
+  }
+
+  .list-mobile {
+    padding-top: 0% !important;
+  }
+
+  #card-list {
+    margin: 0 auto;
+    padding-top:5%
+  }
+
+  .additem {
+    display: none;
   }
 
   .navbar-foodboard > img {
@@ -32,6 +82,7 @@ body {
     border-color: #4EB266;
     padding: 0;
     margin-top: -0.7%;
+    
   }
   /* Style the 'add item' button */
   .btn-default:focus{
@@ -111,15 +162,60 @@ body {
 }
 
 @media screen and (min-width: 481px){
+  
+  /* Everything to do with the background image */
   #board {
     display: inline-block;
     width: 100%;
   }
+
+  #boardpage-background {
+    padding: 0;
+  }
+
+  #boardpage-background img {
+    /* -webkit-filter: blur(3px);
+            filter: blur(3px);
+    opacity: 0.9; */
+    width: 100%;
+    z-index: -1;
+    position: fixed;
+  }
+
+  #background-lg {
+    overflow: hidden;
+    background-color: darkslategray;
+  }
+
+  #background-sm {
+    display: none;
+  }
+
+  /* My Claims and My Posts Title */
+  #myposts {
+    width: 30%;
+    margin: 0 auto;
+    padding-top: 40px;
+  }
+
+  #myclaims {
+    width: 35%;
+    margin: 0 auto;
+    padding-top: 40px;
+  }
+
+  /* Everything to do with the cards  */
   .cardContainer {
     background-color: white;
     margin: 15px;
-    -webkit-box-shadow: 2px 3px 20px grey;
-            box-shadow: 2px 3px 20px grey;
+    -webkit-box-shadow: 1px 1px 10px grey;
+            box-shadow: 1px 1px 10px grey;
+    }
+
+    #card-list-board {
+      width: 400px;
+      margin: 0 auto;
+      padding-top: 1%; 
     }
 
     #card-list {
@@ -128,18 +224,27 @@ body {
       padding-top: 1%;
     }
 
-    #desktop-add-button {
+    /* Add item button  */
+    /* #desktop-add-button {
       padding-right:2%;
       font-size:18pt;
       float:right;
       background-color: #4EB266;
       border-color: #4EB266;
-    }
+      display: none;
+    } */
 
     .glyphicon-plus {
       color:white;
     }
 
+    .additem {
+      position: fixed;
+      right: 5px;
+      bottom: 5px;
+      -webkit-box-shadow: none !important;
+      box-shadow: none !important;
+    }
 }
 
 #submit {

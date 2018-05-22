@@ -421,6 +421,9 @@ io.on('connection', (socket) => {
               console.log(new Date(Date.now()), "Error checking for role of user:", error);
             } else {
               var role = rows[0].role;
+
+              // deletes all expired food items before selecting from the fooditem table
+              deleteExpiredFoodItem();
               // load all posts to be filtered later in boardpage.js
               var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
 
@@ -1224,15 +1227,33 @@ function deleteFoodItem(itemID) {
   connection.query(deletePost, [itemID], (error, rows, field) => {
     if (error) {
 
-      // return error if insertion fail
+      // return error if deletion fail
       slacklog.log(`Event: Delete food item. ${deletePost}.`, error);
       console.log("Error occured when attempting to delete post: ", error);
     } else {
-      // else return the updated table
+      // else console.log deletion message
       console.log("Successful deletion of claimed food item.");
     }
   });
 };
+
+function deleteExpiredFoodItem() {
+  console.log("LOAD FUNCTION: THE CURRENT TIME NOW IS:", new Date(Date.now()));
+  deleteExpiredItems = "DELETE FROM FoodItem WHERE foodExpiryTime < ?";
+  connection.query(deleteExpiredItems, [new Date(Date.now())], (error, rows, field) => {
+    console.log("CHANGED ROWS: ", rows.changedRows);
+    if (error) {
+      // return error if deletion fail
+      slacklog.log(`Event: Delete expired food items. ${deleteExpiredItems}.`, error);
+      console.log(new Date(Date.now()), "Error occured when attempting to delete expired food items: ", error);
+    } else if (rows.changedRows == 0) {
+      console.log("There are no expired food items to delete at this time: ", new Date(Date.now()));
+    } else {
+      // else console.log deletion message
+      console.log("Successful deletion of expired food items.");
+    }
+  });
+}
 
 
 
