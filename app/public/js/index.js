@@ -8,7 +8,7 @@ document.onreadystatechange = function () {
   if ($(window).width() <= 900) {
     $('#homepage-body').css('transform', `translate(0%, -${sum2}%)`);
   } else {
-    $('#homepage-body').css('transform', `translate(0%, -${sum2/1.75}%)`);
+    $('#homepage-body').css('transform', `translate(0%, -${sum2 / 1.75}%)`);
   }
 }
 
@@ -113,31 +113,9 @@ $(document).ready(function () {
     }
   });
 
-
-  // //Change password field red if password is incorrect
-  // $("#register_pwd_confirm").on('change', (e) => {
-  //   e.preventDefault();
-  //   if (validatePassword()) {
-  //     document.getElementById("register_pwd").style.borderColor = '#4EB266';
-  //     document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
-  //   } else {
-  //     document.getElementById("register_pwd").style.borderColor = "#E34234";
-  //     document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
-  //   }
-  // });
-
-  // //Change password field red if password is incorrect
-  // $("#register_pwd").on('change', (e) => {
-  //   e.preventDefault();
-  //   if (validatePassword()) {
-  //     document.getElementById("register_pwd").style.borderColor = '#4EB266';
-  //     document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
-  //   } else {
-  //     document.getElementById("register_pwd").style.borderColor = "#E34234";
-  //     document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
-  //   }
-  // });
-
+  $('#logreg-modal').on('shown.bs.modal', function () {
+    $('#log-first-field, #reg-first-field').focus();
+  });
 });
 
 
@@ -162,6 +140,7 @@ function validatePassword() {
     return true;
   }
 }
+
 
 //closes modal when clicking back button
 function handleBackpress(e) {

@@ -197,7 +197,7 @@ $(document).ready(function () {
       console.log('userID: ', userID);
       console.log('role', typeof role);
       console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
-      console.log("ROLE: ", role );
+      console.log("ROLE: ", role);
       if (role == 0) {
         if (rows[i].Users_userID == userID) {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
@@ -324,6 +324,7 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
         <img class="food-img" src="${setPostImage(foodGroup, img)}">
+        <p id="status${id}" class="status-text" style="display:none;"></p>
     </div>
     <div class="header-Div">
         <div class="row">
@@ -348,7 +349,7 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
             <p></p>
         </div>
     </div>`);
-}
+};
 
 /**
  * Creates Card from FoodItem Table without a 'Delete' Button.
@@ -364,6 +365,7 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
         <img class="food-img" src="${setPostImage(foodGroup, img)}">
+        <p id="status${id}" class="status-text" style="display:none;"></p>
     </div>
     <div class="header-Div">
         <div class="row">
@@ -388,7 +390,7 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
             <p></p>
         </div>
     </div>`);
-}
+};
 /**
  * Creates Card from FoodItem Table without a 'Claim' Button.
  * @param {*} id 
@@ -403,6 +405,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
         <img class="food-img" src="${setPostImage(foodGroup, img)}">
+        <p id="status${id}" class="status-text" style="display:none;"></p>
     </div>
     <div class="header-Div">
         <div class="row">
@@ -422,7 +425,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
             <p>${description}</p>
             <form class="claim-form"
                 action="javascript:void(0);">
-                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteItem(this.id)">
+                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteRoadBlock(this.id)">
             </form>
             <p></p>
         </div>
@@ -442,15 +445,51 @@ function deleteItem(itemID) {
  * @param {*} id 
  */
 function itemDeleted(id) {
-  $(`#card${id}`).remove();
-}
+  $(`#confirmDeleteModal`).modal('hide');
+  $(`#status${id}`).text("DELETED");
+  $(`#status${id}`).css("transform", "rotate(-25deg) translate(50%, -170%)");
 
+  $(`#status${id}`).fadeIn("300", () => {
+    $(`#card${id}`).fadeOut("500", () => {
+      $(`#card${id}`).remove();
+    });
+  });
+};
+
+function deleteRoadBlock(id) {
+  var modalHtml = `<div id="confirmDeleteModal" class="modal fade">
+	<div class="modal-dialog modal-confirm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Are you sure?</h4>	
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			</div>
+			<div class="modal-body">
+				<p>Do you really want to delete this post? This process cannot be undone.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-danger" onclick="deleteItem(${id})">Delete</button>
+			</div>
+		</div>
+	</div>`
+$(`#card${id}`).prepend(modalHtml);
+
+$(`#confirmDeleteModal`).modal('show');
+}
 /**
  * Removes the claimed items from the board.
  * @param {number} id 
  */
 function itemClaimed(id) {
-  $(`#card${id}`).remove();
+  $(`#status${id}`).text("CLAIMED");
+  $(`#status${id}`).css("transform", "rotate(-25deg) translate(50%, -170%)");
+
+  $(`#status${id}`).fadeIn("300", () => {
+    $(`#card${id}`).fadeOut("500", () => {
+      $(`#card${id}`).remove();
+    });
+  });
 };
 
 /**
@@ -495,6 +534,8 @@ function setPostImage(foodCategory, imgName) {
     }
   }
 }
+
+
 //#endregion create card functions
 
 
