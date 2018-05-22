@@ -1,6 +1,17 @@
 const dbconfig = require('./dbconfig.js');
 const mysql = require('mysql');
 
+
+var pool = mysql.createPool({
+    host        : "localhost",
+    user        : "root",
+    password    : "",
+    database    : "Foodboard",
+    connectionLimit: 10,
+});
+
+
+
 /**
  * Handles mysql database disconnection.
  * 
@@ -9,7 +20,7 @@ const mysql = require('mysql');
 function handleDisconnect() {
 
 
-    var connection = mysql.createConnection(dbconfig); // Recreate the connection, since
+    connection = mysql.createConnection(dbconfig); // Recreate the connection, since
     // the old one cannot be reused.
 
     connection.connect(function (err) { // The server is either down
@@ -34,5 +45,5 @@ function handleDisconnect() {
 
 
 module.exports = {
-    handleDisconnect: handleDisconnect,
+    pool: pool,
 };
