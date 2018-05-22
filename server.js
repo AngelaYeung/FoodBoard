@@ -1081,15 +1081,15 @@ io.on('connection', (socket) => {
 function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, foodDescription, foodExpiryTime, foodImage, posterFirstName, posterSuiteNumber) {
 
   const transporter = nodemailer.createTransport({
-    //service: 'gmail', 
-    service: 'smtp.ethereal.email',
+    service: 'gmail', 
+    // service: 'smtp.ethereal.email',
     // port: 587,
     // secure: false, // true for 465, false for other ports
     auth: {
-      //user: 'foodboardcanada@gmail.com',
-      user: 'de5kzppbkaumnfhu@ethereal.email',
-      //pass: 'darkthemesonly' 
-      pass: 'wNmg25t9fqKXZ8wVUF'
+      user: 'foodboardcanada@gmail.com',
+      // user: 'de5kzppbkaumnfhu@ethereal.email',
+      pass: 'darkthemesonly' 
+      // pass: 'wNmg25t9fqKXZ8wVUF'
     },
     tls: {
       rejectUnauthorized: false
@@ -1182,15 +1182,15 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
 function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerEmail, claimerFirstName, claimerSuiteNumber) {
 
   const transporter = nodemailer.createTransport({
-    //service: 'gmail', 
-    service: 'smtp.ethereal.email',
+    service: 'gmail', 
+    // service: 'smtp.ethereal.email',
     // port: 587,
     // secure: false, // true for 465, false for other ports
     auth: {
-      //user: 'foodboardcanada@gmail.com',
-      user: 'de5kzppbkaumnfhu@ethereal.email',
-      //pass: 'darkthemesonly' 
-      pass: 'wNmg25t9fqKXZ8wVUF'
+      user: 'foodboardcanada@gmail.com',
+      // user: 'de5kzppbkaumnfhu@ethereal.email',
+      pass: 'darkthemesonly' 
+      // pass: 'wNmg25t9fqKXZ8wVUF'
     },
     tls: {
       rejectUnauthorized: false
@@ -1287,15 +1287,15 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
 function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber) {
 
   const transporter = nodemailer.createTransport({
-   //service: 'gmail', 
-   service: 'smtp.ethereal.email',
+   service: 'gmail', 
+  //  service: 'smtp.ethereal.email',
    // port: 587,
    // secure: false, // true for 465, false for other ports
    auth: {
-     //user: 'foodboardcanada@gmail.com',
-     user: 'de5kzppbkaumnfhu@ethereal.email',
-     //pass: 'darkthemesonly' 
-     pass: 'wNmg25t9fqKXZ8wVUF'
+     user: 'foodboardcanada@gmail.com',
+    //  user: 'de5kzppbkaumnfhu@ethereal.email',
+     pass: 'darkthemesonly' 
+    //  pass: 'wNmg25t9fqKXZ8wVUF'
     },
     tls: {
       rejectUnauthorized: false
