@@ -658,8 +658,6 @@ io.on('connection', (socket) => {
             connection.release();
           }
         });
-      }
-    });
 
   });
 
