@@ -59,6 +59,7 @@ function getSessions(req, res) {
       let query = 'SELECT * from Sessions';
       connection.query(query, (error, rows, fields) => {
         if (error) {
+
           slacklog.log('Error: Slack Command - getSessions()', sessions);
           console.log('Error', new Date(Date.now()), error);
           connection.release();
