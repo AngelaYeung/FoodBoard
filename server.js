@@ -603,7 +603,7 @@ io.on('connection', (socket) => {
             console.log(new Date(Date.now()), "Error selecting sessionID in post feature", error);
             connection.release();
           } else if (rows.length) {
-    
+
             let foodName = item.name;
             let foodDescription = item.description;
             let foodGroup = item.foodgrouping;
@@ -612,7 +612,7 @@ io.on('connection', (socket) => {
             let itemID;
             let sessionID = item.sessionID;
             userID = rows[0].Users_userID;
-    
+
             /** Inserts data into database */
             var foodItem = "INSERT INTO FoodItem (foodName, foodDescription, foodGroup,  foodExpiryTime, foodImage, Users_userID, Users_claimerUserID) VALUES (?, ?, ?, ?, ?, ?, ?)";
             connection.query(foodItem, [foodName, foodDescription, foodGroup, dateLocalTime, foodImage, userID, null], (error, rows, field) => {
@@ -628,7 +628,7 @@ io.on('connection', (socket) => {
               }
               connection.release();
             });
-    
+
             /* Once image transfer has complete, tell client to create it's card */
             uploader.once('complete', () => {
               console.log('File Transfer Completed...');
@@ -641,7 +641,7 @@ io.on('connection', (socket) => {
                 foodgrouping: foodGroup,
                 image: foodImage,
               });
-    
+
               io.emit('post item return', {
                 sessionID: sessionID,
                 id: itemID,
@@ -658,7 +658,8 @@ io.on('connection', (socket) => {
             connection.release();
           }
         });
-
+      }
+    });
   });
 
 
@@ -668,7 +669,7 @@ io.on('connection', (socket) => {
    * 
    *************************************************************************/
   socket.on('delete item', (deletion) => {
-    
+
     mysqlconnection.pool.getConnection((error, connection) => {
 
       if (error) {
@@ -679,12 +680,12 @@ io.on('connection', (socket) => {
         //Declaring variables needed to generate automated delete email
         let sessionID = deletion.sessionID;
         let itemID = deletion.id;
-    
+
         let role
         let posterUserID, posterFirstName, posterSuiteNumber;
         let foodName, foodDescription, foodExpiryTime, foodImage;
         let claimerUserID, claimerEmail, claimerFirstName;
-    
+
         // first check if the person deleting the post is currently in a session
         var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
         connection.query(query, [sessionID], (error, rows, fields) => {
@@ -693,9 +694,9 @@ io.on('connection', (socket) => {
             console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
             connection.release();
           } else if (rows.length) {
-    
+
             let posterUserID = rows[0].Users_userID;
-    
+
             // check to see if the user is an admin or poaster, no email is sent if a post is deleted by an admin
             var checkRole = "SELECT * FROM users WHERE userID = ? LIMIT 1";
             connection.query(checkRole, [posterUserID], (error, rows, field) => {
@@ -708,15 +709,15 @@ io.on('connection', (socket) => {
                 role = rows[0].role;
                 posterFirstName = rows[0].firstName;
                 posterSuiteNumber = rows[0].suiteNumber;
-    
+
                 if (role === 0) {
-    
+
                   // user is an admin, simply delete the post from all tables no email necessary
                   deleteFoodItem(itemID);
-    
+
                   io.emit('delete return', (itemID));
                 } else {
-    
+
                   // user is the poster of the food item
                   // next query for the food item information as well as the claimerID if there is one.
                   var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
@@ -732,17 +733,17 @@ io.on('connection', (socket) => {
                       foodExpiryTime = rows[0].foodExpiryTime;
                       foodImage = rows[0].foodImage;
                       claimerUserID = rows[0].Users_claimerUserID;
-    
+
                       // item can now be deleted from fooditem table, we have all relevant information
                       deleteFoodItem(itemID);
-    
+
                       if (!claimerUserID) {
                         console.log("TEST DELETE: claimerUSERID doesnt exist!");
                         //posted food item has not been claimed by anyone, no email necessary
                         io.emit('delete return', (itemID));
                         connection.release();
                       } else {
-    
+
                         // posted food item has been claimed
                         // query for claimer's information so we can send an automated email
                         var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
@@ -755,12 +756,12 @@ io.on('connection', (socket) => {
                             claimerEmail = rows[0].email;
                             claimerFirstName = rows[0].firstName;
                             claimerSuiteNumber = rows[0].suiteNumber;
-    
+
                             // sends an email to the claimer of the post 
                             sendDeleteEmailToClaimer(claimerEmail, claimerFirstName,
                               foodName, foodDescription, foodExpiryTime, foodImage,
                               posterFirstName, posterSuiteNumber);
-    
+
                             io.emit('delete return', (itemID));
                           }
                           connection.release();
@@ -780,7 +781,7 @@ io.on('connection', (socket) => {
         });
       }
     });
-    
+
 
   });
 
@@ -793,7 +794,7 @@ io.on('connection', (socket) => {
 
 
   socket.on('claim item', (claim) => {
-    
+
     mysqlconnection.pool.getConnection((error, connection) => {
 
       if (error) {
@@ -804,12 +805,12 @@ io.on('connection', (socket) => {
         //Declaring variables needed to generate automated claim email
         let sessionID = claim.sessionID;
         let itemID = claim.id;
-    
+
         let role
         let posterUserID, posterEmail, posterFirstName;
         let foodName, foodDescription, foodExpiryTime, foodImage;
         let claimerUserID, claimerEmail, claimerFirstName, claimerSuiteNumber;
-    
+
         var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
         connection.query(query, [sessionID], (error, rows, fields) => {
           if (error) {
@@ -817,10 +818,10 @@ io.on('connection', (socket) => {
             console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
             connection.release();
           } else if (rows.length) {
-    
+
             claimerUserID = rows[0].Users_userID; // ID of the user in the session
             console.log("CLAIMERUSERID:", claimerUserID);
-    
+
             var setClaimerID = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ?`;
             connection.query(setClaimerID, [claimerUserID, itemID], (error, rows, field) => {
               if (error) {
@@ -832,7 +833,7 @@ io.on('connection', (socket) => {
                 // else return the updated table
                 console.log("Successfully updated claimerID into FoodItem table.");
                 console.log("PRINTING THE UPDATED FIELD OF FOODITEM TABLE WITH CLAIMER ID:", rows);
-    
+
                 var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
                 connection.query(queryFoodItemTable, [itemID], (error, rows, field) => {
                   if (error) {
@@ -849,7 +850,7 @@ io.on('connection', (socket) => {
                     foodImage = rows[0].foodImage;
                     console.log("THIS IS THE POSTER USER ID:", posterUserID);
                     console.log("THIS IS THE CLAIMER USER ID:", claimerUserID);
-    
+
                     var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
                     connection.query(claimerQuery, [claimerUserID], (error, rows, field) => {
                       if (error) {
@@ -863,7 +864,7 @@ io.on('connection', (socket) => {
                         claimerFirstName = rows[0].firstName;
                         claimerEmail = rows[0].email;
                         claimerSuiteNumber = rows[0].suiteNumber;
-    
+
                         var posterQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
                         connection.query(posterQuery, [posterUserID], (error, rows, field) => {
                           if (error) {
@@ -875,18 +876,18 @@ io.on('connection', (socket) => {
                             console.log("Successfully grabbed user of claimed item. ", rows);
                             posterFirstName = rows[0].firstName;
                             posterEmail = rows[0].email;
-    
+
                             console.log("CLAIMERS FIRST NAME: ", claimerFirstName);
                             console.log("POSTERS FIRST NAME: ", posterFirstName);
                             console.log("CLAIMER SUITE NUMBER: ", claimerSuiteNumber);
                             console.log("CLAIMERUSERID:", claimerUserID);
                             console.log("POSTER EMAIL", posterEmail);
                             console.log("CLAIMER EMAIL", claimerEmail);
-    
+
                             sendClaimEmailToPoster(posterEmail, posterFirstName,
                               foodName, foodDescription, foodExpiryTime, foodImage,
                               claimerEmail, claimerFirstName, claimerSuiteNumber);
-    
+
                             console.log(itemID);
                             io.emit('claim return', (itemID));
                           }
@@ -910,7 +911,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on("my claims", (claim) => {
-    
+
     let sessionID = claim.sessionID;
     let claimerUserID;
 
@@ -930,7 +931,7 @@ io.on('connection', (socket) => {
           } else {
             if (rows.length) {
               claimerUserID = rows[0].Users_userID;
-    
+
               var userInfo = "SELECT * FROM FoodItem WHERE Users_claimerUserID = ?";
               connection.query(userInfo, [claimerUserID], (error, rows, fields) => {
                 if (error) {
@@ -988,9 +989,9 @@ io.on('connection', (socket) => {
           } else {
             console.log("User is logged in and can unclaim the fooditem.");
             if (rows.length) {
-    
+
               claimerUserID = rows[0].Users_userID;
-    
+
               var queryForInformation = "SELECT * FROM FoodItem WHERE itemID = ?";
               connection.query(queryForInformation, [postID], (error, rows, field) => {
                 if (error) {
@@ -1004,7 +1005,7 @@ io.on('connection', (socket) => {
                   foodExpiryTime = rows[0].foodExpiryTime;
                   foodImage = rows[0].foodImage;
                   posterUserID = rows[0].Users_userID;
-    
+
                   var queryUpdateUnclaim = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ${postID}`;
                   connection.query(queryUpdateUnclaim, [null], (error, rows, field) => {
                     if (error) {
@@ -1013,7 +1014,7 @@ io.on('connection', (socket) => {
                       connection.release();
                     } else {
                       console.log("Successfully unclaimed food item.");
-    
+
                       var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
                       connection.query(claimerQuery, [claimerUserID], (error, rows, field) => {
                         if (error) {
@@ -1027,7 +1028,7 @@ io.on('connection', (socket) => {
                           claimerFirstName = rows[0].firstName;
                           claimerEmail = rows[0].email;
                           claimerSuiteNumber = rows[0].suiteNumber;
-    
+
                           var posterQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
                           connection.query(posterQuery, [posterUserID], (error, rows, field) => {
                             if (error) {
@@ -1039,14 +1040,14 @@ io.on('connection', (socket) => {
                               console.log("Successfully grabbed user of claimed item. ", rows);
                               posterFirstName = rows[0].firstName;
                               posterEmail = rows[0].email;
-    
+
                               console.log("CLAIMERS FIRST NAME: ", claimerFirstName);
                               console.log("POSTERS FIRST NAME: ", posterFirstName);
                               console.log("CLAIMER SUITE NUMBER: ", claimerSuiteNumber);
                               console.log("CLAIMERUSERID:", claimerUserID);
                               console.log("POSTER EMAIL", posterEmail);
                               console.log("CLAIMER EMAIL", claimerEmail);
-    
+
                               // Send email to poster that their food item has been unclaimed.
                               sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber);
                               socket.emit('unclaim item return', {
@@ -1068,9 +1069,9 @@ io.on('connection', (socket) => {
         });
       }
     });
-    
   });
 });
+
 
 /*************************************************************************
  * 
@@ -1390,7 +1391,7 @@ function deleteFoodItem(itemID) {
 
       connection.query(deletePost, [itemID], (error, rows, field) => {
         if (error) {
-    
+
           // return error if insertion fail
           slacklog.log(`Event: Delete food item. ${deletePost}.`, error);
           console.log("Error occured when attempting to delete post: ", error);
