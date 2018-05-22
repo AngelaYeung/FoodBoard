@@ -97,25 +97,19 @@ $(document).ready(function () {
     });
   });
 
-  //Change password field red if password is incorrect
-  $("#register_pwd_confirm").on('change', (e) => {
+  $("#register_pwd_confirm, #register_pwd").on('change', (e) => {
     if (validatePassword()) {
-      document.getElementById("register_pwd").style.borderColor = '#4EB266';
-      document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
+      $("#register_pwd").css("border", "2px solid #4EB266");
+      $("#register_pwd_confirm").css("border", "2px solid #4EB266");
+      $('.invalid-feedback').hide();
+      $('#register-submit').removeClass('disabled');
+      $('#register-submit').removeAttr('disabled')
     } else {
-      document.getElementById("register_pwd").style.borderColor = "#E34234";
-      document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
-    }
-  });
-  //Change password field red if password is incorrect
-  $("#register_pwd").on('change', (e) => {
-    e.preventDefault();
-    if (validatePassword()) {
-      document.getElementById("register_pwd").style.borderColor = '#4EB266';
-      document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
-    } else {
-      document.getElementById("register_pwd").style.borderColor = "#E34234";
-      document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
+      $("#register_pwd").css("border", "2px solid #E34234");
+      $("#register_pwd_confirm").css("border", "2px solid #E34234");
+      $('.invalid-feedback').show();
+      $('#register-submit').addClass('disabled');
+      $('#register-submit').attr('disabled', 'disabled');
     }
   });
 
@@ -123,6 +117,19 @@ $(document).ready(function () {
     $('#log-first-field, #reg-first-field').focus();
   });
 });
+
+
+$("#newPW,#confirmPW").on('change', (e) => {
+  if (validatePassword()) {
+    $("#confirmPW").css("border", "2px solid #4EB266");
+    $("#newPW").css("border", "2px solid #4EB266");
+  } else {
+    $("#confirmPW").css("border", "2px solid #E34234");
+    $("#newPW").css("border", "2px solid #E34234");
+  }
+});
+
+
 
 
 //validate the password

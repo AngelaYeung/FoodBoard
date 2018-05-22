@@ -67,22 +67,22 @@
           <!-- Modal Body-->
           <div class="modal-body">
             <!--Sets up the form when the modal is opened-->
-            <form id="postForm" class="needs-validation" action="javascript:void(0);" novalidate>
+            <form id="postForm" class="needs-validation" action="javascript:void(0);" >
 
               <div class="form-group">
-                <input id="name" type="text" class="form-control" placeholder="Enter food name" name="name" required="required">
+                <input id="name" type="text" class="form-control" placeholder="Enter food name" name="name" required>
               </div>
 
-              <div class="form-group">
+              <div class="form-group"> 
                 <input id="description" type="text" class="form-control" placeholder="Enter time of availablility and meet-up location. Eg. 7PM at lobby."
-                  name="description" required="required">
+                  name="description" required>
               </div>
 
               <div class="form-group date">
                   <label>
                     Expiry Date:
                   </label>
-                  <input id="datetimepicker" class="form-control" type="datetime-local" required="required">
+                  <input id="datetimepicker" class="form-control" type="datetime-local" required>
                   <div class='invalid-feedback'> Please enter a valid future date and time. </div >
               </div>
 
