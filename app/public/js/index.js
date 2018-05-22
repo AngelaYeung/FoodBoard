@@ -1,14 +1,14 @@
-document.onreadystatechange = function() {
+document.onreadystatechange = function () {
   var screenHeight = $(window).outerHeight();
   var navbarHeight = $('.navbar-brand-sm').outerHeight();
   var sum = screenHeight + navbarHeight;
   $('#background-sm img, background-lg img').css('height', `${sum}`);
 
-  var sum2 = screenHeight/2;
+  var sum2 = screenHeight / 2;
   if ($(window).width() <= 900) {
     $('#homepage-body').css('transform', `translate(0%, -${sum2}%)`);
   } else {
-    $('#homepage-body').css('transform', `translate(0%, -${sum2/1.75}%)`);
+    $('#homepage-body').css('transform', `translate(0%, -${sum2 / 1.75}%)`);
   }
 }
 
@@ -119,8 +119,10 @@ $(document).ready(function () {
     }
   });
 
+  $('#logreg-modal').on('shown.bs.modal', function () {
+    $('#log-first-field, #reg-first-field').focus();
+  });
 });
-
 
 
 //validate the password
@@ -131,6 +133,7 @@ function validatePassword() {
     return true;
   }
 }
+
 
 //closes modal when clicking back button
 function handleBackpress(e) {
