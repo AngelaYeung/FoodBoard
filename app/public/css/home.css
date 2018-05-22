@@ -363,3 +363,9 @@ body {
   -webkit-box-shadow:none;
           box-shadow:none;
 }
+
+.invalid-feedback {
+  display: none;
+  text-align: center;
+  color: red;
+}

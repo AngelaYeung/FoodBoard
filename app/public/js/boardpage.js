@@ -254,47 +254,22 @@ $(document).ready(function () {
     itemClaimed(itemID);
   });
 
-  /************************************************
-  * 
-  *              SEARCH FEATURE
-  * 
-  *************************************************/
-  //#region search feature
+  
 
-  /**
-   * Handles search bar clear button toggle
-   */
-  // $('#search-bar').on('keyup', (event) => {
-  //   console.log('searchbar');
-  //   if ($('#search-bar').val() !== '') {
-  //     $('#search-bar-btn-reset').show();
-  //   } else {
-  //     $('#search-bar-btn-reset').hide();
-  //   }
-  // });
-
-  // $('#search-bar-btn-reset').on('click', () => {
-  //   $('#search-bar-btn-reset').hide();
-  // });
-
-  // $(window).on('scroll', () => {
-  //   if ($(window).scrollTop() < 2) {
-  //     $('#search-bar-container').slideDown(150);
-  //     $('#card-list').animate({ 'margin-top': '2%', 'padding-top': '0%' }, 25, 'linear');
-  //     $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
-
-  //   } else {
-  //     $('#search-bar-container').slideUp(150);
-  //     $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
-  //     $('#card-list').animate({ 'margin-top': '10%', 'padding-top': '2%' }, 25, 'linear');
-  //   }
-  // });
-
-  // $('#search-bar-form').on('submit', (event) => {
-  //   event.preventDefault();
-  // });
 });
 //#endregion search feature
+
+/**
+ * Returns true if the add item form is filled
+ */
+function isFormFilled() {
+  return (
+    !($("#name").val().length             === 0) &&
+    !($("#description").val().length      === 0) &&
+    !($("#datetimepicker").val().length   === 0) &&
+    !($('#fileinput').get(0).files.length === 0));
+
+}
 
 /**
  * Gets the session id. 
