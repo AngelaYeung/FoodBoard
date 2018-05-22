@@ -1,10 +1,10 @@
-document.onreadystatechange = function() {
+document.onreadystatechange = function () {
   var screenHeight = $(window).outerHeight();
   var navbarHeight = $('.navbar-brand-sm').outerHeight();
   var sum = screenHeight + navbarHeight;
   $('#background-sm img, background-lg img').css('height', `${sum}`);
 
-  var sum2 = screenHeight/2;
+  var sum2 = screenHeight / 2;
   if ($(window).width() <= 900) {
     $('#homepage-body').css('transform', `translate(0%, -${sum2}%)`);
   } else {
@@ -97,29 +97,60 @@ $(document).ready(function () {
     });
   });
 
-  //Change password field red if password is incorrect
-  $("#register_pwd_confirm").on('change', (e) => {
+  $("#register_pwd_confirm, #register_pwd").on('change', (e) => {
     if (validatePassword()) {
-      document.getElementById("register_pwd").style.borderColor = '#4EB266';
-      document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
+      $("#register_pwd").css("border", "2px solid #4EB266");
+      $("#register_pwd_confirm").css("border", "2px solid #4EB266");
+      $('.invalid-feedback').hide();
+      $('#register-submit').removeClass('disabled');
+      $('#register-submit').removeAttr('disabled')
     } else {
-      document.getElementById("register_pwd").style.borderColor = "#E34234";
-      document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
-    }
-  });
-  //Change password field red if password is incorrect
-  $("#register_pwd").on('change', (e) => {
-    e.preventDefault();
-    if (validatePassword()) {
-      document.getElementById("register_pwd").style.borderColor = '#4EB266';
-      document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
-    } else {
-      document.getElementById("register_pwd").style.borderColor = "#E34234";
-      document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
+      $("#register_pwd").css("border", "2px solid #E34234");
+      $("#register_pwd_confirm").css("border", "2px solid #E34234");
+      $('.invalid-feedback').show();
+      $('#register-submit').addClass('disabled');
+      $('#register-submit').attr('disabled', 'disabled');
     }
   });
 
+
+  // //Change password field red if password is incorrect
+  // $("#register_pwd_confirm").on('change', (e) => {
+  //   e.preventDefault();
+  //   if (validatePassword()) {
+  //     document.getElementById("register_pwd").style.borderColor = '#4EB266';
+  //     document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
+  //   } else {
+  //     document.getElementById("register_pwd").style.borderColor = "#E34234";
+  //     document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
+  //   }
+  // });
+
+  // //Change password field red if password is incorrect
+  // $("#register_pwd").on('change', (e) => {
+  //   e.preventDefault();
+  //   if (validatePassword()) {
+  //     document.getElementById("register_pwd").style.borderColor = '#4EB266';
+  //     document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
+  //   } else {
+  //     document.getElementById("register_pwd").style.borderColor = "#E34234";
+  //     document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
+  //   }
+  // });
+
 });
+
+
+$("#newPW,#confirmPW").on('change', (e) => {
+  if (validatePassword()) {
+    $("#confirmPW").css("border", "2px solid #4EB266");
+    $("#newPW").css("border", "2px solid #4EB266");
+  } else {
+    $("#confirmPW").css("border", "2px solid #E34234");
+    $("#newPW").css("border", "2px solid #E34234");
+  }
+});
+
 
 
 
