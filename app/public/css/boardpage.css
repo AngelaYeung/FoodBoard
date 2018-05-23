@@ -349,6 +349,10 @@ a#color-change {
 .claim-form {
   width:100%;
   }
+
+#claims {
+  padding: 0%;
+}
 .collapse{
   padding-left:0%;
   padding-right:0%;
