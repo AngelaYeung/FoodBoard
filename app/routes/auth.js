@@ -68,49 +68,42 @@ var validate = (app, passport) => {
    *************************************************************************/
   app.get('/account', isLoggedIn, (req, res) => {
 
-    mysqlconnection.pool.getConnection( (error, connection) => {
-      if (error) {
-        
-      } else {
 
-        var query = `SELECT * FROM Sessions WHERE sessionID = '${req.sessionID}' LIMIT 1`;
-    
-        connection.query(query, (error, rows, fields) => {
-          if (error) {
-            console.log(new Date(Date.now()), "Error selecting userID from accounts:", error);
-            connection.release();
-          } else {
-            if (rows.length) {
-              console.log("THIS IS THE COMPLETE SESION RETURNED:", rows);
-              var userID = rows[0].Users_userID;
-              console.log("USERID FOR MYACCOUNT:", userID);
-              //Query for user info for current user
-              var userInfo = "SELECT * FROM users WHERE userID = ?";
-              connection.query(userInfo, [userID], (error, result, field) => {
-                if (error) {
-                  console.log("error");
-                  
-                } else {
-                  console.log("successful");
-                  var name = result[0].firstName + " " + result[0].lastName;
-                  var email = result[0].email;
-                  var suiteNum = result[0].suiteNumber;
-    
-                  res.render('account', {
-                    name: name,
-                    email: email,
-                    suiteNum: suiteNum,
-                  });
-                }
-                connection.release();
-              });
+    var query = `SELECT * FROM Sessions WHERE sessionID = '${req.sessionID}' LIMIT 1`;
+
+    mysqlconnection.pool.query(query, (error, rows, fields) => {
+      if (error) {
+        console.log(new Date(Date.now()), "Error selecting userID from accounts:", error);
+
+      } else {
+        if (rows.length) {
+          console.log("THIS IS THE COMPLETE SESION RETURNED:", rows);
+          var userID = rows[0].Users_userID;
+          console.log("USERID FOR MYACCOUNT:", userID);
+          //Query for user info for current user
+          var userInfo = "SELECT * FROM users WHERE userID = ?";
+          mysqlconnection.pool.query(userInfo, [userID], (error, result, field) => {
+            if (error) {
+              console.log("error");
+
             } else {
-              connection.release();
+              console.log("successful");
+              var name = result[0].firstName + " " + result[0].lastName;
+              var email = result[0].email;
+              var suiteNum = result[0].suiteNumber;
+
+              res.render('account', {
+                name: name,
+                email: email,
+                suiteNum: suiteNum,
+              });
             }
-          }
-        });
+
+          });
+        }
       }
     });
+
 
   });
 
@@ -125,18 +118,13 @@ var validate = (app, passport) => {
 
 function insertSessionDB(sessionID, userID) {
 
-  mysqlconnection.pool.getConnection((error, connection) => {
+
+  mysqlconnection.pool.query("INSERT INTO Sessions(sessionID, Users_userID) VALUES (?,?)", [sessionID, userID], (error, rows, fields) => {
     if (error) {
-      console.log('InsertSessionDb', error);
-    } else {
-      connection.query("INSERT INTO Sessions(sessionID, Users_userID) VALUES (?,?)", [sessionID, userID], (error, rows, fields) => {
-        if (error) {
-          console.log(error);
-        }
-        connection.release();
-      });
+      console.log(error);
     }
   });
+
 };
 
 
