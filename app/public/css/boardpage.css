@@ -11,6 +11,18 @@ body {
     width: 100%;
   }
 
+  /* My Claims and My Posts Title */
+  .boardpage-title {
+    text-align: center;
+    padding-top: 7%;
+    font-family: "Raleway";
+    font-size: 22pt;
+  }
+  
+  .boardpage-title p {
+    margin: 0;
+  }
+
   .cardContainer {
   background-color: white;
   width: 90%;
@@ -18,6 +30,14 @@ body {
   -webkit-box-shadow: 2px 3px 20px grey;
           box-shadow: 2px 3px 20px grey;
   border-radius: 3px;
+  }
+
+  /* Card-list on my claims and my posts page */
+  .list-mobile {
+    padding-top: 0% !important;
+    -webkit-transform: translate(0px, -10px); /* Safari */
+        -ms-transform: translate(0px, -10px); /* IE 9 */
+            transform: translate(0px, -10px);
   }
 
   #card-list {
@@ -122,17 +142,19 @@ body {
 
   .empty-board {
     text-align: center;
+    color: #7D7D7D;
   }
 
-  .empty-board img {
-    padding-top: 30%;
-    width: 40%;
+  .emoji {
+    font-size: 60pt;
+    padding-top: 50%;
   }
 
   .empty-message {
-    font-family: Raleway;
-    font-size: 22px;
-    font-style: normal;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 18pt;
+    font-style: italic;
+    font-weight: 500;
     line-height: 1.2em;
     padding-top: 3%;
   }
@@ -144,6 +166,18 @@ body {
     width: 100%;
   }
 
+  /* My Claims and My Posts Title */
+  .boardpage-title {
+    text-align: center;
+    padding-top: 2%;
+    font-family: "Raleway";
+    font-size: 30pt;
+  }
+  
+  .boardpage-title p {
+    margin: 0;
+  }
+
   .cardContainer {
     background-color: white;
     margin: 15px;
@@ -151,9 +185,14 @@ body {
             box-shadow: 2px 3px 20px grey;
     }
 
+    .list-desktop {
+      padding-top: 0% !important;
+    }
+
     #card-list {
       width: 400px;
-      margin-top:10%;
+      padding-top:1%;
+      margin: 0 auto;
     }
 
     .additem {
@@ -166,22 +205,21 @@ body {
 
     .empty-board {
       text-align: center;
+      color: #7D7D7D;
     }
-  
-    .empty-board img {
-      padding-top: 10%;
-      width: 10%;
+
+    .emoji {
+      font-size: 80pt;
+      padding-top: 15%;
     }
   
     .empty-message {
-      font-family: Raleway;
-      font-size: 22px;
-      font-style: normal;
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 20pt;
+      font-style: italic;
       line-height: 1.2em;
       padding-top: 3%;
     }
-  }
-
 }
 
 #submit {

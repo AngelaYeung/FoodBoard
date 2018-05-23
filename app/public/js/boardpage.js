@@ -282,9 +282,6 @@ $(document).ready(function () {
   //#region delete feature
   socket.on('delete return', (itemID) => {
     itemDeleted(itemID); //deletes the item
-    if ($(".empty-board").length == 0) {
-      setTimeout(emptyBoardPrompt, 1000);
-    }
   });
 
   /*************************************************************************
@@ -295,9 +292,6 @@ $(document).ready(function () {
   //#region claim feature
   socket.on('claim return', (itemID) => {
     itemClaimed(itemID);
-    if ($(".empty-board").length == 0) {
-      setTimeout(emptyBoardPrompt, 1000);
-    }
   });
 
 
@@ -585,12 +579,12 @@ function setPostImage(foodCategory, imgName) {
 
 function emptyBoardPrompt() {
   var boardEmpty = `<div class='empty-board'>
-    <img src="../../Pictures/search.png"/>
     <div>
-    <p class="empty-message">The FoodBoard is empty.</br>Share a food item for others to claim!</p>
+      <p class="emoji">(~˘▾˘)~</p>
+      <p class="empty-message">The FoodBoard is empty.</br>Share a food item for others to claim!</p>
     </div>
   </div>`
-  $('#card-list').before(boardEmpty).fadeIn(500);
+  $('#card-list').before(boardEmpty);
 }
 
 //#endregion create card functions
