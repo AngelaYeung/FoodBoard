@@ -59,7 +59,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
         <img class="food-img" src="${setPostImage(foodGroup, img)}">
-        <p id="status${id}" class="status-text" style="display:none;"></p>
+        <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
@@ -124,8 +124,8 @@ function unclaimItem(cardID) {
     sessionID: sessionID
   });
   
-  $(`#status${cardID}`).text("UNCLAIMED");
-  $(`#status${cardID}`).css("transform", "rotate(-25deg) translate(25%, -170%)");
+  $(`#status${cardID}`).attr("src", "../../Pictures/unclaim.png");
+  $(`#status${cardID}`).css("transform", "translate(102%, -170%)");
 
   $(`#status${cardID}`).fadeIn("300", () => {
     $(`#card${cardID}`).fadeOut("500", () => {
