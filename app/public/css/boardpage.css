@@ -140,7 +140,7 @@ body {
     width: 100%;
   }
 
-  .empty-board {
+  #empty-foodboard {
     text-align: center;
     color: #7D7D7D;
   }
@@ -203,7 +203,7 @@ body {
       box-shadow: none !important;
     }
 
-    .empty-board {
+    #empty-foodboard {
       text-align: center;
       color: #7D7D7D;
     }

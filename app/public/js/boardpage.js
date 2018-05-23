@@ -230,7 +230,7 @@ $(document).ready(function () {
     var rows = items.rows;
     console.log("SESSIONID OF THE USER WHO IS LOADING:", items.sessionID);
     console.log("LOAD: ROWS: ", rows);
-    $(".empty-board").remove();
+    $('#empty-foodboard').css("display", "none");
     for (var i = 0; i < rows.length; i++) {
       console.log('userID: ', userID);
       console.log('role', typeof role);
@@ -259,7 +259,7 @@ $(document).ready(function () {
 
   socket.on('empty foodboard', () => {
     console.log("Empty foodboard event!");
-    emptyBoardPrompt();
+    $('#empty-foodboard').css("display", "block");
   });
 
   socket.on('myposts', (items) => {
@@ -281,6 +281,7 @@ $(document).ready(function () {
    *************************************************************************/
   //#region delete feature
   socket.on('delete return', (itemID) => {
+    $('#empty-foodboard').css("display", "none");
     itemDeleted(itemID); //deletes the item
   });
 
@@ -291,6 +292,7 @@ $(document).ready(function () {
    *************************************************************************/
   //#region claim feature
   socket.on('claim return', (itemID) => {
+    $('#empty-foodboard').css("display", "none");
     itemClaimed(itemID);
   });
 
@@ -575,16 +577,6 @@ function setPostImage(foodCategory, imgName) {
         break;
     }
   }
-}
-
-function emptyBoardPrompt() {
-  var boardEmpty = `<div class='empty-board'>
-    <div>
-      <p class="emoji">(~˘▾˘)~</p>
-      <p class="empty-message">The FoodBoard is empty.</br>Share a food item for others to claim!</p>
-    </div>
-  </div>`
-  $('#card-list').before(boardEmpty);
 }
 
 //#endregion create card functions
