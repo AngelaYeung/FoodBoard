@@ -6,11 +6,11 @@ $(document).ready(function () {
   $('.modal').on('show.bs.modal', function (e) {
     window.history.pushState('forward', null, '#modal');
   });
-  
+
   $('.modal').on('hide.bs.modal', function (e) {
     //pop the forward state to go back to original state before pushing the "Modal!" button
   });
-  
+
   $(window).on('popstate', function () {
     $('.modal').modal('hide');
   });
@@ -198,6 +198,7 @@ $(document).ready(function () {
   socket.on('post item return', (item) => {
     console.log("postitemreturn item.sessionID:", item.sessionID);
     console.log("postitemreturn active sessionID:", getSessionID('connect.sid'));
+    $(".empty-board").remove();
     if (getSessionID('connect.sid') === item.sessionID) {
       createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
     } else {
@@ -229,6 +230,7 @@ $(document).ready(function () {
     var rows = items.rows;
     console.log("SESSIONID OF THE USER WHO IS LOADING:", items.sessionID);
     console.log("LOAD: ROWS: ", rows);
+    $(".empty-board").remove();
     for (var i = 0; i < rows.length; i++) {
       console.log('userID: ', userID);
       console.log('role', typeof role);
@@ -255,6 +257,11 @@ $(document).ready(function () {
     }
   });
 
+  socket.on('empty foodboard', () => {
+    console.log("Empty foodboard event!");
+    emptyBoardPrompt();
+  });
+
   socket.on('myposts', (items) => {
     let userID = items.userID;
     let rows = items.rows;
@@ -275,6 +282,9 @@ $(document).ready(function () {
   //#region delete feature
   socket.on('delete return', (itemID) => {
     itemDeleted(itemID); //deletes the item
+    if ($(".empty-board").length == 0) {
+      setTimeout(emptyBoardPrompt, 1000);
+    }
   });
 
   /*************************************************************************
@@ -285,6 +295,9 @@ $(document).ready(function () {
   //#region claim feature
   socket.on('claim return', (itemID) => {
     itemClaimed(itemID);
+    if ($(".empty-board").length == 0) {
+      setTimeout(emptyBoardPrompt, 1000);
+    }
   });
 
 
@@ -485,7 +498,7 @@ function itemDeleted(id) {
   $(`#status${id}`).css("transform", "translate(86%, -145%)");
 
   $(`#status${id}`).fadeIn("300", () => {
-    $(`#card${id}`).fadeOut("500", () => {  
+    $(`#card${id}`).fadeOut("500", () => {
       $(`#card${id}`).remove();
     });
   });
@@ -570,6 +583,15 @@ function setPostImage(foodCategory, imgName) {
   }
 }
 
+function emptyBoardPrompt() {
+  var boardEmpty = `<div class='empty-board'>
+    <img src="../../Pictures/search.png"/>
+    <div>
+    <p class="empty-message">The FoodBoard is empty.</br>Share a food item for others to claim!</p>
+    </div>
+  </div>`
+  $('#card-list').before(boardEmpty).fadeIn(500);
+}
 
 //#endregion create card functions
 

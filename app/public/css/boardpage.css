@@ -1,10 +1,15 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway:900');
+@import url('https://fonts.googleapis.com/css?family=Cookie');
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 @media screen and (max-width: 480px) {
+  #board {
+    display: inline-block;
+    width: 100%;
+  }
 
   .cardContainer {
   background-color: white;
@@ -104,6 +109,23 @@ body {
   
   #search-bar-btn-reset img {
     width: 100%;
+  }
+
+  .empty-board {
+    text-align: center;
+  }
+
+  .empty-board img {
+    padding-top: 30%;
+    width: 40%;
+  }
+
+  .empty-message {
+    font-family: Raleway;
+    font-size: 22px;
+    font-style: normal;
+    line-height: 1.2em;
+    padding-top: 3%;
   }
 }
 
@@ -225,8 +247,6 @@ Styling the location and layout of the expandable text for a card.
   border-bottom-left-radius: 3px;
   outline:none;
 }
-
-
 
 /** Remove outline for add glyphicon. */
 .glyphicon-plus {
