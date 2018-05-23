@@ -14,7 +14,7 @@ $(document).ready(() => {
   });
 
   $("#suite-form").change(() => {
-    if (pwFieldsFilled()) {
+    if (pwSuiteFieldsFilled()) {
       $("#suite-submit").removeClass("disabled");
       $("#suite-submit").removeAttr('disabled');
     } else {
@@ -51,4 +51,11 @@ function pwFieldsFilled() {
   return (!($("#currentPW").val().length === 0) &&
     !($("#newPW").val().length === 0) &&
     !($("#confirmPW").val().length === 0));
+};
+
+/**
+ * Returns true if the password change forms are filled for suite Number
+ */
+function pwSuiteFieldsFilled() {
+  return (!($(".currentPW").val().length === 0) && (!($('#newSuite').val().length === 0)))
 };
