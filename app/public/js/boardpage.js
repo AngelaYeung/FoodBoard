@@ -2,6 +2,19 @@
 var socket;
 
 $(document).ready(function () {
+  //close modals with back btn
+  $('.modal').on('show.bs.modal', function (e) {
+    window.history.pushState('forward', null, '#modal');
+  });
+  
+  $('.modal').on('hide.bs.modal', function (e) {
+    //pop the forward state to go back to original state before pushing the "Modal!" button
+  });
+  
+  $(window).on('popstate', function () {
+    $('.modal').modal('hide');
+  });
+
   socket = io();
   const uploader = new SocketIOFileUpload(socket);
   var image_name;
