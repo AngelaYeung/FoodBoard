@@ -198,6 +198,7 @@ $(document).ready(function () {
   socket.on('post item return', (item) => {
     console.log("postitemreturn item.sessionID:", item.sessionID);
     console.log("postitemreturn active sessionID:", getSessionID('connect.sid'));
+    $('#empty-foodboard').css("display", "none");
     if (getSessionID('connect.sid') === item.sessionID) {
       createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
     } else {
@@ -229,6 +230,7 @@ $(document).ready(function () {
     var rows = items.rows;
     console.log("SESSIONID OF THE USER WHO IS LOADING:", items.sessionID);
     console.log("LOAD: ROWS: ", rows);
+    $('#empty-foodboard').css("display", "none");
     for (var i = 0; i < rows.length; i++) {
       console.log('userID: ', userID);
       console.log('role', typeof role);
@@ -266,6 +268,11 @@ $(document).ready(function () {
       itemDeleted(deletedItems.rows[i].itemID);
     }
   });
+  
+  socket.on('empty foodboard', () => {
+    console.log("Empty foodboard event!");
+    $('#empty-foodboard').css("display", "block");
+  });
 
   socket.on('myposts', (items) => {
     let userID = items.userID;
@@ -286,6 +293,7 @@ $(document).ready(function () {
    *************************************************************************/
   //#region delete feature
   socket.on('delete return', (itemID) => {
+    $('#empty-foodboard').css("display", "none");
     itemDeleted(itemID); //deletes the item
   });
 
@@ -296,6 +304,7 @@ $(document).ready(function () {
    *************************************************************************/
   //#region claim feature
   socket.on('claim return', (itemID) => {
+    $('#empty-foodboard').css("display", "none");
     itemClaimed(itemID);
   });
 
@@ -581,6 +590,8 @@ function setPostImage(foodCategory, imgName) {
     }
   }
 }
+
+
 //#endregion create card functions
 
 

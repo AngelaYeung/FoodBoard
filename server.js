@@ -484,7 +484,7 @@ io.on('connection', (socket) => {
 
                 } else if (rows.length == 0) {
                   console.log("Database is empty.");
-                  //TODO generate some kind of user prompt
+                  socket.emit('empty foodboard');
                 } else {
                   console.log("Successfully grabbed food items.");
 

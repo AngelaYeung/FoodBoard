@@ -1,10 +1,27 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway:900');
+@import url('https://fonts.googleapis.com/css?family=Cookie');
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 @media screen and (max-width: 480px) {
+  #board {
+    display: inline-block;
+    width: 100%;
+  }
+
+  /* My Claims and My Posts Title */
+  .boardpage-title {
+    text-align: center;
+    padding-top: 7%;
+    font-family: "Raleway";
+    font-size: 22pt;
+  }
+  
+  .boardpage-title p {
+    margin: 0;
+  }
 
   .cardContainer {
   background-color: white;
@@ -13,6 +30,19 @@ body {
   -webkit-box-shadow: 2px 3px 20px grey;
           box-shadow: 2px 3px 20px grey;
   border-radius: 3px;
+  }
+
+  /* Card-list on my claims and my posts page */
+  .list-mobile {
+    padding-top: 0% !important;
+    -webkit-transform: translate(0px, -10px); /* Safari */
+        -ms-transform: translate(0px, -10px); /* IE 9 */
+            transform: translate(0px, -10px);
+  }
+
+  #card-list {
+    margin: 0 auto;
+    padding-top:5%
   }
 
   .navbar-foodboard > img {
@@ -66,6 +96,10 @@ body {
       margin-top: -100%;
     }
 
+    .additem {
+      display: none;
+    }
+
   #search-bar-container {
     margin: 0 auto;
     width: 77%;
@@ -105,12 +139,40 @@ body {
   #search-bar-btn-reset img {
     width: 100%;
   }
+  
+  .emoji {
+    font-size: 60pt;
+    padding-top: 50%;
+  }
+
+  .empty-message {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 18pt;
+    font-style: italic;
+    font-weight: 500;
+    line-height: 1.2em;
+    padding-top: 3%;
+  }
 }
 
 @media screen and (min-width: 481px){
   #board {
     display: inline-block;
+    width: 100%;
   }
+
+  /* My Claims and My Posts Title */
+  .boardpage-title {
+    text-align: center;
+    padding-top: 2%;
+    font-family: "Raleway";
+    font-size: 30pt;
+  }
+  
+  .boardpage-title p {
+    margin: 0;
+  }
+
   .cardContainer {
     background-color: white;
     margin: 15px;
@@ -118,11 +180,36 @@ body {
             box-shadow: 2px 3px 20px grey;
     }
 
-    #card-list {
-      width: 400px;
-      margin-top:10%;
+    .list-desktop {
+      padding-top: 0% !important;
     }
 
+    #card-list {
+      width: 400px;
+      padding-top:1%;
+      margin: 0 auto;
+    }
+
+    .additem {
+      position: fixed;
+      right: 5px;
+      bottom: 5px;
+      -webkit-box-shadow: none !important;
+      box-shadow: none !important;
+    }
+  
+    .emoji {
+      font-size: 80pt;
+      padding-top: 15%;
+    }
+  
+    .empty-message {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 20pt;
+      font-style: italic;
+      line-height: 1.2em;
+      padding-top: 3%;
+    }
 }
 
 #submit {
@@ -226,8 +313,6 @@ Styling the location and layout of the expandable text for a card.
   outline:none;
 }
 
-
-
 /** Remove outline for add glyphicon. */
 .glyphicon-plus {
   outline:none;
@@ -313,4 +398,10 @@ a#color-change {
 
 #confirmDeleteModal {
   margin-top: 50%;
+}
+
+  #empty-foodboard {
+    text-align: center;
+    color: #7D7D7D;
+    display:none;
 }
