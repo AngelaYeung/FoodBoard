@@ -482,6 +482,9 @@ io.on('connection', (socket) => {
               // check to see if the user is an admin
               var userID = rows[0].Users_userID;
 
+              // deletes expired food items from FoodItem table before loading
+              deleteExpiredFoodItem();
+
               var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
               connection.query(checkRole, [userID], (error, rows, field) => {
                 if (error) {
@@ -1415,6 +1418,34 @@ function deleteFoodItem(itemID) {
 
 };
 
+function deleteExpiredFoodItem() {
+  console.log("LOAD FUNCTION: THE CURRENT TIME NOW IS:", new Date(Date.now()));
+  deleteExpiredItems = "DELETE FROM FoodItem WHERE foodExpiryTime < ?";
+
+  mysqlconnection.pool.getConnection((error, connection) => {
+
+    if (error) {
+      slackcmd.log(`Error attemping to connect to db for My Claims Event:`, error);
+      console.log('Error attemping to connect to db for My Claims Event:', error);
+    } else {
+
+      connection.query(deleteExpiredItems, [new Date(Date.now())], (error, rows, field) => {
+        console.log("CHANGED ROWS: ", rows.changedRows);
+        if (error) {
+          // return error if deletion fail
+          slacklog.log(`Event: Delete expired food items. ${deleteExpiredItems}.`, error);
+          console.log(new Date(Date.now()), "Error occured when attempting to delete expired food items: ", error);
+        } else if (rows.changedRows == 0) {
+          console.log("There are no expired food items to delete at this time: ", new Date(Date.now()));
+        } else {
+          // else console.log deletion message
+          console.log("Successful deletion of expired food items.");
+        }
+        connection.release();
+      });
+    }
+  });
+}
 
 
 /*************************************************************************
