@@ -296,7 +296,7 @@ a#color-change {
   width: fit-content;
   padding: 10%;
   border-radius: 5%;
-  position: relative;
+  position: absolute;
   z-index: 10;
   background: rgb(0, 0, 0, 0.6);
 }
