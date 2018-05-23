@@ -198,7 +198,7 @@ $(document).ready(function () {
   socket.on('post item return', (item) => {
     console.log("postitemreturn item.sessionID:", item.sessionID);
     console.log("postitemreturn active sessionID:", getSessionID('connect.sid'));
-    $(".empty-board").remove();
+    $('#empty-foodboard').css("display", "none");
     if (getSessionID('connect.sid') === item.sessionID) {
       createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
     } else {
