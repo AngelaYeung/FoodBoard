@@ -1,6 +1,6 @@
 ![Foodboard logo](https://i.imgur.com/YZb5agj.png)
 
-**Link to our webpage**: [http://foodboard.ca](http://foodboard.ca)
+**Link to our webpage**: [FoodBoard](http://foodboard.ca)
 
 ## Contact us
 | Members | Student Number | Github | LinkedIn |
