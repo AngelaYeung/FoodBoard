@@ -153,8 +153,18 @@ body {
     line-height: 1.2em;
     padding-top: 3%;
   }
+
+  /** Position modal for deletion road block */
+  #confirmDeleteModal {
+    margin-top: 65%;
+  }
 }
 
+/**********************************************************
+*
+*   Styling for desktop.
+*
+**********************************************************/
 @media screen and (min-width: 481px){
   #board {
     display: inline-block;
@@ -209,6 +219,9 @@ body {
       font-style: italic;
       line-height: 1.2em;
       padding-top: 3%;
+    }
+    #confirmDeleteModal {
+      margin-top: 15%;
     }
 }
 
@@ -394,10 +407,6 @@ a#color-change {
 
 .invalid-feedback{
   display: none;
-}
-
-#confirmDeleteModal {
-  margin-top: 65%;
 }
 
   #empty-foodboard {
