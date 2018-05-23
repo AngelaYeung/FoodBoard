@@ -6,11 +6,11 @@ $(document).ready(function () {
   $('.modal').on('show.bs.modal', function (e) {
     window.history.pushState('forward', null, '#modal');
   });
-  
+
   $('.modal').on('hide.bs.modal', function (e) {
     //pop the forward state to go back to original state before pushing the "Modal!" button
   });
-  
+
   $(window).on('popstate', function () {
     $('.modal').modal('hide');
   });
@@ -255,6 +255,18 @@ $(document).ready(function () {
     }
   });
 
+
+  /*************************************************************************
+ * 
+ *         FOOD BOARD AUTO-DELETE FEATURE - CLIENT SIDE
+ * 
+ *************************************************************************/
+  socket.on('delete expired posts', (deletedItems) => {
+    for (let i = 0; i < deletedItems.rows.length; i++) {
+      itemDeleted(deletedItems.rows[i].itemID);
+    }
+  });
+
   socket.on('myposts', (items) => {
     let userID = items.userID;
     let rows = items.rows;
@@ -485,7 +497,7 @@ function itemDeleted(id) {
   $(`#status${id}`).css("transform", "translate(86%, -145%)");
 
   $(`#status${id}`).fadeIn("300", () => {
-    $(`#card${id}`).fadeOut("500", () => {  
+    $(`#card${id}`).fadeOut("500", () => {
       $(`#card${id}`).remove();
     });
   });
@@ -569,8 +581,6 @@ function setPostImage(foodCategory, imgName) {
     }
   }
 }
-
-
 //#endregion create card functions
 
 

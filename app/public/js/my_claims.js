@@ -22,7 +22,27 @@ $(document).ready(() => {
         rows[i].foodGroup, rows[i].foodImage);
     };
   });
-}); //closes $(document).ready();
+
+  /*************************************************************************
+ * 
+ *         FOOD BOARD DELETE FEATURE - CLIENT SIDE
+ * 
+ *************************************************************************/
+  socket.on('delete return', (itemID) => {
+    itemDeleted(itemID); //deletes the item
+  });
+
+  /*************************************************************************
+ * 
+ *         FOOD BOARD AUTO-DELETE FEATURE - CLIENT SIDE
+ * 
+ *************************************************************************/
+  socket.on('delete expired posts', (deletedItems) => {
+    for (let i = 0; i < deletedItems.rows.length; i++) {
+      itemDeleted(deletedItems.rows[i].itemID);
+    }
+  });
+});
 /**
  * Gets the session id. 
  * @param {string} name - name of the cookie session key we are grabbing (should be connect.sid)
@@ -116,6 +136,18 @@ function setPostImage(foodCategory, imgName) {
   }
 }
 
+function itemDeleted(id) {
+  $(`#confirmDeleteModal`).modal('hide');
+  $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
+  $(`#status${id}`).css("transform", "translate(86%, -145%)");
+
+  $(`#status${id}`).fadeIn("300", () => {
+    $(`#card${id}`).fadeOut("500", () => {
+      $(`#card${id}`).remove();
+    });
+  });
+};
+
 function unclaimItem(cardID) {
   console.log("The cardID is:", cardID);
   let sessionID = getSessionID('connect.sid');
@@ -123,7 +155,7 @@ function unclaimItem(cardID) {
     cardID: cardID,
     sessionID: sessionID
   });
-  
+
   $(`#status${cardID}`).attr("src", "../../Pictures/unclaim.png");
   $(`#status${cardID}`).css("transform", "translate(102%, -170%)");
 
