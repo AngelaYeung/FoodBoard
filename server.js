@@ -87,7 +87,7 @@ app.get('/', (req, res) => {
 
   mysqlconnection.pool.getConnection((error, connection) => {
     if (error) {
-      slackcmd.log('Error: attempting to connect to database during get-request for "/" ', error);
+      slacklog.log('Error: attempting to connect to database during get-request for "/" ', error);
       console.log('Error: attempting to connect to database during get-request for "/"', error);
     } else {
 
@@ -160,7 +160,7 @@ app.get('/account', (req, res) => {
   mysqlconnection.pool.getConnection((error, connection) => {
 
     if (error) {
-      slackcmd.log('Error: attempting to connect to database during get-request for "/account" ', error);
+      slacklog.log('Error: attempting to connect to database during get-request for "/account" ', error);
       console.log('Error: attempting to connect to database during get-request for "/account"', error);
     } else {
 
@@ -218,7 +218,7 @@ app.post('/changepassword', (req, res) => {
   mysqlconnection.pool.getConnection((error, connection) => {
 
     if (error) {
-      slackcmd.log('Error: attempting to connect to database during get-request for "/changepassword" ', error);
+      slacklog.log('Error: attempting to connect to database during get-request for "/changepassword" ', error);
       console.log('Error: attempting to connect to database during get-request for "/changepassword"', error);
     } else {
 
@@ -319,7 +319,7 @@ app.post("/changesuitenumber", (req, res) => {
   mysqlconnection.pool.getConnection((error, connection) => {
 
     if (error) {
-      slackcmd.log('Error: attempting to connect to database during get-request for "/changesuitenumber" ', error);
+      slacklog.log('Error: attempting to connect to database during get-request for "/changesuitenumber" ', error);
       console.log('Error: attempting to connect to database during get-request for "/changesuitenumber"', error);
     } else {
 
@@ -433,7 +433,7 @@ io.on('connection', (socket) => {
   mysqlconnection.pool.getConnection((error, connection) => {
 
     if (error) {
-      slackcmd.log(`Error: attempting to "SELECT * FROM Sessions": `, error);
+      slacklog.log(`Error: attempting to "SELECT * FROM Sessions": `, error);
       console.log('Error: attempting to connect to database during get-request for "/changesuitenumber"', error);
     } else {
       var query = `SELECT * FROM Sessions`;
@@ -467,7 +467,7 @@ io.on('connection', (socket) => {
     mysqlconnection.pool.getConnection((error, connection) => {
 
       if (error) {
-        slackcmd.log(`Error connecting to db for Loading Page:`, error);
+        slacklog.log(`Error connecting to db for Loading Page:`, error);
         console.log('Error connecting to db for Loading Page:', error);
       } else {
 
@@ -542,7 +542,7 @@ io.on('connection', (socket) => {
     mysqlconnection.pool.getConnection((error, connection) => {
 
       if (error) {
-        slackcmd.log(`Error attemping to connect to db for My Post Page:`, error);
+        slacklog.log(`Error attemping to connect to db for My Post Page:`, error);
         console.log('Error attemping to connect to db for My Post Page:', error);
       } else {
 
@@ -595,7 +595,7 @@ io.on('connection', (socket) => {
     mysqlconnection.pool.getConnection((error, connection) => {
 
       if (error) {
-        slackcmd.log(`Error attemping to connect to db for Post Event:`, error);
+        slacklog.log(`Error attemping to connect to db for Post Event:`, error);
         console.log('Error attemping to connect to db for Post Event:', error);
       } else {
 
@@ -676,7 +676,7 @@ io.on('connection', (socket) => {
     mysqlconnection.pool.getConnection((error, connection) => {
 
       if (error) {
-        slackcmd.log(`Error attemping to connect to db for Delete Event:`, error);
+        slacklog.log(`Error attemping to connect to db for Delete Event:`, error);
         console.log('Error attemping to connect to db for Delete Event:', error);
       } else {
 
@@ -801,7 +801,7 @@ io.on('connection', (socket) => {
     mysqlconnection.pool.getConnection((error, connection) => {
 
       if (error) {
-        slackcmd.log(`Error attemping to connect to db for Claim Event:`, error);
+        slacklog.log(`Error attemping to connect to db for Claim Event:`, error);
         console.log('Error attemping to connect to db for Claim Event:', error);
       } else {
 
@@ -872,7 +872,7 @@ io.on('connection', (socket) => {
                         connection.query(posterQuery, [posterUserID], (error, rows, field) => {
                           if (error) {
                             //return error if selection fail
-                            slackcmd.log(`Event: Claim item. ${posterQuery}.`, error);
+                            slacklog.log(`Event: Claim item. ${posterQuery}.`, error);
                             console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
 
                           } else {
@@ -921,7 +921,7 @@ io.on('connection', (socket) => {
     mysqlconnection.pool.getConnection((error, connection) => {
 
       if (error) {
-        slackcmd.log(`Error attemping to connect to db for My Claims Event:`, error);
+        slacklog.log(`Error attemping to connect to db for My Claims Event:`, error);
         console.log('Error attemping to connect to db for My Claims Event:', error);
       } else {
 
@@ -980,7 +980,7 @@ io.on('connection', (socket) => {
     mysqlconnection.pool.getConnection((error, connection) => {
 
       if (error) {
-        slackcmd.log(`Error attemping to connect to db for My Claims Event:`, error);
+        slacklog.log(`Error attemping to connect to db for My Claims Event:`, error);
         console.log('Error attemping to connect to db for My Claims Event:', error);
       } else {
 
@@ -1022,7 +1022,7 @@ io.on('connection', (socket) => {
                       connection.query(claimerQuery, [claimerUserID], (error, rows, field) => {
                         if (error) {
                           //return error if selection fail
-                          slackcmd.log(`Event: Claim item. ${claimerQuery}.`, error);
+                          slacklog.log(`Event: Claim item. ${claimerQuery}.`, error);
                           console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
                           connection.release();
                         } else {
@@ -1036,7 +1036,7 @@ io.on('connection', (socket) => {
                           connection.query(posterQuery, [posterUserID], (error, rows, field) => {
                             if (error) {
                               //return error if selection fail
-                              slackcmd.log(`Event: Claim item. ${posterQuery}.`, error);
+                              slacklog.log(`Event: Claim item. ${posterQuery}.`, error);
                               console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
 
                             } else {
@@ -1397,7 +1397,7 @@ function deleteFoodItem(itemID) {
   mysqlconnection.pool.getConnection((error, connection) => {
 
     if (error) {
-      slackcmd.log(`Error attemping to connect to db for My Claims Event:`, error);
+      slacklog.log(`Error attemping to connect to db for My Claims Event:`, error);
       console.log('Error attemping to connect to db for My Claims Event:', error);
     } else {
 
