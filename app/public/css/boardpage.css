@@ -381,7 +381,7 @@ a#color-change {
   width: fit-content;
   padding: 10%;
   border-radius: 5%;
-  position: relative;
+  position: absolute;
   z-index: 10;
   background: rgb(0, 0, 0, 0.6);
 }
@@ -397,7 +397,7 @@ a#color-change {
 }
 
 #confirmDeleteModal {
-  margin-top: 50%;
+  margin-top: 65%;
 }
 
   #empty-foodboard {

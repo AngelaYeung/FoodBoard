@@ -62,11 +62,16 @@ $(document).ready(function () {
 
 function deleteItem(itemID) {
   let sessionID = getSessionID('connect.sid');
-  socket.emit('delete item', {
-    id: itemID,
-    sessionID: sessionID
-  });
-}
+  var input = $(`#dateTime${itemID}`).text();
+  if (validateDate(input)) {
+    socket.emit('delete item', {
+      id: itemID,
+      sessionID: sessionID
+    });
+  } else {
+    alert("The card no longer exists. Please refresh the page");
+  }
+};
 
 /**
  * Gets the session id. 
@@ -91,31 +96,11 @@ function getCookie(name) {
   }
 };
 
-function setPostImage(foodCategory, imgName) {
-  if (imgName !== "undefined.png") {
-    return `/images/${imgName}`;
-  } else {
-    switch (foodCategory) {
-      case "Produce":
-        return "../../Pictures/default_produce.png";
-        break;
-      case "Meat":
-        return "../../Pictures/default_meat.png";
-        break;
-      case "Canned Goods":
-        return "../../Pictures/default_food.png";
-        break;
-      case "Packaged":
-        return "../../Pictures/default_packaged.png";
-        break;
-    }
-  }
-}
-
 function itemDeleted(id) {
   $(`#confirmDeleteModal`).modal('hide');
   $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
-  $(`#status${id}`).css("transform", "translate(86%, -145%)");
+  $(`#status${id}`).css("top", "28%");
+  $(`#status${id}`).css("left", "33%");
 
   $(`#status${id}`).fadeIn("300", () => {
     $(`#card${id}`).fadeOut("500", () => {
@@ -158,7 +143,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   $('#card-list').prepend(`
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
-        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+        <img class="food-img" src="/images/${img}">
         <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
@@ -166,6 +151,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
             <div class="col-xs-10">
                 <h4>${name}</h4>
                  <p>Expires ${formatDate(dateTime)}</p>
+                 <p id="dateTime${id}" style="display:none">${dateTime}</p>
             </div>
             <div class="col-xs-2">
                 <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
@@ -175,7 +161,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
     </div>
     <div class="contentDiv row">
         <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
-            <p>${foodGroup}</p>
+            <p style="display:none">${foodGroup}</p>
             <p>${description}</p>
             <form class="claim-form"
                 action="javascript:void(0);">
@@ -196,3 +182,17 @@ function formatDate(dateTime) {
   var formatedDate = moment(expiryDate).fromNow();
   return formatedDate;
 };
+
+/**
+ * Returns true if the input time is larger than the current time --> it is a valid date
+ * , otherwise returns false.
+ * @param {*} dateInput 
+ */
+function validateDate(dateInput) {
+
+  var input = new Date(dateInput).getTime(); //user input time converted to milliseconds
+  var currentTime = Date.now(); //current time in milliseconds
+  console.log('input > currentTime:', (input > currentTime));
+  return (input > currentTime);
+};
+

@@ -144,4 +144,3 @@ function validatePassword() {
     return true;
   }
 }
-
