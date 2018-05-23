@@ -20,6 +20,11 @@ body {
   border-radius: 3px;
   }
 
+  #card-list {
+    margin: 0 auto;
+    padding-top:5%
+  }
+
   .navbar-foodboard > img {
     padding-top:1.3%;
     padding-bottom:1%;
@@ -69,6 +74,10 @@ body {
     .glyphicon-plus {
       font-size:14pt;
       margin-top: -100%;
+    }
+
+    .additem {
+      display: none;
     }
 
   #search-bar-container {
@@ -132,7 +141,9 @@ body {
 @media screen and (min-width: 481px){
   #board {
     display: inline-block;
+    width: 100%;
   }
+
   .cardContainer {
     background-color: white;
     margin: 15px;
@@ -144,6 +155,32 @@ body {
       width: 400px;
       margin-top:10%;
     }
+
+    .additem {
+      position: fixed;
+      right: 5px;
+      bottom: 5px;
+      -webkit-box-shadow: none !important;
+      box-shadow: none !important;
+    }
+
+    .empty-board {
+      text-align: center;
+    }
+  
+    .empty-board img {
+      padding-top: 10%;
+      width: 10%;
+    }
+  
+    .empty-message {
+      font-family: Raleway;
+      font-size: 22px;
+      font-style: normal;
+      line-height: 1.2em;
+      padding-top: 3%;
+    }
+  }
 
 }
 
