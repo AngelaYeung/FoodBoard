@@ -421,21 +421,51 @@ io.on('connection', (socket) => {
    */
 
   socket.on('page loaded', (session) => {
-
-
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
     mysqlconnection.pool.query(query, [session.sessionID], (error, rows, fields) => {
       if (error) {
         slacklog.log(`Event: Page loaded ${query}.`, error);
         console.log(new Date(Date.now()), 'Error selecting sessionID in load feature: ', error);
-
       } else {
         if (rows.length) {
           // check to see if the user is an admin
           var userID = rows[0].Users_userID;
 
           // deletes expired food items from FoodItem table before loading
-          deleteExpiredFoodItem();
+          console.log("LOAD FUNCTION: THE CURRENT TIME NOW IS:", new Date(Date.now()));
+
+          // emit the deleted rows to myClaims, myPosts, boardpage
+          emitDeletedRows = "SELECT itemID from FoodItem where foodExpiryTime < ?";
+          mysqlconnection.pool.query(emitDeletedRows, [new Date(Date.now())], (error, rows, field) => {
+            console.log(rows);
+            if (error) {
+              slacklog.log(`Event: Delete expired food items. ${emitDeletedRows}.`, error);
+              console.log(new Date(Date.now()), "Error occured when attempting to select expired food items: ", error);
+            }
+            else if (rows.length == 0) {
+              console.log("There are no expired food items to delete at this time: ", new Date(Date.now()));
+              console.log(rows.length)
+            } else {
+              io.emit('delete expired posts', {
+                rows: rows
+              });
+
+              deleteExpiredItems = "DELETE FROM FoodItem WHERE foodExpiryTime < ?";
+              mysqlconnection.pool.query(deleteExpiredItems, [new Date(Date.now())], (error, rows, field) => {
+                console.log("CHANGED ROWS: ", rows.changedRows);
+                if (error) {
+                  // return error if deletion fail
+                  slacklog.log(`Event: Delete expired food items. ${deleteExpiredItems}.`, error);
+                  console.log(new Date(Date.now()), "Error occured when attempting to delete expired food items: ", error);
+                } else if (rows.affectedRows == 0) {
+                  console.log("There are no expired food items to delete at this time: ", new Date(Date.now()));
+                  console.log(rows.length)
+                } else {
+                  console.log("Successful deletion of expired food items.");
+                }
+              });
+            }
+          });
 
           var checkRole = "SELECT role FROM users WHERE userID = ? LIMIT 1";
           mysqlconnection.pool.query(checkRole, [userID], (error, rows, field) => {
@@ -446,9 +476,8 @@ io.on('connection', (socket) => {
             } else {
               var role = rows[0].role;
               // load all posts to be filtered later in boardpage.js
-              var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL";
-
-              mysqlconnection.pool.query(allFoodboardItems, (error, rows, fields) => {
+              var allFoodboardItems = "SELECT * FROM FoodItem WHERE Users_claimerUserID IS NULL AND foodExpiryTime > ?";
+              mysqlconnection.pool.query(allFoodboardItems, [new Date(Date.now())], (error, rows, fields) => {
                 if (error) {
                   slacklog.log(`Event: Page loaded ${allFoodboardItems}.`, error);
                   console.log(new Date(Date.now()), "Error grabbing food items");
@@ -456,7 +485,6 @@ io.on('connection', (socket) => {
                 } else if (rows.length == 0) {
                   console.log("Database is empty.");
                   socket.emit('empty foodboard');
-                  //TODO generate some kind of user prompt
                 } else {
                   console.log("Successfully grabbed food items.");
 
@@ -469,14 +497,12 @@ io.on('connection', (socket) => {
                     role: role
                   });
                 }
-
               });
             }
           });
         }
       }
     });
-
   });
 
   /*************************************************************************
@@ -1041,15 +1067,15 @@ function sendDeleteEmailToClaimer(claimerEmail, claimerFirstName, foodName, food
           </div>
         </div>`, // html body
     attachments: [{
-        filename: `foodboard_${foodImage}`,
-        path: `./app/images/${foodImage}`,
-        cid: 'donotreply@foodboard.ca'
-      },
-      {
-        filename: 'foodboard_logo',
-        path: './app/Pictures/largelogo-text-transparent.png',
-        cid: 'foodboardlogo'
-      }
+      filename: `foodboard_${foodImage}`,
+      path: `./app/images/${foodImage}`,
+      cid: 'donotreply@foodboard.ca'
+    },
+    {
+      filename: 'foodboard_logo',
+      path: './app/Pictures/largelogo-text-transparent.png',
+      cid: 'foodboardlogo'
+    }
     ]
   };
   // send mail with defined transport object
@@ -1145,15 +1171,15 @@ function sendClaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDesc
           </div>
         </div>`, // html body
     attachments: [{
-        filename: `foodboard_${foodImage}`,
-        path: `./app/images/${foodImage}`,
-        cid: 'donotreply@foodboard.ca'
-      },
-      {
-        filename: 'foodboard_logo',
-        path: './app/Pictures/largelogo-text-transparent.png',
-        cid: 'foodboardlogo'
-      }
+      filename: `foodboard_${foodImage}`,
+      path: `./app/images/${foodImage}`,
+      cid: 'donotreply@foodboard.ca'
+    },
+    {
+      filename: 'foodboard_logo',
+      path: './app/Pictures/largelogo-text-transparent.png',
+      cid: 'foodboardlogo'
+    }
     ]
   };
 
@@ -1250,15 +1276,15 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
           </div>
         </div>`, // html body
     attachments: [{
-        filename: `foodboard_${foodImage}`,
-        path: `./app/images/${foodImage}`,
-        cid: 'donotreply@foodboard.ca'
-      },
-      {
-        filename: 'foodboard_logo',
-        path: './app/Pictures/largelogo-text-transparent.png',
-        cid: 'foodboardlogo'
-      }
+      filename: `foodboard_${foodImage}`,
+      path: `./app/images/${foodImage}`,
+      cid: 'donotreply@foodboard.ca'
+    },
+    {
+      filename: 'foodboard_logo',
+      path: './app/Pictures/largelogo-text-transparent.png',
+      cid: 'foodboardlogo'
+    }
     ]
   };
 
@@ -1282,9 +1308,6 @@ function sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDe
 
 function deleteFoodItem(itemID) {
   var deletePost = `DELETE FROM FoodItem WHERE itemID = ? LIMIT 1`;
-
-
-
   mysqlconnection.pool.query(deletePost, [itemID], (error, rows, field) => {
     if (error) {
 
@@ -1299,30 +1322,6 @@ function deleteFoodItem(itemID) {
   });;
 
 };
-
-function deleteExpiredFoodItem() {
-  console.log("LOAD FUNCTION: THE CURRENT TIME NOW IS:", new Date(Date.now()));
-  deleteExpiredItems = "DELETE FROM FoodItem WHERE foodExpiryTime < ?";
-
-
-
-  mysqlconnection.pool.query(deleteExpiredItems, [new Date(Date.now())], (error, rows, field) => {
-    console.log("CHANGED ROWS: ", rows.changedRows);
-    if (error) {
-      // return error if deletion fail
-      slacklog.log(`Event: Delete expired food items. ${deleteExpiredItems}.`, error);
-      console.log(new Date(Date.now()), "Error occured when attempting to delete expired food items: ", error);
-    } else if (rows.changedRows == 0) {
-      console.log("There are no expired food items to delete at this time: ", new Date(Date.now()));
-    } else {
-      // else console.log deletion message
-      console.log("Successful deletion of expired food items.");
-    }
-
-  });
-
-};
-
 
 /*************************************************************************
  * 

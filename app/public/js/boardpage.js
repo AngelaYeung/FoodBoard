@@ -257,6 +257,18 @@ $(document).ready(function () {
     }
   });
 
+
+  /*************************************************************************
+ * 
+ *         FOOD BOARD AUTO-DELETE FEATURE - CLIENT SIDE
+ * 
+ *************************************************************************/
+  socket.on('delete expired posts', (deletedItems) => {
+    for (let i = 0; i < deletedItems.rows.length; i++) {
+      itemDeleted(deletedItems.rows[i].itemID);
+    }
+  });
+  
   socket.on('empty foodboard', () => {
     console.log("Empty foodboard event!");
     $('#empty-foodboard').css("display", "block");

@@ -47,6 +47,17 @@ $(document).ready(function () {
   socket.on('delete return', (itemID) => {
     itemDeleted(itemID); //deletes the item
   });
+
+  /*************************************************************************
+* 
+*         FOOD BOARD AUTO-DELETE FEATURE - CLIENT SIDE
+* 
+*************************************************************************/
+  socket.on('delete expired posts', (deletedItems) => {
+    for (let i = 0; i < deletedItems.rows.length; i++) {
+      itemDeleted(deletedItems.rows[i].itemID);
+    }
+  });
 });
 
 function deleteItem(itemID) {
@@ -115,9 +126,9 @@ function deleteRoadBlock(id) {
 			</div>
 		</div>
 	</div>`
-$(`#card${id}`).prepend(modalHtml);
+  $(`#card${id}`).prepend(modalHtml);
 
-$(`#confirmDeleteModal`).modal('show');
+  $(`#confirmDeleteModal`).modal('show');
 }
 /**
  * Creates Card from FoodItem Table without a 'Claim' Button.
