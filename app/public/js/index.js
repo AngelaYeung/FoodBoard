@@ -13,6 +13,19 @@ document.onreadystatechange = function () {
 }
 
 $(document).ready(function () {
+  //close modals with back btn
+$('.modal').on('show.bs.modal', function (e) {
+  window.history.pushState('forward', null, '#modal');
+});
+
+$('.modal').on('hide.bs.modal', function (e) {
+  //pop the forward state to go back to original state before pushing the "Modal!" button
+});
+
+$(window).on('popstate', function () {
+  $('.modal').modal('hide');
+});
+
 
   // add scrollspy onto body of the page for 'Our Team' link
   $("#our-team-link").click(function () {
@@ -77,10 +90,6 @@ $(document).ready(function () {
       }
     });
 
-    //closes modal when clicking back button
-    $(window).on("popstate", this.handleBackpress);
-    document.addEventListener("backbutton", this.handleBackpress, false);
-
   });
 
   //change navbar colour green when opening dropdown
@@ -127,9 +136,6 @@ $("#newPW,#confirmPW").on('change', (e) => {
   }
 });
 
-
-
-
 //validate the password
 function validatePassword() {
   if ($("#register_pwd").val() !== $("#register_pwd_confirm").val()) {
@@ -139,12 +145,3 @@ function validatePassword() {
   }
 }
 
-
-//closes modal when clicking back button
-function handleBackpress(e) {
-  e.preventDefault();
-  e.stopPropagation();
-
-  $(".modal").modal("hide");
-  $(".modal-backdrop").remove();
-}
