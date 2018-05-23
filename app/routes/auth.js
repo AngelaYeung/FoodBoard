@@ -67,8 +67,6 @@ var validate = (app, passport) => {
    * 
    *************************************************************************/
   app.get('/account', isLoggedIn, (req, res) => {
-
-
     var query = `SELECT * FROM Sessions WHERE sessionID = '${req.sessionID}' LIMIT 1`;
 
     mysqlconnection.pool.query(query, (error, rows, fields) => {

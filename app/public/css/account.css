@@ -21,10 +21,6 @@
         color: #4EB266;
       }
 
-      .head{
-          background-color: #4EB266;
-      }
-
       .account{
           padding-top: 10%;
           text-align: center;
@@ -59,10 +55,6 @@
 
 }
 
-.edit-info {
-    border: none;
-}
-
 @media screen and (min-width: 1200px) {
     .container {
         width: 480px;
@@ -76,4 +68,33 @@
 
 input:focus {
     outline: none;
+}
+
+.edit-info {
+    border: none;
+    background: #333131;
+}
+
+.account p {
+    text-align: center;
+    padding-top: 7%;
+    font-family: "Raleway";
+    font-size: 22pt;
+
+}
+
+  .btn-primary:active:focus, .btn-primary:active:hover,.btn-primary.active, .btn-primary:active, .open>.dropdown-toggle.btn-primary.btn-primary.focus, .btn-primary:focus, .btn-primary:hover {
+  background: #333131;
+}
+
+#changePWForm p:first-child {
+  text-align: center;
+  font-family: "Raleway";
+  font-size: 14pt;
+}
+
+#changeSuiteForm p:first-child {
+  text-align: center;
+  font-family: "Raleway";
+  font-size: 14pt;
 }
