@@ -26,42 +26,48 @@ $(window).on('popstate', function () {
   $('.modal').modal('hide');
 });
 
+// //removes input in form when modal is closed.
+// $('.modal').on('hidden.bs.modal', function () {
+//   clearInput();
+// });
 
-  // add scrollspy onto body of the page for 'Our Team' link
-  $("#our-team-link").click(function () {
+  // add scrollspy onto body of the page for about link
+  $("#about-link").click(function () {
+    $('html, body').animate({
+      scrollTop: $("#homepage-body-container").offset().top
+    }, 500);
+  });
+
+  // add scrollspy onto body of the page for how it works link
+  $("#how-link").click(function () {
+    $('html, body').animate({
+      scrollTop: $("#how-it-works").offset().top
+    }, 500);
+  });
+
+  // add scrollspy onto body of the page for our-team link
+  $("#team-link").click(function () {
     $('html, body').animate({
       scrollTop: $("#our-team").offset().top
     }, 500);
   });
 
-  // add scrollspy onto body of the page for 'Contact Us' link
-  $("#contact-us-link").click(function () {
+  // add scrollspy onto body of the page for contact us link
+  $("#contact-us").click(function () {
     $('html, body').animate({
-      scrollTop: $("#contact-us").offset().top
-    }, 500);
-  });
-   // add scrollspy onto body of the page for 'Contact Us' link
-   $("#contact-us-link-desktop").click(function () {
-    $('html, body').animate({
-      scrollTop: $("#contact-us").offset().top
+      scrollTop: $("#contact").offset().top
     }, 500);
   });
 
-  // add scrollspy onto body of the page for'Getting Started' link
-  $("#getting-started-link").click(function () {
+  // add scrollspy onto body of the page for login link
+  $("#about-link").click(function () {
     $('html, body').animate({
-      scrollTop: $("#getting-started").offset().top
-    }, 500);
-  });
-  // add scrollspy onto body of the page for'Getting Started' link
-  $("#getting-started-link-desktop").click(function () {
-    $('html, body').animate({
-      scrollTop: $("#getting-started").offset().top
+      scrollTop: $("#homepage-body-container").offset().top
     }, 500);
   });
 
-  // add scrollspy onto body of the page for 'Home' link        
-  $("#home-link").click(function () {
+  // add scrollspy onto body of the page for home link        
+  $(".navbar-brand a").click(function () {
     $('html, body').animate({
       scrollTop: $("#page-top").offset().top
     }, 500);
@@ -145,3 +151,7 @@ function validatePassword() {
   }
 }
 
+//clears the input in the modal when modal is closed.
+// function clearInput() {
+//   $('form').find('input[type=text], input[type=password], input[type=number], input[type=email], textarea').val('');
+// };
