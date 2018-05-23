@@ -27,42 +27,40 @@ $(window).on('popstate', function () {
 });
 
 
-  // add scrollspy onto body of the page for about link
+  // add scrollspy onto body of the page for 'Our Team' link
   $("#our-team-link").click(function () {
     $('html, body').animate({
       scrollTop: $("#our-team").offset().top
     }, 500);
   });
 
-  // add scrollspy onto body of the page for how it works link
+  // add scrollspy onto body of the page for 'Contact Us' link
   $("#contact-us-link").click(function () {
     $('html, body').animate({
       scrollTop: $("#contact-us").offset().top
     }, 500);
   });
-
-  // add scrollspy onto body of the page for our-team link
-  $("#contact-us-link-desktop").click(function () {
+   // add scrollspy onto body of the page for 'Contact Us' link
+   $("#contact-us-link-desktop").click(function () {
     $('html, body').animate({
       scrollTop: $("#contact-us").offset().top
     }, 500);
   });
 
-  // add scrollspy onto body of the page for contact us link
+  // add scrollspy onto body of the page for'Getting Started' link
   $("#getting-started-link").click(function () {
     $('html, body').animate({
       scrollTop: $("#getting-started").offset().top
     }, 500);
   });
-
-  // add scrollspy onto body of the page for login link
+  // add scrollspy onto body of the page for'Getting Started' link
   $("#getting-started-link-desktop").click(function () {
     $('html, body').animate({
       scrollTop: $("#getting-started").offset().top
     }, 500);
   });
 
-  // add scrollspy onto body of the page for home link        
+  // add scrollspy onto body of the page for 'Home' link        
   $("#home-link").click(function () {
     $('html, body').animate({
       scrollTop: $("#page-top").offset().top
