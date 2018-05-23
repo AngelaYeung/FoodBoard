@@ -26,10 +26,6 @@ $(window).on('popstate', function () {
   $('.modal').modal('hide');
 });
 
-// //removes input in form when modal is closed.
-// $('.modal').on('hidden.bs.modal', function () {
-//   clearInput();
-// });
 
   // add scrollspy onto body of the page for about link
   $("#about-link").click(function () {
@@ -150,8 +146,3 @@ function validatePassword() {
     return true;
   }
 }
-
-//clears the input in the modal when modal is closed.
-// function clearInput() {
-//   $('form').find('input[type=text], input[type=password], input[type=number], input[type=email], textarea').val('');
-// };

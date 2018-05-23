@@ -56,6 +56,7 @@
     #suite-form form {
         padding-top: 5%;
     }
+
 }
 
 .edit-info {
@@ -68,6 +69,10 @@
         margin-top: 18%;
     }
 }
+
+    .heading{
+        font-weight: bold;
+    }
 
 input:focus {
     outline: none;
