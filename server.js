@@ -1425,7 +1425,7 @@ function deleteExpiredFoodItem() {
   mysqlconnection.pool.getConnection((error, connection) => {
 
     if (error) {
-      slackcmd.log(`Error attemping to connect to db for My Claims Event:`, error);
+      slacklog.log(`Error attemping to connect to db for My Claims Event:`, error);
       console.log('Error attemping to connect to db for My Claims Event:', error);
     } else {
 
