@@ -27,20 +27,16 @@ exports.logout = (req, res) => {
       console.log("Error occured while logging out: ", err);
     }
 
-    mysqlconnection.pool.getConnection( (error, connection) => {
+
+    mysqlconnection.pool.query(`DELETE FROM Sessions WHERE sessionID = '${req.sessionID}'`, (error, rows, fields) => {
       if (error) {
-        console.log('Error occured when connecting to db during logout');
+        console.log("Error occured while trying to delete sessionID from Sessions: ", error);
       } else {
-        connection.query(`DELETE FROM Sessions WHERE sessionID = '${req.sessionID}'`, (error, rows, fields) => {
-          if (error) {
-            console.log("Error occured while trying to delete sessionID from Sessions: ", error);
-          } else {
-            console.log("Successful deletion of sessionID from Sessions.");
-          }
-          connection.release();
-        });
+        console.log("Successful deletion of sessionID from Sessions.");
       }
+
     });
+
 
     res.redirect('/');
 

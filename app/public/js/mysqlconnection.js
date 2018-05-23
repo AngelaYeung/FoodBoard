@@ -7,7 +7,6 @@ var pool = mysql.createPool({
     user        : "root",
     password    : "",
     database    : "Foodboard",
-    connectionLimit: 10,
 });
 
 
