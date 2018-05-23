@@ -136,12 +136,13 @@ $(document).ready(function () {
     }
 
     //submits the form if the date is valid
-    if (validateDate($('#datetimepicker').val())) {
+    if (validateDate($('#datetimepicker').val()) && isFormFilled()) {
 
       // closes the form modal after the submit button is clicked
       if ($('#itemModal').is(':visible')) {
         $('#itemModal').modal('toggle');
       };
+
       socket.emit('post item', {
         name: $('#name').val(),
         description: $('#description').val(),
@@ -152,9 +153,31 @@ $(document).ready(function () {
       });
       $('#postForm').trigger('reset');
     } else {
-      console.log("time is invalid");
-      $('#datetimepicker').addClass("invalid-input");
-      $('.invalid-feedback').show();
+
+      if (!validateDate($('#datetimepicker').val())) {
+        $("#invalid-datetime").show();
+      } else {
+        $("#invalid-datetime").hide();
+      }
+
+      if (($("#name").val().trim().length === 0)) {
+        $("#invalid-name").show();
+      } else {
+        $("#invalid-name").hide();
+      }
+
+      if (($("#description").val().trim().length === 0)) {
+        $("#invalid-description").show();
+      } else {
+        $("#invalid-description").hide();
+      }
+
+      if (($("#file-input").get(0).files.length === 0)) {
+        $("#invalid-file-input").show();
+      } else {
+        $("#invalid-file-input").hide();
+      }
+
     }
     return false;
   });
@@ -251,7 +274,7 @@ $(document).ready(function () {
     itemClaimed(itemID);
   });
 
-  
+
 
 });
 //#endregion search feature
@@ -260,11 +283,10 @@ $(document).ready(function () {
  * Returns true if the add item form is filled
  */
 function isFormFilled() {
-  return (
-    !($("#name").val().length             === 0) &&
-    !($("#description").val().length      === 0) &&
-    !($("#datetimepicker").val().length   === 0) &&
-    !($('#fileinput').get(0).files.length === 0));
+  return (!($("#name").val().length === 0) &&
+    !($("#description").val().length === 0) &&
+    !($("#datetimepicker").val().length === 0) &&
+    !($('#file-input').get(0).files.length === 0));
 
 }
 
@@ -324,7 +346,7 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
         <img class="food-img" src="${setPostImage(foodGroup, img)}">
-        <p id="status${id}" class="status-text" style="display:none;"></p>
+        <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
@@ -365,7 +387,7 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
         <img class="food-img" src="${setPostImage(foodGroup, img)}">
-        <p id="status${id}" class="status-text" style="display:none;"></p>
+        <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
@@ -404,8 +426,8 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   $('#card-list').prepend(`
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
-        <img class="food-img" src="${setPostImage(foodGroup, img)}">
-        <p id="status${id}" class="status-text" style="display:none;"></p>
+    <img class="food-img" src="${setPostImage(foodGroup, img)}">
+    <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
@@ -446,11 +468,11 @@ function deleteItem(itemID) {
  */
 function itemDeleted(id) {
   $(`#confirmDeleteModal`).modal('hide');
-  $(`#status${id}`).text("DELETED");
-  $(`#status${id}`).css("transform", "rotate(-25deg) translate(50%, -170%)");
+  $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
+  $(`#status${id}`).css("transform", "translate(86%, -145%)");
 
   $(`#status${id}`).fadeIn("300", () => {
-    $(`#card${id}`).fadeOut("500", () => {
+    $(`#card${id}`).fadeOut("500", () => {  
       $(`#card${id}`).remove();
     });
   });
@@ -461,8 +483,8 @@ function deleteRoadBlock(id) {
 	<div class="modal-dialog modal-confirm">
 		<div class="modal-content">
 			<div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title">Are you sure?</h4>	
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 			</div>
 			<div class="modal-body">
 				<p>Do you really want to delete this post? This process cannot be undone.</p>
@@ -473,17 +495,17 @@ function deleteRoadBlock(id) {
 			</div>
 		</div>
 	</div>`
-$(`#card${id}`).prepend(modalHtml);
+  $(`#card${id}`).prepend(modalHtml);
 
-$(`#confirmDeleteModal`).modal('show');
+  $(`#confirmDeleteModal`).modal('show');
 }
 /**
  * Removes the claimed items from the board.
  * @param {number} id 
  */
 function itemClaimed(id) {
-  $(`#status${id}`).text("CLAIMED");
-  $(`#status${id}`).css("transform", "rotate(-25deg) translate(50%, -170%)");
+  $(`#status${id}`).attr("src", "../../Pictures/checkmark.png");
+  $(`#status${id}`).css("transform", "translate(112%, -186%)");
 
   $(`#status${id}`).fadeIn("300", () => {
     $(`#card${id}`).fadeOut("500", () => {
@@ -493,9 +515,9 @@ function itemClaimed(id) {
 };
 
 /**
-* Sends emits the item id to the server.
-* @param {number} itemID 
-*/
+ * Sends emits the item id to the server.
+ * @param {number} itemID 
+ */
 function claimItem(itemID) {
   let sessionID = getSessionID('connect.sid');
   socket.emit('claim item', {
