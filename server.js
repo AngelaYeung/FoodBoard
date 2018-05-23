@@ -294,7 +294,6 @@ app.post("/changesuitenumber", (req, res) => {
           console.log(new Date(Date.now()), "Error querying for old password in the users Table: ", error);
         } else {
           if (rows.length) {
-
             passwordHashed = rows[0].password;
             name = rows[0].firstName + " " + rows[0].lastName;
             email = rows[0].email;
