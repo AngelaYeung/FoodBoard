@@ -39,63 +39,109 @@
 
     <div id="homepage-body" class="text-center">
       <img class="img-responsive" src="./Pictures/largelogo-text-transparent.png" alt="FoodBoard logo">
-      <p>Share More, Waste Less</p>
+      <p><i>Share More, Waste Less</i></p>
       <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#logreg-modal">Get Started!</button>
     </div>
   </div>
+  <div id="getting-started"></div>
 
   <!-- How it works section-->
-  <div class="container-fluid container-fluid-custom" id="how-it-works">
-    <div class="jumbotron jumbotron-custom">
-      <div class="row">
-        <div class="col-lg-12 text-center">
-          <b>VALUES</b>
+  <div class="text-center container container-carousel-custom">
+
+    <div id="foodboard-how-to-carousel" class="carousel" data-interval="false">
+      <!-- Indicators -->
+      <ol class="carousel-indicators">
+        <li data-target="#foodboard-how-to-carousel" data-slide-to="0" class="active"></li>
+        <li data-target="#foodboard-how-to-carousel" data-slide-to="1"></li>
+        <li data-target="#foodboard-how-to-carousel" data-slide-to="2"></li>
+      </ol>
+
+      <!-- Wrapper for slides -->
+      <div class="carousel-inner">
+        {{!-- Page 1 --}}
+        <div class="item active">
+          <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-6">
+              <p>Register</p>
+              <p>One step registration from beginning your journey to food sustainability.</p>
+            </div>
+            <div class="col-lg-1"></div>
+            <div class="phone-card col-lg-3 text-center">
+              <div class="phone-border">
+                <div class="phone-speaker"></div>
+                <div class="phone-content">
+                  <img src="../Pictures/carousel-1.jpg">
+                </div>
+                <div class="circle phone-home-button"></div>
+              </div>
+            </div>
+            <div class="col-lg-1"></div>
+          </div>
+        </div>
+        {{!-- Page 2 --}}
+        <div class="item">
+          <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-6">
+              <p>Share Food</p>
+              <p>Post food items that would otherwise perish away, sharing with your community and reducing food waste.</p>
+            </div>
+            <div class="col-lg-1"></div>
+            <div class="phone-card col-lg-3 text-center">
+              <div class="phone-border">
+                <div class="phone-speaker"></div>
+                <div class="phone-content">
+                  <img src="../Pictures/carousel-2.jpg">
+                </div>
+                <div class="circle phone-home-button"></div>
+              </div>
+            </div>
+            <div class="col-lg-1"></div>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-6">
+              <p>Claim</p>
+              <p>See something you like? Claim it with a click of a button!</p>
+            </div>
+            <div class="col-lg-1"></div>
+            <div class="phone-card col-lg-3 text-center">
+              <div class="phone-border">
+                <div class="phone-speaker"></div>
+                <div class="phone-content">
+                  <img src="../Pictures/carousel-3.jpg">
+                </div>
+                <div class="   phone-home-button"></div>
+              </div>
+            </div>
+            <div class="col-lg-1"></div>
+          </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-lg-4 text-center">
-          <img src="./Pictures/sustain.png" alt="Sustain">
-          <div>
-            <h2>
-              <b>Sustain</b>
-            </h2>
-            <p>Reduce the amount of perishable foods in your community.</p>
-          </div>
-        </div>
-        <div class="col-lg-4 text-center">
-          <img src="./Pictures/groceries.png" alt="Share">
-          <div>
-            <h2>
-              <b>Share</b>
-            </h2>
-            <p>Post and claim items with the click of a button.</p>
-          </div>
-        </div>
-        <div class="col-lg-4 text-center">
-          <img src="./Pictures/grow.png" alt="Grow">
-          <div>
-            <h2>
-              <b>Grow</b>
-            </h2>
-            <p>Create a sustainable community within your neighborhood.</p>
-          </div>
-        </div>
+
+      <!-- Left and right controls -->
+      <div id="carousel-controls">
+        <a class="left carousel-control" href="#foodboard-how-to-carousel" data-slide="prev">
+          <span class="glyphicon glyphicon-chevron-left"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#foodboard-how-to-carousel" data-slide="next">
+          <span class="glyphicon glyphicon-chevron-right"></span>
+          <span class="sr-only">Next</span>
+        </a>
       </div>
     </div>
   </div>
-  </br>
-  </br>
-  </br>
-  </br>
-  </br>
-  </br>
-
 
   <!-- OUR TEAM -->
   <div class="container-fluid text-center" id="our-team">
     <div class="row">
       <div class="col-lg-12 text-center" id="our-team-title">
-        <b>OUR TEAM</b>
+        <p>Our Team</p>
       </div>
     </div>
     <div class="row">
@@ -155,55 +201,45 @@
             {{> login}} {{> register}}
             <!-- Register Panel Footer -->
             <!-- <div class="modal-footer">
-                <button type="submit" class="btn btn-success center-block" value="Register">Register</button>
-              </div> -->
+                  <button type="submit" class="btn btn-success center-block" value="Register">Register</button>
+                </div> -->
           </div>
         </div>
       </div>
     </div>
   </div>
 
-
-  <!-- FAQ Section-->
-  <!-- <div class="container-fluid" id="faq">
-    <div class="row">
-      <div class="text-center">FAQ</div>
-    </div>
-    <div class="row">
-      <div class="col-sm-4 text-center">
-        1.
+  <footer>
+    <div class="container container-contact-us">
+      <div class="container-contact-us-background-blur">
+        <div class="container-contact-us-background"></div>
       </div>
-      <div class="col-sm-8">
-        <p class="question">The question will go here.</p>
-        <p class="answer">Answer to the question</p>
+      <div class="container-contact-us-content">
+        <div class="row">
+          <div class="col-lg-12 text-center" id="contact-us">
+            Get In Touch With Us!
+          </div>
+        </div>
+        <div class='row text-center'>
+          <div class="logodiv col-xs-12">
+            <img id="email-icon" src="../Pictures/paper.png">
+          </div>
+        </div>
+        <div class='row text-center'>
+          <div class="col-xs-12">
+            <p>We would love to hear feedback from our users. You can contact us at:</p>
+          </div>
+        </div>
+        <div class="row text-center">
+          <div class="col-xs-12">
+            <p>
+              <b>foodboardcanada@gmail.com</b>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
-  </div> -->
-
+  </footer>
 </body>
-
-<footer id="contact">
-  <h1>Contact Us</h1>
-  <div class='row text-center'>
-    <p>We here at Foodboard would love to hear feedback from you guys. You can contact us at
-    </p>
-  </div>
-  <div class='row text-center'>
-    <div class="logodiv col-xs-12">
-      <img src="../Pictures/icon.png">
-    </div>
-    <div class="row text-center">
-      <div class="col-xs-12">
-
-        <span id="boldEmail">foodboardcanada@gmail.com</span>
-      </div>
-
-    </div>
-
-  </div>
-  <div class="row text-center">
-  <p><span id="credit">Icon made by Freepik from www.flaticon.com</span> </p>
-  </div>
-</footer>
 
 </html>

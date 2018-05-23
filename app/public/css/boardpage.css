@@ -413,19 +413,27 @@ a#color-change {
     box-shadow: 0 0 2px 2px rgb(199, 108, 108);
 }
 
+
+
 .status-text {
   width: fit-content;
-  border-radius: 5px;
-  color: red;
+  padding: 10%;
+  border-radius: 5%;
   position: relative;
   z-index: 10;
-  font-size: 40pt;
-  font-family: 'Raleway', sans-serif;
-  background: rgb(255, 255, 255, 0.6);
+  background: rgb(0, 0, 0, 0.6);
 }
 
 .imgDiv {
   position: relative;
   z-index: 1;
   height: 300px;
+}
+
+.invalid-feedback{
+  display: none;
+}
+
+#confirmDeleteModal {
+  margin-top: 50%;
 }

@@ -103,8 +103,8 @@ function setPostImage(foodCategory, imgName) {
 
 function itemDeleted(id) {
   $(`#confirmDeleteModal`).modal('hide');
-  $(`#status${id}`).text("DELETED");
-  $(`#status${id}`).css("transform", "rotate(-25deg) translate(50%, -170%)");
+  $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
+  $(`#status${id}`).css("transform", "translate(86%, -145%)");
 
   $(`#status${id}`).fadeIn("300", () => {
     $(`#card${id}`).fadeOut("500", () => {
@@ -148,7 +148,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
         <img class="food-img" src="${setPostImage(foodGroup, img)}">
-        <p id="status${id}" class="status-text" style="display:none;"></p>
+        <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
