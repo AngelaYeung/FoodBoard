@@ -139,12 +139,7 @@ body {
   #search-bar-btn-reset img {
     width: 100%;
   }
-
-  #empty-foodboard {
-    text-align: center;
-    color: #7D7D7D;
-  }
-
+  
   .emoji {
     font-size: 60pt;
     padding-top: 50%;
@@ -202,12 +197,7 @@ body {
       -webkit-box-shadow: none !important;
       box-shadow: none !important;
     }
-
-    #empty-foodboard {
-      text-align: center;
-      color: #7D7D7D;
-    }
-
+  
     .emoji {
       font-size: 80pt;
       padding-top: 15%;
@@ -408,4 +398,10 @@ a#color-change {
 
 #confirmDeleteModal {
   margin-top: 50%;
+}
+
+  #empty-foodboard {
+    text-align: center;
+    color: #7D7D7D;
+    display:none;
 }
