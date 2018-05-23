@@ -102,9 +102,38 @@ function setPostImage(foodCategory, imgName) {
 }
 
 function itemDeleted(id) {
-  $(`#card${id}`).remove();
-}
+  $(`#confirmDeleteModal`).modal('hide');
+  $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
+  $(`#status${id}`).css("transform", "translate(86%, -145%)");
 
+  $(`#status${id}`).fadeIn("300", () => {
+    $(`#card${id}`).fadeOut("500", () => {
+      $(`#card${id}`).remove();
+    });
+  });
+};
+
+function deleteRoadBlock(id) {
+  var modalHtml = `<div id="confirmDeleteModal" class="modal fade">
+	<div class="modal-dialog modal-confirm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Are you sure?</h4>	
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			</div>
+			<div class="modal-body">
+				<p>Do you really want to delete this post? This process cannot be undone.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-danger" onclick="deleteItem(${id})">Delete</button>
+			</div>
+		</div>
+	</div>`
+$(`#card${id}`).prepend(modalHtml);
+
+$(`#confirmDeleteModal`).modal('show');
+}
 /**
  * Creates Card from FoodItem Table without a 'Claim' Button.
  * @param {*} id 
@@ -119,6 +148,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
         <img class="food-img" src="${setPostImage(foodGroup, img)}">
+        <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
@@ -138,7 +168,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
             <p>${description}</p>
             <form class="claim-form"
                 action="javascript:void(0);">
-                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteItem(this.id)">
+                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteRoadBlock(this.id)">
             </form>
             <p></p>
         </div>

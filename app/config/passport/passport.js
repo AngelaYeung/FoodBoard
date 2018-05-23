@@ -1,7 +1,6 @@
 //load bcrypt
 var bCrypt = require('bcrypt-nodejs');
 const mysqlconnection = require('../../public/js/mysqlconnection');
-var connection = mysqlconnection.handleDisconnect();
 var slacklog = require('../../public/js/slacklogs');
 
 module.exports = function (passport, user) {
@@ -31,36 +30,50 @@ module.exports = function (passport, user) {
         return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
       };
 
-      var userSelect = "SELECT userID FROM users WHERE email = ? LIMIT 1";
-      connection.query(userSelect, [register_email], (error, results) => {
-        if (error) {
-          slacklog.log(`Event: Passport. ${userSelect}.`, error);
-          console.log(new Date(Date.now()), 'Error:', error);
-          return done(error);
-        }
-        if (results.length) { // Return fail
-          return done(null, false, console.log("Email is already taken."));
-        } else { 
-          var userPassword = generateHash(register_pwd); // hashed password
-          var data = {
-            email: register_email,
-            password: userPassword,
-            firstName: req.body.register_first_name,
-            lastName: req.body.register_last_name,
-            suiteNumber: req.body.register_suite_number,
-            role: 1
-          };
+      mysqlconnection.pool.getConnection( (error, connection) => {
 
-          User.create(data).then((newUser, created) => {
-            if (!newUser) {
-              return done(null, false);
-            }
-            if (newUser) {
-              return done(null, newUser);
+        if (error) {
+          slacklog.log('Error local-signup: ', error);
+          console.log('Error login-signup', error);
+        } else {
+
+          var userSelect = "SELECT userID FROM users WHERE email = ? LIMIT 1";
+
+          connection.query(userSelect, [register_email], (error, results) => {
+            if (error) {
+              slacklog.log(`Event: Passport. ${userSelect}.`, error);
+              console.log(new Date(Date.now()), 'Error:', error);
+              connection.release();
+              return done(error);
+            } else if (results.length) { // Return fail
+              connection.release();
+              return done(null, false, console.log("Email is already taken."));
+            } else { 
+              var userPassword = generateHash(register_pwd); // hashed password
+              var data = {
+                email: register_email,
+                password: userPassword,
+                firstName: req.body.register_first_name,
+                lastName: req.body.register_last_name,
+                suiteNumber: req.body.register_suite_number,
+                role: 1
+              };
+    
+              User.create(data).then((newUser, created) => {
+                if (!newUser) {
+                  connection.release();
+                  return done(null, false);
+                }
+                if (newUser) {
+                  connection.release();
+                  return done(null, newUser);
+                }
+              });
             }
           });
         }
       });
+
     }
   ));
 

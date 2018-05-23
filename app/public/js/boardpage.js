@@ -136,12 +136,13 @@ $(document).ready(function () {
     }
 
     //submits the form if the date is valid
-    if (validateDate($('#datetimepicker').val())) {
+    if (validateDate($('#datetimepicker').val()) && isFormFilled()) {
 
       // closes the form modal after the submit button is clicked
       if ($('#itemModal').is(':visible')) {
         $('#itemModal').modal('toggle');
       };
+
       socket.emit('post item', {
         name: $('#name').val(),
         description: $('#description').val(),
@@ -152,9 +153,31 @@ $(document).ready(function () {
       });
       $('#postForm').trigger('reset');
     } else {
-      console.log("time is invalid");
-      $('#datetimepicker').addClass("invalid-input");
-      $('.invalid-feedback').show();
+
+      if (!validateDate($('#datetimepicker').val())) {
+        $("#invalid-datetime").show();
+      } else {
+        $("#invalid-datetime").hide();
+      }
+
+      if (($("#name").val().trim().length === 0)) {
+        $("#invalid-name").show();
+      } else {
+        $("#invalid-name").hide();
+      }
+
+      if (($("#description").val().trim().length === 0)) {
+        $("#invalid-description").show();
+      } else {
+        $("#invalid-description").hide();
+      }
+
+      if (($("#file-input").get(0).files.length === 0)) {
+        $("#invalid-file-input").show();
+      } else {
+        $("#invalid-file-input").hide();
+      }
+
     }
     return false;
   });
@@ -197,7 +220,7 @@ $(document).ready(function () {
       console.log('userID: ', userID);
       console.log('role', typeof role);
       console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
-      console.log("ROLE: ", role );
+      console.log("ROLE: ", role);
       if (role == 0) {
         if (rows[i].Users_userID == userID) {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
@@ -251,47 +274,21 @@ $(document).ready(function () {
     itemClaimed(itemID);
   });
 
-  /************************************************
-  * 
-  *              SEARCH FEATURE
-  * 
-  *************************************************/
-  //#region search feature
 
-  /**
-   * Handles search bar clear button toggle
-   */
-  // $('#search-bar').on('keyup', (event) => {
-  //   console.log('searchbar');
-  //   if ($('#search-bar').val() !== '') {
-  //     $('#search-bar-btn-reset').show();
-  //   } else {
-  //     $('#search-bar-btn-reset').hide();
-  //   }
-  // });
 
-  // $('#search-bar-btn-reset').on('click', () => {
-  //   $('#search-bar-btn-reset').hide();
-  // });
-
-  // $(window).on('scroll', () => {
-  //   if ($(window).scrollTop() < 2) {
-  //     $('#search-bar-container').slideDown(150);
-  //     $('#card-list').animate({ 'margin-top': '2%', 'padding-top': '0%' }, 25, 'linear');
-  //     $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
-
-  //   } else {
-  //     $('#search-bar-container').slideUp(150);
-  //     $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
-  //     $('#card-list').animate({ 'margin-top': '10%', 'padding-top': '2%' }, 25, 'linear');
-  //   }
-  // });
-
-  // $('#search-bar-form').on('submit', (event) => {
-  //   event.preventDefault();
-  // });
 });
 //#endregion search feature
+
+/**
+ * Returns true if the add item form is filled
+ */
+function isFormFilled() {
+  return (!($("#name").val().length === 0) &&
+    !($("#description").val().length === 0) &&
+    !($("#datetimepicker").val().length === 0) &&
+    !($('#file-input').get(0).files.length === 0));
+
+}
 
 /**
  * Gets the session id. 
@@ -349,6 +346,7 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
         <img class="food-img" src="${setPostImage(foodGroup, img)}">
+        <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
@@ -373,7 +371,7 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
             <p></p>
         </div>
     </div>`);
-}
+};
 
 /**
  * Creates Card from FoodItem Table without a 'Delete' Button.
@@ -389,6 +387,7 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
         <img class="food-img" src="${setPostImage(foodGroup, img)}">
+        <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
@@ -413,7 +412,7 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
             <p></p>
         </div>
     </div>`);
-}
+};
 /**
  * Creates Card from FoodItem Table without a 'Claim' Button.
  * @param {*} id 
@@ -427,7 +426,8 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   $('#card-list').prepend(`
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
-        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+    <img class="food-img" src="${setPostImage(foodGroup, img)}">
+    <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
@@ -447,7 +447,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
             <p>${description}</p>
             <form class="claim-form"
                 action="javascript:void(0);">
-                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteItem(this.id)">
+                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteRoadBlock(this.id)">
             </form>
             <p></p>
         </div>
@@ -467,21 +467,57 @@ function deleteItem(itemID) {
  * @param {*} id 
  */
 function itemDeleted(id) {
-  $(`#card${id}`).remove();
-}
+  $(`#confirmDeleteModal`).modal('hide');
+  $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
+  $(`#status${id}`).css("transform", "translate(86%, -145%)");
 
+  $(`#status${id}`).fadeIn("300", () => {
+    $(`#card${id}`).fadeOut("500", () => {  
+      $(`#card${id}`).remove();
+    });
+  });
+};
+
+function deleteRoadBlock(id) {
+  var modalHtml = `<div id="confirmDeleteModal" class="modal fade">
+	<div class="modal-dialog modal-confirm">
+		<div class="modal-content">
+			<div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Are you sure?</h4>	
+			</div>
+			<div class="modal-body">
+				<p>Do you really want to delete this post? This process cannot be undone.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-danger" onclick="deleteItem(${id})">Delete</button>
+			</div>
+		</div>
+	</div>`
+  $(`#card${id}`).prepend(modalHtml);
+
+  $(`#confirmDeleteModal`).modal('show');
+}
 /**
  * Removes the claimed items from the board.
  * @param {number} id 
  */
 function itemClaimed(id) {
-  $(`#card${id}`).remove();
+  $(`#status${id}`).attr("src", "../../Pictures/checkmark.png");
+  $(`#status${id}`).css("transform", "translate(112%, -186%)");
+
+  $(`#status${id}`).fadeIn("300", () => {
+    $(`#card${id}`).fadeOut("500", () => {
+      $(`#card${id}`).remove();
+    });
+  });
 };
 
 /**
-* Sends emits the item id to the server.
-* @param {number} itemID 
-*/
+ * Sends emits the item id to the server.
+ * @param {number} itemID 
+ */
 function claimItem(itemID) {
   let sessionID = getSessionID('connect.sid');
   socket.emit('claim item', {
@@ -520,6 +556,8 @@ function setPostImage(foodCategory, imgName) {
     }
   }
 }
+
+
 //#endregion create card functions
 
 

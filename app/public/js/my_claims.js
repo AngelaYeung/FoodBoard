@@ -59,6 +59,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
         <img class="food-img" src="${setPostImage(foodGroup, img)}">
+        <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
@@ -85,7 +86,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
     </div>`);
   /** Clearing Forms */
   $('#postForm').trigger('reset');
-}
+};
 function formatDate(dateTime) {
   var expiryDate = new Date(dateTime);
   console.log('Expiry date', expiryDate);
@@ -122,5 +123,13 @@ function unclaimItem(cardID) {
     cardID: cardID,
     sessionID: sessionID
   });
-  $(`#card${cardID}`).remove();
-}
+  
+  $(`#status${cardID}`).attr("src", "../../Pictures/unclaim.png");
+  $(`#status${cardID}`).css("transform", "translate(102%, -170%)");
+
+  $(`#status${cardID}`).fadeIn("300", () => {
+    $(`#card${cardID}`).fadeOut("500", () => {
+      $(`#card${cardID}`).remove();
+    });
+  });
+};

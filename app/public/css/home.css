@@ -525,3 +525,8 @@ body {
   width:64px;
 }
 
+.invalid-feedback {
+  display: none;
+  text-align: center;
+  color: red;
+}

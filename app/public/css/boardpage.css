@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:900');
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -287,4 +288,29 @@ a#color-change {
 .invalid-input {
     -webkit-box-shadow: 0 0 2px 2px rgb(199, 108, 108);
     box-shadow: 0 0 2px 2px rgb(199, 108, 108);
+}
+
+
+
+.status-text {
+  width: fit-content;
+  padding: 10%;
+  border-radius: 5%;
+  position: relative;
+  z-index: 10;
+  background: rgb(0, 0, 0, 0.6);
+}
+
+.imgDiv {
+  position: relative;
+  z-index: 1;
+  height: 300px;
+}
+
+.invalid-feedback{
+  display: none;
+}
+
+#confirmDeleteModal {
+  margin-top: 50%;
 }
