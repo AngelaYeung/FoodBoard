@@ -491,7 +491,9 @@ function deleteItem(itemID) {
  */
 function itemDeleted(id) {
   $(`#confirmDeleteModal${id}`).modal('hide');
-  $(`${id}`).attr('disabled', 'disabled');
+  $(`#card${id}`).attr('disabled', 'true');
+  $(`#${id}`).attr('disabled', 'disabled');
+
   $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
   $(`#status${id}`).css("top", "28%");
   $(`#status${id}`).css("left", "33%");

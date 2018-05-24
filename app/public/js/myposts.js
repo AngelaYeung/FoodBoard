@@ -97,6 +97,8 @@ function getCookie(name) {
 };
 
 function itemDeleted(id) {
+  $(`#card${id}`).attr('disabled', 'true');
+  $(`#${id}`).attr('disabled', 'disabled');
   $(`#confirmDeleteModal`).modal('hide');
   $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
   $(`#status${id}`).css("top", "28%");
