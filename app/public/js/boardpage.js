@@ -282,6 +282,16 @@ $(document).ready(function () {
   socket.on('claim return', (itemID) => {
     itemClaimed(itemID);
   });
+
+
+  $('#emoji').on('click', (event) => {
+    if ($('#emoji').html() === '~(˘▾˘~)') {
+      $('#emoji').html('(~˘▾˘)~');
+    } else if ($('#emoji').html() === '(~˘▾˘)~') {
+      $('#emoji').html('~(˘▾˘~)');
+    }
+  });
+
 });
 //#endregion search feature
 
@@ -480,7 +490,7 @@ function deleteItem(itemID) {
  * @param {*} id 
  */
 function itemDeleted(id) {
-  $(`#confirmDeleteModal`).modal('hide');
+  $(`#confirmDeleteModal${id}`).modal('hide');
   $(`${id}`).attr('disabled', 'disabled');
   $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
   $(`#status${id}`).css("top", "28%");
@@ -510,7 +520,8 @@ function deleteRoadBlock(id) {
 				<button type="button" class="btn btn-danger" onclick="deleteItem(${id})">Delete</button>
 			</div>
 		</div>
-	</div>`
+  </div>
+  </div>`
   $(`#card${id}`).prepend(modalHtml);
 
   $(`#confirmDeleteModal${id}`).modal('show');
@@ -581,7 +592,7 @@ function flipEmoji() {
       $('.emoji').html('⚆ _ ⚆');
       break;
     case 2:
-      $('.emoji').html('\ (•◡•) /');
+      $('.emoji').html('(•◡•) /');
       break;
     case 3:
       $('.emoji').html('(ﾉ◕ヮ◕)ﾉ');
