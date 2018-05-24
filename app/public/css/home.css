@@ -126,6 +126,11 @@
 *
 ************************************************/
 @media screen and (min-width: 481px) {
+
+  .modal-open .modal{
+    overflow-y: hidden;
+  }
+  
   .homepage-background img {
     -webkit-filter: blur(5px);
             filter: blur(5px);
