@@ -2,7 +2,10 @@
 
 **Link to our webpage**: [FoodBoard](http://foodboard.ca)
 
-## Contact us
+## Table of Contents
+1. [Contact Us](#Contact-us)
+
+## Contact us <a id="Contact-us"></a>
 | Members | Student Number | Github | LinkedIn |
  --------|-----------------|--------|----------
 | Derek Lee | A00940646 | [derek-lee8526](https://github.com/derek-lee8526) | https://www.linkedin.com/in/dereklee8526/|
@@ -14,7 +17,26 @@
 **Completion: 95%**
 
 ## Known bugs
-- [x] email automation does not work
 - [ ] board page is buggy on apple products
-- [ ] function to handle mysql timeout does not solve the problem
 - [ ] image uploaded from iphone cameras are rotated
+
+## Challenges we experienced as a group
+* difficulty testing all the different scenarios that we could have in our application
+* explaining code to other team members
+* learning database
+
+
+## Installation <a name="Installation"></a>
+This project requires [node.js](https://nodejs.org/en/download/). Download and add to path.
+```
+npm install
+```
+If you receive a "socketio-upload not found error" then:
+```
+npm install socketio-upload
+```
+
+## Usage
+```
+node server.js
+```
