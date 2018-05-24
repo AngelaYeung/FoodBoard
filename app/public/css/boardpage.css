@@ -418,3 +418,7 @@ a#color-change {
     color: #7D7D7D;
     display: none;
 }
+
+img {
+  image-orientation: from-image;
+}
