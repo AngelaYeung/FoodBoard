@@ -1,6 +1,7 @@
 ![Foodboard logo](https://i.imgur.com/YZb5agj.png)
 
 FoodBoard is a mobile web application that allows users to share food that will otherwise go to waste. 
+
 This project was created from April 23 2018 - May 25 2018 for the COMP2910 course at [BCIT](https://www.bcit.ca/).
 
 **Link to our webpage**: [FoodBoard](http://foodboard.ca)
