@@ -30,7 +30,7 @@
                       <span class="glyphicon glyphicon-envelope"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="email" placeholder="Email Address" name="register_email" id='register_email' pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required>
+                      <input class="form-control" type="email" placeholder="Email Address" name="register_email" id='register_email' pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,3}$" oninput="setCustomValidity('')" oninvalid="this.setCustomValidity('Not a valid email')" required>
                     </div>
                   </div>
                   <!-- Register form password input -->
