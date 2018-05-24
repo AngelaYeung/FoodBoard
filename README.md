@@ -19,6 +19,7 @@ This project was created from April 23 2018 - May 25 2018 for the COMP2910 cours
 ## Known bugs
 - [ ] board page is buggy on apple products
 - [ ] image uploaded from iphone cameras are rotated
+- [ ] certain .png types cannot be uploaded in the card form
 
 <a id="challenges"></a>
 ## Challenges we experienced as a group
