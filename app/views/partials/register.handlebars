@@ -30,7 +30,7 @@
                       <span class="glyphicon glyphicon-envelope"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="email" placeholder="Email Address" name="register_email" id='register_email' required>
+                      <input class="form-control" type="email" placeholder="Email Address" name="register_email" id='register_email' pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,3}$" oninput="setCustomValidity('')" oninvalid="this.setCustomValidity('Not a valid email')" required>
                     </div>
                   </div>
                   <!-- Register form password input -->
@@ -39,7 +39,7 @@
                       <span class="glyphicon glyphicon-lock"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="password" placeholder="Enter Password" name='register_pwd' id="register_pwd" required pattern="[A-Za-z0-9]{8,}" title="Password must be more than 8 characters.">
+                      <input class="form-control" type="password" placeholder="Enter Password" name='register_pwd' id="register_pwd" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be more than 8 characters.">
                     </div>
                   </div>
                   <!-- Register form password confirm input -->
@@ -48,7 +48,7 @@
                       <span class="glyphicon glyphicon-ok-circle"></span>
                     </div>
                     <div class="col-sm-9">
-                      <input class="form-control" type="password" placeholder="Confirm Password" name='register_pwd_confirm' id="register_pwd_confirm" required pattern="[A-Z-a-z0-9]{8,}" title="Password must be more than 8 characters.">
+                      <input class="form-control" type="password" placeholder="Confirm Password" name='register_pwd_confirm' id="register_pwd_confirm" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be more than 8 characters.">
                     </div>
                     <div class='invalid-feedback'> Your passwords are not the same. </div >
                   </div>
