@@ -1,5 +1,7 @@
 ![Foodboard logo](https://i.imgur.com/YZb5agj.png)
 
+FoodBoard is a mobile web application that allows users to share food that will otherwise go to waste (Created April 23 2018 - May 25 2018.)
+
 **Link to our webpage**: [FoodBoard](http://foodboard.ca)
 
 **Completion: 95%**
