@@ -7,7 +7,7 @@ var validate = (app, passport) => {
 
   app.get('/signin', authController.signin);
 
-  // Apple the local strategy to the registration route, re-directing to foodboard upon success and homepage if not.
+  // Apply the local strategy to the registration route, re-directing to foodboard upon success and homepage if not.
   app.post('/user_registration', (req, res, next) => {
     passport.authenticate('local-signup', (err, user, info) => {
       if (err) {
