@@ -17,6 +17,7 @@ body {
     padding-top: 7%;
     font-family: "Raleway";
     font-size: 22pt;
+    margin-bottom: -3%;
   }
   
   .boardpage-title p {
@@ -42,7 +43,6 @@ body {
 
   #card-list {
     margin: 0 auto;
-    padding-top:5%
   }
 
   .navbar-foodboard > img {
