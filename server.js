@@ -31,7 +31,7 @@ var bCrypt = require('bcrypt-nodejs'); // decrypting/encrypting passwords server
 var slacklog = require('./app/public/js/slacklogs');
 var slackcmd = require('./app/public/js/slackcommands');
 
-const port = 9000;
+const port = 8080;
 
 
 var app = express().use(siofu.router); // adds siofu as a router, middleware
