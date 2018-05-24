@@ -130,14 +130,6 @@ $(document).ready(function () {
     uploader.listenOnSubmitBlob(document.getElementById('submit'), fileData, `${image_name}.${png}`);
   }
 
-
-  /** Uploads the image in form to server, and grabs its name */
-  // uploader.listenOnSubmit(document.getElementById('submit'), document.getElementById('file-input'));
-
-  // uploader.addEventListener('start', (event) => {
-  //   image_name = "test.png";
-  // });
-
   /** Sends data from post-form to server.js */
   $('#submit').click(function () {
     console.log('Submit triggered!');
@@ -230,7 +222,6 @@ $(document).ready(function () {
     var rows = items.rows;
     console.log("SESSIONID OF THE USER WHO IS LOADING:", items.sessionID);
     console.log("LOAD: ROWS: ", rows);
-    $('#empty-foodboard').css("display", "none");
     for (var i = 0; i < rows.length; i++) {
       console.log('userID: ', userID);
       console.log('role', typeof role);
@@ -255,6 +246,7 @@ $(document).ready(function () {
         }
       }
     }
+    isBoardEmpty();
   });
 
 
@@ -271,7 +263,7 @@ $(document).ready(function () {
   
   socket.on('empty foodboard', () => {
     console.log("Empty foodboard event!");
-    $('#empty-foodboard').css("display", "block");
+    isBoardEmpty();
   });
 
   socket.on('myposts', (items) => {
@@ -293,7 +285,6 @@ $(document).ready(function () {
    *************************************************************************/
   //#region delete feature
   socket.on('delete return', (itemID) => {
-    $('#empty-foodboard').css("display", "none");
     itemDeleted(itemID); //deletes the item
   });
 
@@ -304,12 +295,8 @@ $(document).ready(function () {
    *************************************************************************/
   //#region claim feature
   socket.on('claim return', (itemID) => {
-    $('#empty-foodboard').css("display", "none");
     itemClaimed(itemID);
   });
-
-
-
 });
 //#endregion search feature
 
@@ -517,6 +504,7 @@ function itemDeleted(id) {
   $(`#status${id}`).animate().fadeIn("300", () => {
    $(`#card${id}`).fadeOut("500", () => {
       $(`#card${id}`).remove();
+      isBoardEmpty();
     });
   });
 };
@@ -554,6 +542,7 @@ function itemClaimed(id) {
   $(`#status${id}`).fadeIn("300", () => {
     $(`#card${id}`).fadeOut("500", () => {
       $(`#card${id}`).remove();
+      isBoardEmpty();
     });
   });
 };
@@ -586,32 +575,25 @@ function formatDate(dateTime) {
   return formatedDate;
 };
 
-//#endregion create card functions
+function isBoardEmpty() {
+  if( $('#card-list').is(':empty') || $.trim( $('#card-list').html() ).length === 0) {
+    console.log('EMPTY');
+    $('#empty-foodboard').show();
+    $('#empty-foodboard').css('display', 'block');
+    flipEmoji();
+  } else {
+    console.log('NOT EMPTY');
+    $('#empty-foodboard').hide();
+    $('#empty-foodboard').css('display', 'none');
+  }
+  flipEmoji();
+};
 
 
-
-// Creates a thumbnail when an image has been uploaded
-// function handleFileSelect(evt) {
-//     var files = evt.target.files; // FileList object
-
-//     // Only process image files.
-//   if (files[0].type.match('image.*')) {
-
-//         var reader = new FileReader();
-
-//        // Closure to capture the file information.
-//         reader.onload = (function (theFile) {
-//             return function (e) {
-//                 // Render thumbnail.
-//                 var span = document.createElement('span');
-//                 span.innerHTML = ['<img class="thumb" src="', e.target.result,
-//                     '" title="', escape(theFile.name), '"/>'].join('');
-//                 document.getElementById("output").appendChild(span);
-//             };
-//         })(files[0]);
-
-//        // Read in the image file as a data URL.
-//        reader.readAsDataURL(files[0]);
-//     }
-// }
-// document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
+function flipEmoji() {
+  if ( $('.emoji').html() === '(~˘▾˘)~') {
+    $('.emoji').html('~(˘▾˘~)');
+  } else {
+    $('.emoji').html('(~˘▾˘)~');
+  }
+}
