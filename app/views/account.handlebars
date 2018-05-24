@@ -115,7 +115,7 @@
                             <input class="currentPW" name="currentPW" type="password" value="" placeholder="Enter Password" required>
                         </div>
                         <div class="form-group text-center">
-                            <input id="newSuite" name="newSuite" type="number" placeholder="Enter new Suite Number">
+                            <input id="newSuite" name="newSuite" type="text" placeholder="Enter new Suite Number"  pattern="[0-9]{1,3}" title="Suite Number must be between 1 to 5 digits" required>
                         </div>
                         <div class="form-group text-center">
                             <button id="suite-submit" class="btn btn-primary disabled" type="submit" disabled>Save Changes</button>
