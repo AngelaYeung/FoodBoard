@@ -37,14 +37,14 @@ $(document).ready(function () {
           readFile(file);
         } else {
           console.log('Not a valid Image');
-          // DOM EVENT TO NOTIFY USER
+
         }
       }
     });
 
   } else {
     console.log("File Upload Not Supported");
-    // DOM EVENT TO NOTIFY USER
+
   }
 
   /**
@@ -108,7 +108,6 @@ $(document).ready(function () {
       context.drawImage(this, 0, 0, newWidth, newHeight);
 
       canvas.toBlob((blob) => {
-        console.log(blob);
         sendFile(blob);
       }, fileType);
 
@@ -126,13 +125,11 @@ $(document).ready(function () {
     var png = 'png';
 
     formData.append('imageData', fileData);
-    console.log('Uploaded');
     uploader.listenOnSubmitBlob(document.getElementById('submit'), fileData, `${image_name}.${png}`);
   }
 
   /** Sends data from post-form to server.js */
   $('#submit').click(function () {
-    console.log('Submit triggered!');
 
     $('.invalid-feedback').hide();
 
@@ -188,8 +185,6 @@ $(document).ready(function () {
   });
 
   socket.on('post item return', (item) => {
-    console.log("postitemreturn item.sessionID:", item.sessionID);
-    console.log("postitemreturn active sessionID:", getSessionID('connect.sid'));
     $('#empty-foodboard').css("display", "none");
     if (getSessionID('connect.sid') === item.sessionID) {
       createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
@@ -210,7 +205,6 @@ $(document).ready(function () {
    * from the data base. 
    */
   $(window).on('load', () => {
-    console.log('Client: page loaded:', getSessionID('connect.sid'));
     socket.emit('page loaded', {
       sessionID: getSessionID('connect.sid'),
     });
@@ -220,13 +214,7 @@ $(document).ready(function () {
     var role = items.role; // their role as administrator or user
     var userID = items.userID; // whos logged in the active session 
     var rows = items.rows;
-    console.log("SESSIONID OF THE USER WHO IS LOADING:", items.sessionID);
-    console.log("LOAD: ROWS: ", rows);
     for (var i = 0; i < rows.length; i++) {
-      console.log('userID: ', userID);
-      console.log('role', typeof role);
-      console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
-      console.log("ROLE: ", role);
       if (role == 0) {
         if (rows[i].Users_userID == userID) {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
@@ -262,16 +250,13 @@ $(document).ready(function () {
   });
   
   socket.on('empty foodboard', () => {
-    console.log("Empty foodboard event!");
     isBoardEmpty();
   });
 
   socket.on('myposts', (items) => {
     let userID = items.userID;
     let rows = items.rows;
-    console.log("MY POSTS: userID: ", userID);
     for (let i = 0; i < rows.length; i++) {
-      console.log("CREATING CARD NO CLAIM");
       createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime, rows[i].foodGroup, rows[i].foodImage);
     }
   });
@@ -346,7 +331,6 @@ function validateDate(dateInput) {
 
   var input = new Date(dateInput).getTime(); //user input time converted to milliseconds
   var currentTime = Date.now(); //current time in milliseconds
-  console.log('input > currentTime:', (input > currentTime));
   return (input > currentTime);
 };
 
@@ -497,6 +481,7 @@ function deleteItem(itemID) {
  */
 function itemDeleted(id) {
   $(`#confirmDeleteModal`).modal('hide');
+  $(`${id}`).attr('disabled', 'disabled');
   $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
   $(`#status${id}`).css("top", "28%");
   $(`#status${id}`).css("left", "33%");
@@ -510,7 +495,7 @@ function itemDeleted(id) {
 };
 
 function deleteRoadBlock(id) {
-  var modalHtml = `<div id="confirmDeleteModal" class="modal fade">
+  var modalHtml = `<div id="confirmDeleteModal${id}" class="modal confirmDeleteModal fade">
 	<div class="modal-dialog modal-confirm">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -528,13 +513,14 @@ function deleteRoadBlock(id) {
 	</div>`
   $(`#card${id}`).prepend(modalHtml);
 
-  $(`#confirmDeleteModal`).modal('show');
+  $(`#confirmDeleteModal${id}`).modal('show');
 }
 /**
  * Removes the claimed items from the board.
  * @param {number} id 
  */
 function itemClaimed(id) {
+  $(`#confirmDeleteModal${id}`).modal('hide');
   $(`#status${id}`).attr("src", "../../Pictures/checkmark.png");
   $(`#status${id}`).css("top", "35%");
   $(`#status${id}`).css("left", "36%");
@@ -568,21 +554,17 @@ function claimItem(itemID) {
 
 function formatDate(dateTime) {
   var expiryDate = new Date(dateTime);
-  console.log('Expiry date', expiryDate);
   var today = new Date(Date.now());
-  console.log('today', today);
   var formatedDate = moment(expiryDate).fromNow();
   return formatedDate;
 };
 
 function isBoardEmpty() {
   if( $('#card-list').is(':empty') || $.trim( $('#card-list').html() ).length === 0) {
-    console.log('EMPTY');
     flipEmoji();
     $('#empty-foodboard').show();
     $('#empty-foodboard').css('display', 'block');
   } else {
-    console.log('NOT EMPTY');
     $('#empty-foodboard').hide();
     $('#empty-foodboard').css('display', 'none');
   }
@@ -590,9 +572,29 @@ function isBoardEmpty() {
 
 
 function flipEmoji() {
-  if ( $('.emoji').html() === '(~˘▾˘)~') {
-    $('.emoji').html('~(˘▾˘~)');
-  } else {
-    $('.emoji').html('(~˘▾˘)~');
+  let face = getRandomInt(6);
+  switch (face) {
+    case 0:
+      $('.emoji').html('~(˘▾˘~)');
+      break;
+    case 1:
+      $('.emoji').html('⚆ _ ⚆');
+      break;
+    case 2:
+      $('.emoji').html('\ (•◡•) /');
+      break;
+    case 3:
+      $('.emoji').html('(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧');
+      break;
+    case 4:
+      $('.emoji').html("(ʘᗩʘ')");
+      break;
+    case 5:
+      $('.emoji').html('ʕ•ᴥ•ʔ');
+      break;
+    default:
+      $('.emoji').html('~(˘▾˘~)');
+      break;
   }
+
 };

@@ -2,13 +2,7 @@ const dbconfig = require('./dbconfig.js');
 const mysql = require('mysql');
 
 
-var pool = mysql.createPool({
-    host        : "localhost",
-    user        : "root",
-    password    : "",
-    database    : "Foodboard",
-});
-
+var pool = mysql.createPool(dbconfig);
 
 
 /**
