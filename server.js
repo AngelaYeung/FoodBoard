@@ -10,15 +10,9 @@ const passport = require('passport'); // for authentication
 const session = require('express-session'); // for session handling
 const env = require('dotenv').load();
 const exphbs = require('express-handlebars'); // for rendering dynamic templates
-/** FOR SENDING AUTOMATED EMAILS */
-const nodemailer = require('nodemailer');
-const inlineCss = require('nodemailer-juice'); // allows for inline css styling in nodemailer email
-const ses = require('node-ses'),
-  client = ses.createClient({
-    key: '',
-    secret: ''
-  }); // for creating a client key
+const nodemailer = require('nodemailer'); //for sending automated emails
 
+const inlineCss = require('nodemailer-juice'); // allows for inline css styling in nodemailer email
 
 /** Exports made */
 var models = require("./app/models"); // tells the server to require these routes 
