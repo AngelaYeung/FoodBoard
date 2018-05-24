@@ -578,15 +578,14 @@ function formatDate(dateTime) {
 function isBoardEmpty() {
   if( $('#card-list').is(':empty') || $.trim( $('#card-list').html() ).length === 0) {
     console.log('EMPTY');
+    flipEmoji();
     $('#empty-foodboard').show();
     $('#empty-foodboard').css('display', 'block');
-    flipEmoji();
   } else {
     console.log('NOT EMPTY');
     $('#empty-foodboard').hide();
     $('#empty-foodboard').css('display', 'none');
   }
-  flipEmoji();
 };
 
 
@@ -596,4 +595,4 @@ function flipEmoji() {
   } else {
     $('.emoji').html('(~˘▾˘)~');
   }
-}
+};
