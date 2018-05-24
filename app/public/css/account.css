@@ -98,3 +98,9 @@ input:focus {
   font-family: "Raleway";
   font-size: 14pt;
 }
+
+/** Change colour of the 'Save Changes' Item*/
+.btn-save-changes.disabled, .btn-save-changes[disabled], .btn-save-changes.disabled:hover, .btn-save-changes[disabled]:hover, .btn-save-changes.disabled:focus, .btn-save-changes[disabled]:focus, .btn-save-changes, .btn-save-changes:active:focus, .btn-save-changes:active:hover,.btn-save-changes.active, .btn-save-changes:active, .open>.dropdown-toggle.btn-save-changes.btn-primary.focus, .btn-save-changes:focus, .btn-save-changes:hover {
+    background-color: #4EB266;
+    border-color: #4EB266;
+}

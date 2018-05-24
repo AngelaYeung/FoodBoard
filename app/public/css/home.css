@@ -535,6 +535,9 @@ body {
   display: none;
   text-align: center;
   color: red;
+  padding-bottom:2.5%;
+  padding-top:2.5%;
+  margin-top: -15px;
 }
 
 
