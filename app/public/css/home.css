@@ -118,6 +118,10 @@
     width: 85%;
     margin: 0 auto;
   }
+  .invalid-feedback {
+    padding-bottom: 2.5%;
+    margin-top: -1.5%;
+  }
 }
 
 /************************************************
@@ -126,10 +130,6 @@
 *
 ************************************************/
 @media screen and (min-width: 481px) {
-
-  .modal-open .modal{
-    overflow-y: hidden;
-  }
   
   .homepage-background img {
     -webkit-filter: blur(5px);
@@ -243,6 +243,10 @@
   }
   .logodiv {
     margin: 2% 0% !important;
+  }
+
+  .invalid-feedback {
+    padding-bottom: 2.5%;
   }
 }
 
@@ -531,13 +535,9 @@ body {
   width:64px;
 }
 
-.invalid-feedback {
+.invalid-feedback{
   display: none;
   text-align: center;
   color: red;
-  padding-bottom:2.5%;
-  padding-top:2.5%;
-  margin-top: -15px;
 }
-
 
