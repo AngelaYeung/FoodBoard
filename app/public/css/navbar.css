@@ -39,6 +39,12 @@
     font-size: 14pt;
     color:white;
   }
+  .navbar-foodboard { 
+    position:relative;
+    z-index:1 ;
+    padding: 0.5em;
+    line-height: 2em;
+  }
 }
 /**********************************************************
 *
@@ -151,11 +157,4 @@
   padding-right: 5%;
   font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size:14pt; 
-}
-
-.navbar-foodboard { 
-  position:relative;
-  z-index:1 ;
-  padding: 0.5em;
-  line-height: 2em;
 }
