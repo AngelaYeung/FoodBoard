@@ -572,7 +572,7 @@ function isBoardEmpty() {
 
 
 function flipEmoji() {
-  let face = getRandomInt(6);
+  let face = Math.floor(Math.random() * 6);
   switch (face) {
     case 0:
       $('.emoji').html('~(˘▾˘~)');
@@ -584,7 +584,7 @@ function flipEmoji() {
       $('.emoji').html('\ (•◡•) /');
       break;
     case 3:
-      $('.emoji').html('(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧');
+      $('.emoji').html('(ﾉ◕ヮ◕)ﾉ');
       break;
     case 4:
       $('.emoji').html("(ʘᗩʘ')");
@@ -596,5 +596,4 @@ function flipEmoji() {
       $('.emoji').html('~(˘▾˘~)');
       break;
   }
-
 };
