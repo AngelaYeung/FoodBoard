@@ -5,23 +5,11 @@
 **Completion: 95%**
 
 ## Table of Contents
-1. [Contact Us](#Contact-us)
-2. [Known bugs](#known-bugs)
-3. [Challenges](#challenges)
-4. [Installation](#installation)
-5. [Usage](#usage)
-
-<a id="Contact-us"></a>
-## Contact us 
-| Members | Student Number | Github | LinkedIn |
- --------|-----------------|--------|----------
-| Derek Lee | A00940646 | [derek-lee8526](https://github.com/derek-lee8526) | https://www.linkedin.com/in/dereklee8526/|
-| James Nguyen | A00906285 | [duyanhja](https://github.com/duyanhja) | https://www.linkedin.com/in/james-da-nguyen/|
-| Robert Ozdoba|A01047477| [rozdoba](https://github.com/rozdoba) | https://www.linkedin.com/in/robertozdoba|
-|Angela Yeung | A00942641| [angelayeung](https://github.com/AngelaYeung) | https://www.linkedin.com/in/angela-sy-yeung/ |
-| Michael Yu | A01041867| [michaelmhyu1013](https://github.com/michaelmhyu1013) | https://www.linkedin.com/in/michael-mh-yu/| 
-
-
+* [Known bugs](#known-bugs)
+* [Challenges](#challenges)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Contact Us](#Contact-us)
 
 <a id="known-bugs"></a>
 ## Known bugs
@@ -49,3 +37,14 @@ npm install socketio-upload
 ```
 node server.js
 ```
+
+<a id="Contact-us"></a>
+## Contact us 
+| Members | Student Number | Github | LinkedIn |
+ --------|-----------------|--------|----------
+| Derek Lee | A00940646 | [derek-lee8526](https://github.com/derek-lee8526) | https://www.linkedin.com/in/dereklee8526/|
+| James Nguyen | A00906285 | [duyanhja](https://github.com/duyanhja) | https://www.linkedin.com/in/james-da-nguyen/|
+| Robert Ozdoba|A01047477| [rozdoba](https://github.com/rozdoba) | https://www.linkedin.com/in/robertozdoba|
+|Angela Yeung | A00942641| [angelayeung](https://github.com/AngelaYeung) | https://www.linkedin.com/in/angela-sy-yeung/ |
+| Michael Yu | A01041867| [michaelmhyu1013](https://github.com/michaelmhyu1013) | https://www.linkedin.com/in/michael-mh-yu/| 
+
