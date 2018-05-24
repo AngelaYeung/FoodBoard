@@ -155,7 +155,7 @@ body {
   }
 
   /** Position modal for deletion road block */
-  #confirmDeleteModal {
+  .confirmDeleteModal {
     margin-top: 65%;
   }
 }
@@ -220,7 +220,8 @@ body {
       line-height: 1.2em;
       padding-top: 3%;
     }
-    #confirmDeleteModal {
+
+    .confirmDeleteModal {
       margin-top: 15%;
     }
 }
@@ -417,4 +418,8 @@ a#color-change {
     text-align: center;
     color: #7D7D7D;
     display: none;
+}
+
+img {
+  image-orientation: from-image;
 }

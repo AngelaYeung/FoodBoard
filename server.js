@@ -91,6 +91,24 @@ app.get('/', (req, res) => {
 })
 
 
+app.get('/nicetrybud', (req, res) => {
+
+  var query = `SELECT * FROM Sessions WHERE sessionID = '${req.sessionID}' LIMIT 1`;
+  mysqlconnection.pool.query(query, (error, rows, fields) => {
+    if (error) {
+      console.log(new Date(Date.now()), 'Error:', error);
+    } else {
+
+      if (rows.length > 0) {
+        res.render('home_success');
+      } else {
+        res.render('home');
+      }
+    }
+  });
+})
+
+
 app.post('/slack/command/items', (req, res) => {
 
   if (req.body.token === slackcmd.token) {
@@ -834,7 +852,6 @@ io.on('connection', (socket) => {
       } else {
         slacklog.log('NICE TRY BUD!', '');
         app.get('/nicetrybud');
-
       }
     });
 
