@@ -495,7 +495,7 @@ function itemDeleted(id) {
 };
 
 function deleteRoadBlock(id) {
-  var modalHtml = `<div id="confirmDeleteModal" class="modal fade">
+  var modalHtml = `<div id="confirmDeleteModal${id}" class="modal confirmDeleteModal fade">
 	<div class="modal-dialog modal-confirm">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -513,13 +513,14 @@ function deleteRoadBlock(id) {
 	</div>`
   $(`#card${id}`).prepend(modalHtml);
 
-  $(`#confirmDeleteModal`).modal('show');
+  $(`#confirmDeleteModal${id}`).modal('show');
 }
 /**
  * Removes the claimed items from the board.
  * @param {number} id 
  */
 function itemClaimed(id) {
+  $(`#confirmDeleteModal${id}`).modal('hide');
   $(`#status${id}`).attr("src", "../../Pictures/checkmark.png");
   $(`#status${id}`).css("top", "35%");
   $(`#status${id}`).css("left", "36%");
@@ -571,9 +572,29 @@ function isBoardEmpty() {
 
 
 function flipEmoji() {
-  if ( $('.emoji').html() === '(~˘▾˘)~') {
-    $('.emoji').html('~(˘▾˘~)');
-  } else {
-    $('.emoji').html('(~˘▾˘)~');
+  let face = getRandomInt(6);
+  switch (face) {
+    case 0:
+      $('.emoji').html('~(˘▾˘~)');
+      break;
+    case 1:
+      $('.emoji').html('⚆ _ ⚆');
+      break;
+    case 2:
+      $('.emoji').html('\ (•◡•) /');
+      break;
+    case 3:
+      $('.emoji').html('(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧');
+      break;
+    case 4:
+      $('.emoji').html("(ʘᗩʘ')");
+      break;
+    case 5:
+      $('.emoji').html('ʕ•ᴥ•ʔ');
+      break;
+    default:
+      $('.emoji').html('~(˘▾˘~)');
+      break;
   }
+
 };
