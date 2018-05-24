@@ -5,11 +5,6 @@
 **********************************************************/
 @media screen and (max-width: 480px) {
 
-  .navbar-foodboard img {
-    width: 9%;
-    margin-top: -15px;
-  }
-
   .navbar-right-custom {
     display: none;
   }

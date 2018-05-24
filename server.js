@@ -10,9 +10,6 @@ const passport = require('passport'); // for authentication
 const session = require('express-session'); // for session handling
 const env = require('dotenv').load();
 const exphbs = require('express-handlebars'); // for rendering dynamic templates
-
-
-
 /** FOR SENDING AUTOMATED EMAILS */
 const nodemailer = require('nodemailer');
 const inlineCss = require('nodemailer-juice'); // allows for inline css styling in nodemailer email
@@ -32,7 +29,6 @@ var slacklog = require('./app/public/js/slacklogs');
 var slackcmd = require('./app/public/js/slackcommands');
 
 const port = 8080;
-
 
 var app = express().use(siofu.router); // adds siofu as a router, middleware
 
