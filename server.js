@@ -636,9 +636,6 @@ io.on('connection', (socket) => {
    * 
    *************************************************************************/
   socket.on('delete item', (deletion) => {
-
-
-
     //Declaring variables needed to generate automated delete email
     let sessionID = deletion.sessionID;
     let itemID = deletion.id;
@@ -650,96 +647,101 @@ io.on('connection', (socket) => {
 
     // first check if the person deleting the post is currently in a session
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-    mysqlconnection.pool.query(query, [sessionID], (error, rows, fields) => {
-      if (error) {
-        slacklog.log(`Event: Delete item. ${query}.`, error);
-        console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
+    try {
+      mysqlconnection.pool.query(query, [sessionID], (error, rows, fields) => {
+        if (error) {
+          slacklog.log(`Event: Delete item. ${query}.`, error);
+          console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
 
-      } else if (rows.length) {
+        } else if (rows.length) {
 
-        let posterUserID = rows[0].Users_userID;
+          let posterUserID = rows[0].Users_userID;
 
-        // check to see if the user is an admin or poaster, no email is sent if a post is deleted by an admin
-        var checkRole = "SELECT * FROM users WHERE userID = ? LIMIT 1";
-        mysqlconnection.pool.query(checkRole, [posterUserID], (error, rows, field) => {
-          if (error) {
-            console.log(new Date(Date.now()), "Error checking for role of user:", error);
+          // check to see if the user is an admin or poaster, no email is sent if a post is deleted by an admin
+          var checkRole = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+          mysqlconnection.pool.query(checkRole, [posterUserID], (error, rows, field) => {
+            if (error) {
+              console.log(new Date(Date.now()), "Error checking for role of user:", error);
 
-          } else {
-            slacklog.log(`Event: Delete item. ${checkRole}.`, error);
-            console.log("Successfully inquired for poster's information: ", rows);
-            role = rows[0].role;
-            posterFirstName = rows[0].firstName;
-            posterSuiteNumber = rows[0].suiteNumber;
-
-            if (role === 0) {
-
-              // user is an admin, simply delete the post from all tables no email necessary
-              deleteFoodItem(itemID);
-
-              io.emit('delete return', (itemID));
             } else {
+              slacklog.log(`Event: Delete item. ${checkRole}.`, error);
+              console.log("Successfully inquired for poster's information: ", rows);
+              role = rows[0].role;
+              posterFirstName = rows[0].firstName;
+              posterSuiteNumber = rows[0].suiteNumber;
 
-              // user is the poster of the food item
-              // next query for the food item information as well as the claimerID if there is one.
-              var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
-              mysqlconnection.pool.query(queryFoodItemTable, [itemID], (error, rows, field) => {
-                if (error) {
-                  slacklog.log(`Event: Delete item. ${queryFoodItemTable}.`, error);
-                  console.log(new Date(Date.now()), "Error querying from FoodItem Table: ", error);
+              if (role === 0) {
 
-                } else {
-                  console.log("Successfully obtained food item info from FoodItem Table");
-                  foodName = rows[0].foodName;
-                  foodDescription = rows[0].foodDescription;
-                  foodExpiryTime = rows[0].foodExpiryTime;
-                  foodImage = rows[0].foodImage;
-                  claimerUserID = rows[0].Users_claimerUserID;
+                // user is an admin, simply delete the post from all tables no email necessary
+                deleteFoodItem(itemID);
 
-                  // item can now be deleted from fooditem table, we have all relevant information
-                  deleteFoodItem(itemID);
+                io.emit('delete return', (itemID));
+              } else {
 
-                  if (!claimerUserID) {
-                    console.log("TEST DELETE: claimerUSERID doesnt exist!");
-                    //posted food item has not been claimed by anyone, no email necessary
-                    io.emit('delete return', (itemID));
+                // user is the poster of the food item
+                // next query for the food item information as well as the claimerID if there is one.
+                var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
+                mysqlconnection.pool.query(queryFoodItemTable, [itemID], (error, rows, field) => {
+                  if (error) {
+                    slacklog.log(`Event: Delete item. ${queryFoodItemTable}.`, error);
+                    console.log(new Date(Date.now()), "Error querying from FoodItem Table: ", error);
 
                   } else {
+                    console.log("Successfully obtained food item info from FoodItem Table");
+                    foodName = rows[0].foodName;
+                    foodDescription = rows[0].foodDescription;
+                    foodExpiryTime = rows[0].foodExpiryTime;
+                    foodImage = rows[0].foodImage;
+                    claimerUserID = rows[0].Users_claimerUserID;
 
-                    // posted food item has been claimed
-                    // query for claimer's information so we can send an automated email
-                    var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
-                    mysqlconnection.pool.query(claimerQuery, [claimerUserID], (error, rows, field) => {
-                      if (error) {
-                        slacklog.log(`Event: Delete item. ${claimerQuery}.`, error);
-                        console.log(new Date(Date.now()), "Error checking for role of user:", error);
-                      } else {
-                        console.log("Successfully inquired for claimer's information.")
-                        claimerEmail = rows[0].email;
-                        claimerFirstName = rows[0].firstName;
-                        claimerSuiteNumber = rows[0].suiteNumber;
+                    // item can now be deleted from fooditem table, we have all relevant information
+                    deleteFoodItem(itemID);
 
-                        // sends an email to the claimer of the post 
-                        sendDeleteEmailToClaimer(claimerEmail, claimerFirstName,
-                          foodName, foodDescription, foodExpiryTime, foodImage,
-                          posterFirstName, posterSuiteNumber);
+                    if (!claimerUserID) {
+                      console.log("TEST DELETE: claimerUSERID doesnt exist!");
+                      //posted food item has not been claimed by anyone, no email necessary
+                      io.emit('delete return', (itemID));
 
-                        io.emit('delete return', (itemID));
-                      }
+                    } else {
 
-                    });
+                      // posted food item has been claimed
+                      // query for claimer's information so we can send an automated email
+                      var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+                      mysqlconnection.pool.query(claimerQuery, [claimerUserID], (error, rows, field) => {
+                        if (error) {
+                          slacklog.log(`Event: Delete item. ${claimerQuery}.`, error);
+                          console.log(new Date(Date.now()), "Error checking for role of user:", error);
+                        } else {
+                          console.log("Successfully inquired for claimer's information.")
+                          claimerEmail = rows[0].email;
+                          claimerFirstName = rows[0].firstName;
+                          claimerSuiteNumber = rows[0].suiteNumber;
+
+                          // sends an email to the claimer of the post 
+                          sendDeleteEmailToClaimer(claimerEmail, claimerFirstName,
+                            foodName, foodDescription, foodExpiryTime, foodImage,
+                            posterFirstName, posterSuiteNumber);
+
+                          io.emit('delete return', (itemID));
+                        }
+
+                      });
+                    }
                   }
-                }
-              });
+                });
+              }
             }
-          }
-        });
-      } else {
-        // user is not currently in a session and therefore should'nt be able to delete a post
-        slacklog.log('NICE TRY BUD!', '');
-        app.get('/nicetrybud');
-      }
-    });
+          });
+        } else {
+          // user is not currently in a session and therefore should'nt be able to delete a post
+          slacklog.log('NICE TRY BUD!', '');
+          app.get('/nicetrybud');
+        }
+      });
+    } catch (error) {
+      slacklog.log("Prevented server crash when querying into database for 'Unclaim item'", error);
+      console.log(new Date(Date.now()), "Prevented server crash when querying into database for 'Unclaim item'", error);
+    }
   });
 
 
@@ -762,100 +764,103 @@ io.on('connection', (socket) => {
     let claimerUserID, claimerEmail, claimerFirstName, claimerSuiteNumber;
 
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-    mysqlconnection.pool.query(query, [sessionID], (error, rows, fields) => {
-      if (error) {
-        slacklog.log(`Event: Claim item. ${query}.`, error);
-        console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
+    try {
+      mysqlconnection.pool.query(query, [sessionID], (error, rows, fields) => {
+        if (error) {
+          slacklog.log(`Event: Claim item. ${query}.`, error);
+          console.log(new Date(Date.now()), "Error occured while inquiring for sessionID", error);
 
-      } else if (rows.length) {
+        } else if (rows.length) {
 
-        claimerUserID = rows[0].Users_userID; // ID of the user in the session
-        console.log("CLAIMERUSERID:", claimerUserID);
+          claimerUserID = rows[0].Users_userID; // ID of the user in the session
+          console.log("CLAIMERUSERID:", claimerUserID);
 
-        var setClaimerID = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ?`;
-        mysqlconnection.pool.query(setClaimerID, [claimerUserID, itemID], (error, rows, field) => {
-          if (error) {
-            //return error if update claimerID into failed
-            slacklog.log(`Event: Claim item. ${setClaimerID}.`, error);
-            console.log(new Date(Date.now()), "Error updating claimerID into FoodItem table: ", error);
+          var setClaimerID = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ?`;
+          mysqlconnection.pool.query(setClaimerID, [claimerUserID, itemID], (error, rows, field) => {
+            if (error) {
+              //return error if update claimerID into failed
+              slacklog.log(`Event: Claim item. ${setClaimerID}.`, error);
+              console.log(new Date(Date.now()), "Error updating claimerID into FoodItem table: ", error);
 
-          } else {
-            // else return the updated table
-            console.log("Successfully updated claimerID into FoodItem table.");
-            console.log("PRINTING THE UPDATED FIELD OF FOODITEM TABLE WITH CLAIMER ID:", rows);
+            } else {
+              // else return the updated table
+              console.log("Successfully updated claimerID into FoodItem table.");
+              console.log("PRINTING THE UPDATED FIELD OF FOODITEM TABLE WITH CLAIMER ID:", rows);
 
-            var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
-            mysqlconnection.pool.query(queryFoodItemTable, [itemID], (error, rows, field) => {
-              if (error) {
-                //error occured while attempting to query FoodItem Table
-                slacklog.log(`Event: Claim item. ${queryFoodItemTable}.`, error);
-                console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
+              var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
+              mysqlconnection.pool.query(queryFoodItemTable, [itemID], (error, rows, field) => {
+                if (error) {
+                  //error occured while attempting to query FoodItem Table
+                  slacklog.log(`Event: Claim item. ${queryFoodItemTable}.`, error);
+                  console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
 
-              } else {
-                console.log("Successfully obtained Poster's userID from FoodItem Table", rows);
-                posterUserID = rows[0].Users_userID;
-                foodName = rows[0].foodName;
-                foodDescription = rows[0].foodDescription;
-                foodExpiryTime = rows[0].foodExpiryTime;
-                foodImage = rows[0].foodImage;
-                console.log("THIS IS THE POSTER USER ID:", posterUserID);
-                console.log("THIS IS THE CLAIMER USER ID:", claimerUserID);
+                } else {
+                  console.log("Successfully obtained Poster's userID from FoodItem Table", rows);
+                  posterUserID = rows[0].Users_userID;
+                  foodName = rows[0].foodName;
+                  foodDescription = rows[0].foodDescription;
+                  foodExpiryTime = rows[0].foodExpiryTime;
+                  foodImage = rows[0].foodImage;
+                  console.log("THIS IS THE POSTER USER ID:", posterUserID);
+                  console.log("THIS IS THE CLAIMER USER ID:", claimerUserID);
 
-                var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
-                mysqlconnection.pool.query(claimerQuery, [claimerUserID], (error, rows, field) => {
-                  if (error) {
-                    //return error if selection fail
-                    slacklog.log(`Event: Claim item. ${claimerQuery}.`, error);
-                    console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
+                  var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+                  mysqlconnection.pool.query(claimerQuery, [claimerUserID], (error, rows, field) => {
+                    if (error) {
+                      //return error if selection fail
+                      slacklog.log(`Event: Claim item. ${claimerQuery}.`, error);
+                      console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
 
-                  } else {
-                    //else return the users information
-                    console.log("Successfully grabbed user of claimed item. ", rows);
-                    claimerFirstName = rows[0].firstName;
-                    claimerEmail = rows[0].email;
-                    claimerSuiteNumber = rows[0].suiteNumber;
+                    } else {
+                      //else return the users information
+                      console.log("Successfully grabbed user of claimed item. ", rows);
+                      claimerFirstName = rows[0].firstName;
+                      claimerEmail = rows[0].email;
+                      claimerSuiteNumber = rows[0].suiteNumber;
 
-                    var posterQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
-                    mysqlconnection.pool.query(posterQuery, [posterUserID], (error, rows, field) => {
-                      if (error) {
-                        //return error if selection fail
-                        slacklog.log(`Event: Claim item. ${posterQuery}.`, error);
-                        console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
+                      var posterQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+                      mysqlconnection.pool.query(posterQuery, [posterUserID], (error, rows, field) => {
+                        if (error) {
+                          //return error if selection fail
+                          slacklog.log(`Event: Claim item. ${posterQuery}.`, error);
+                          console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
 
-                      } else {
-                        console.log("Successfully grabbed user of claimed item. ", rows);
-                        posterFirstName = rows[0].firstName;
-                        posterEmail = rows[0].email;
+                        } else {
+                          console.log("Successfully grabbed user of claimed item. ", rows);
+                          posterFirstName = rows[0].firstName;
+                          posterEmail = rows[0].email;
 
-                        console.log("CLAIMERS FIRST NAME: ", claimerFirstName);
-                        console.log("POSTERS FIRST NAME: ", posterFirstName);
-                        console.log("CLAIMER SUITE NUMBER: ", claimerSuiteNumber);
-                        console.log("CLAIMERUSERID:", claimerUserID);
-                        console.log("POSTER EMAIL", posterEmail);
-                        console.log("CLAIMER EMAIL", claimerEmail);
+                          console.log("CLAIMERS FIRST NAME: ", claimerFirstName);
+                          console.log("POSTERS FIRST NAME: ", posterFirstName);
+                          console.log("CLAIMER SUITE NUMBER: ", claimerSuiteNumber);
+                          console.log("CLAIMERUSERID:", claimerUserID);
+                          console.log("POSTER EMAIL", posterEmail);
+                          console.log("CLAIMER EMAIL", claimerEmail);
 
-                        sendClaimEmailToPoster(posterEmail, posterFirstName,
-                          foodName, foodDescription, foodExpiryTime, foodImage,
-                          claimerEmail, claimerFirstName, claimerSuiteNumber);
+                          sendClaimEmailToPoster(posterEmail, posterFirstName,
+                            foodName, foodDescription, foodExpiryTime, foodImage,
+                            claimerEmail, claimerFirstName, claimerSuiteNumber);
 
-                        console.log(itemID);
-                        io.emit('claim return', (itemID));
-                      }
+                          console.log(itemID);
+                          io.emit('claim return', (itemID));
+                        }
 
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      } else {
-        slacklog.log('NICE TRY BUD!', '');
-        app.get('/nicetrybud');
-      }
-    });
-
-
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          });
+        } else {
+          slacklog.log('NICE TRY BUD!', '');
+          app.get('/nicetrybud');
+        }
+      });
+    } catch (error) {
+      slacklog.log("Prevented server crash when querying into database for 'Claim item'", error);
+      console.log(new Date(Date.now()), "Prevented server crash when querying into database for 'Claim item'", error);
+    }
   });
 
   socket.on("my claims", (claim) => {
@@ -911,89 +916,93 @@ io.on('connection', (socket) => {
     let claimerUserID, claimerFirstName, claimerSuiteNumber;
 
     var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
-    mysqlconnection.pool.query(query, [sessionID], (error, rows, fields) => {
-      if (error) {
-        console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID", error);
+    try {
+      mysqlconnection.pool.query(query, [sessionID], (error, rows, fields) => {
+        if (error) {
+          console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID", error);
+        } else {
+          console.log("User is logged in and can unclaim the fooditem.");
+          if (rows.length) {
 
-      } else {
-        console.log("User is logged in and can unclaim the fooditem.");
-        if (rows.length) {
+            claimerUserID = rows[0].Users_userID;
 
-          claimerUserID = rows[0].Users_userID;
+            var queryForInformation = "SELECT * FROM FoodItem WHERE itemID = ?";
+            mysqlconnection.pool.query(queryForInformation, [postID], (error, rows, field) => {
+              if (error) {
+                slacklog.log(`Event: Unclaim item. ${queryForInformation}.`, error);
+                console.log(new Date(Date.now()), "Error querying for food item information in unclaim event", error);
 
-          var queryForInformation = "SELECT * FROM FoodItem WHERE itemID = ?";
-          mysqlconnection.pool.query(queryForInformation, [postID], (error, rows, field) => {
-            if (error) {
-              slacklog.log(`Event: Unclaim item. ${queryForInformation}.`, error);
-              console.log(new Date(Date.now()), "Error querying for food item information in unclaim event", error);
+              } else {
+                console.log("Successfully obtained food item information in unclaim event.");
+                foodName = rows[0].foodName;
+                foodDescription = rows[0].foodDescription;
+                foodExpiryTime = rows[0].foodExpiryTime;
+                foodImage = rows[0].foodImage;
+                posterUserID = rows[0].Users_userID;
 
-            } else {
-              console.log("Successfully obtained food item information in unclaim event.");
-              foodName = rows[0].foodName;
-              foodDescription = rows[0].foodDescription;
-              foodExpiryTime = rows[0].foodExpiryTime;
-              foodImage = rows[0].foodImage;
-              posterUserID = rows[0].Users_userID;
+                var queryUpdateUnclaim = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ${postID}`;
+                mysqlconnection.pool.query(queryUpdateUnclaim, [null], (error, rows, field) => {
+                  if (error) {
+                    slacklog.log(`Event: Unclaim item. ${queryUpdateUnclaim}.`, error);
+                    console.log(new Date(Date.now()), "Error changing claim status of food item", error);
 
-              var queryUpdateUnclaim = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ${postID}`;
-              mysqlconnection.pool.query(queryUpdateUnclaim, [null], (error, rows, field) => {
-                if (error) {
-                  slacklog.log(`Event: Unclaim item. ${queryUpdateUnclaim}.`, error);
-                  console.log(new Date(Date.now()), "Error changing claim status of food item", error);
+                  } else {
+                    console.log("Successfully unclaimed food item.");
 
-                } else {
-                  console.log("Successfully unclaimed food item.");
+                    var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+                    mysqlconnection.pool.query(claimerQuery, [claimerUserID], (error, rows, field) => {
+                      if (error) {
+                        //return error if selection fail
+                        slacklog.log(`Event: Claim item. ${claimerQuery}.`, error);
+                        console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
 
-                  var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
-                  mysqlconnection.pool.query(claimerQuery, [claimerUserID], (error, rows, field) => {
-                    if (error) {
-                      //return error if selection fail
-                      slacklog.log(`Event: Claim item. ${claimerQuery}.`, error);
-                      console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
+                      } else {
+                        //else return the users information
+                        console.log("Successfully grabbed user of claimed item. ", rows);
+                        claimerFirstName = rows[0].firstName;
+                        claimerEmail = rows[0].email;
+                        claimerSuiteNumber = rows[0].suiteNumber;
 
-                    } else {
-                      //else return the users information
-                      console.log("Successfully grabbed user of claimed item. ", rows);
-                      claimerFirstName = rows[0].firstName;
-                      claimerEmail = rows[0].email;
-                      claimerSuiteNumber = rows[0].suiteNumber;
+                        var posterQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+                        mysqlconnection.pool.query(posterQuery, [posterUserID], (error, rows, field) => {
+                          if (error) {
+                            //return error if selection fail
+                            slacklog.log(`Event: Claim item. ${posterQuery}.`, error);
+                            console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
 
-                      var posterQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
-                      mysqlconnection.pool.query(posterQuery, [posterUserID], (error, rows, field) => {
-                        if (error) {
-                          //return error if selection fail
-                          slacklog.log(`Event: Claim item. ${posterQuery}.`, error);
-                          console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
+                          } else {
+                            console.log("Successfully grabbed user of claimed item. ", rows);
+                            posterFirstName = rows[0].firstName;
+                            posterEmail = rows[0].email;
 
-                        } else {
-                          console.log("Successfully grabbed user of claimed item. ", rows);
-                          posterFirstName = rows[0].firstName;
-                          posterEmail = rows[0].email;
+                            console.log("CLAIMERS FIRST NAME: ", claimerFirstName);
+                            console.log("POSTERS FIRST NAME: ", posterFirstName);
+                            console.log("CLAIMER SUITE NUMBER: ", claimerSuiteNumber);
+                            console.log("CLAIMERUSERID:", claimerUserID);
+                            console.log("POSTER EMAIL", posterEmail);
+                            console.log("CLAIMER EMAIL", claimerEmail);
 
-                          console.log("CLAIMERS FIRST NAME: ", claimerFirstName);
-                          console.log("POSTERS FIRST NAME: ", posterFirstName);
-                          console.log("CLAIMER SUITE NUMBER: ", claimerSuiteNumber);
-                          console.log("CLAIMERUSERID:", claimerUserID);
-                          console.log("POSTER EMAIL", posterEmail);
-                          console.log("CLAIMER EMAIL", claimerEmail);
+                            // Send email to poster that their food item has been unclaimed.
+                            sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber);
+                            socket.emit('unclaim item return', {
+                              cardID: postID,
+                            });
+                          }
 
-                          // Send email to poster that their food item has been unclaimed.
-                          sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber);
-                          socket.emit('unclaim item return', {
-                            cardID: postID,
-                          });
-                        }
-
-                      });
-                    }
-                  });
-                }
-              });
-            }
-          });
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
         }
-      }
-    });
+      });
+    } catch (error) {
+      slacklog.log("Prevented server crash when querying into database for 'Unclaim item'", error);
+      console.log(new Date(Date.now()), "Prevented server crash when querying into database for 'Unclaim item'", error);
+    }
   });
 });
 
