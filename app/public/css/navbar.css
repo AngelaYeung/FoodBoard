@@ -3,13 +3,8 @@
 *             Stlying for Mobile
 *
 **********************************************************/
+
 @media screen and (max-width: 480px) {
-
-  .navbar-foodboard img {
-    width: 9%;
-    margin-top: -15px;
-  }
-
   .navbar-right-custom {
     display: none;
   }
@@ -25,7 +20,6 @@
   }
   .navbar-brand-sm img {
     width: 70%;
-    
   }
   .dropdown .btn-primary {
     background-color: transparent;
@@ -36,26 +30,33 @@
   }
   .dropdown-menu {
     width: 110%;
-    left:-20px;
+    left: -20px;
     border-radius: 0;
     background-color: #4EB266;
   }
   .dropdown-menu li a {
     font-size: 14pt;
-    color:white;
+    color: white;
+  }
+  .navbar-foodboard {
+    position: relative;
+    z-index: 1;
+    padding: 0.5em;
+    line-height: 2em;
   }
 }
+
 /**********************************************************
 *
 *             Stlying for Desktop.
 *
 **********************************************************/
-@media screen and (min-width: 481px){
-  .navbar-brand-sm {
-    display:none;
-  }
 
-  .navbar-fixed-top{
+@media screen and (min-width: 481px) {
+  .navbar-brand-sm {
+    display: none;
+  }
+  .navbar-fixed-top {
     background-color: #4EB266;
   }
   .navbar-brand .navbar-foodboard {
@@ -69,33 +70,36 @@
 *
 **********************************************************/
 
-  /** Position the hamburger icon. */
-  .glyphicon-menu-hamburger {
-    font-size: 18pt;
-  }
+/** Position the hamburger icon. */
 
-  /** Positions the dropdown menu on all navbars */
-  .open >.dropdown-menu{
-    margin-top: 2.5%;
-    border-top: none;
-  }
-  .dropdown-menu {
-    border:none;
-  }
-  .dropdown .btn-primary {
-    background-color: transparent;
-    border-style: none;
-    padding: 0;
-    position: relative;
-    top: 3px;
-  }
-
-.navbar-brand .navbar-foodboard {
-  color:white;
-  padding-left:5%;
-  font-weight:bold;
+.glyphicon-menu-hamburger {
+  font-size: 18pt;
 }
 
+/** Positions the dropdown menu on all navbars */
+
+.open>.dropdown-menu {
+  margin-top: 2.5%;
+  border-top: none;
+}
+
+.dropdown-menu {
+  border: none;
+}
+
+.dropdown .btn-primary {
+  background-color: transparent;
+  border-style: none;
+  padding: 0;
+  position: relative;
+  top: 3px;
+}
+
+.navbar-brand .navbar-foodboard {
+  color: white;
+  padding-left: 5%;
+  font-weight: bold;
+}
 
 .navbar-foodboard img {
   width: 9%;
@@ -104,19 +108,20 @@
 
 /* Navbar link properties */
 
-.nav>li>a:focus, .nav>li>a:hover {
+.nav>li>a:focus,
+.nav>li>a:hover {
   background-color: transparent;
   -webkit-animation-name: underline-animation;
-          animation-name: underline-animation;
+  animation-name: underline-animation;
   -webkit-animation-duration: 2s;
-          animation-duration: 2s;
-  color:white;
+  animation-duration: 2s;
+  color: white;
 }
 
 .nav>li>a {
-  color:white;
+  color: white;
   text-decoration: none;
-  position:relative;
+  position: relative;
 }
 
 .navbar-right-custom>li>a:before {
@@ -130,30 +135,30 @@
   visibility: hidden;
   -webkit-transform: scaleX(0);
   -ms-transform: scaleX(0);
-      transform: scaleX(0);
+  transform: scaleX(0);
   -webkit-transition: all 0.4s ease-in-out 0s;
   -o-transition: all 0.4s ease-in-out 0s;
   transition: all 0.4s ease-in-out 0s;
 }
+
 .navbar-right-custom>li>a:hover:before {
   visibility: visible;
   -webkit-transform: scaleX(1);
   -ms-transform: scaleX(1);
-      transform: scaleX(1);
+  transform: scaleX(1);
 }
 
-
-
-.nav>li>a:focus, .nav>li>a:hover {
+.nav>li>a:focus,
+.nav>li>a:hover {
   background-color: transparent;
 }
 
 .nav>li>a {
-  color:white;
+  color: white;
 }
 
 .navbar-right-custom {
   padding-right: 5%;
-  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-size:14pt; 
+  font-family: "HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 14pt;
 }

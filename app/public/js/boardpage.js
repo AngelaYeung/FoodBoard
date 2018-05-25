@@ -1,10 +1,20 @@
 // needs to be declared as a global variable to be in same scope as claimItem(), deleteItem()
 var socket;
 
-$(window).on('load', () => {
-  window.scroll(0, 5);
-});
 $(document).ready(function () {
+  //close modals with back btn
+  $('.modal').on('show.bs.modal', function (e) {
+    window.history.pushState('forward', null, '#modal');
+  });
+
+  $('.modal').on('hide.bs.modal', function (e) {
+    //pop the forward state to go back to original state before pushing the "Modal!" button
+  });
+
+  $(window).on('popstate', function () {
+    $('.modal').modal('hide');
+  });
+
   socket = io();
   const uploader = new SocketIOFileUpload(socket);
   var image_name;
@@ -27,14 +37,14 @@ $(document).ready(function () {
           readFile(file);
         } else {
           console.log('Not a valid Image');
-          // DOM EVENT TO NOTIFY USER
+
         }
       }
     });
 
   } else {
     console.log("File Upload Not Supported");
-    // DOM EVENT TO NOTIFY USER
+
   }
 
   /**
@@ -98,7 +108,6 @@ $(document).ready(function () {
       context.drawImage(this, 0, 0, newWidth, newHeight);
 
       canvas.toBlob((blob) => {
-        console.log(blob);
         sendFile(blob);
       }, fileType);
 
@@ -116,21 +125,11 @@ $(document).ready(function () {
     var png = 'png';
 
     formData.append('imageData', fileData);
-    console.log('Uploaded');
     uploader.listenOnSubmitBlob(document.getElementById('submit'), fileData, `${image_name}.${png}`);
   }
 
-
-  /** Uploads the image in form to server, and grabs its name */
-  // uploader.listenOnSubmit(document.getElementById('submit'), document.getElementById('file-input'));
-
-  // uploader.addEventListener('start', (event) => {
-  //   image_name = "test.png";
-  // });
-
   /** Sends data from post-form to server.js */
   $('#submit').click(function () {
-    console.log('Submit triggered!');
 
     $('.invalid-feedback').hide();
 
@@ -139,12 +138,13 @@ $(document).ready(function () {
     }
 
     //submits the form if the date is valid
-    if (validateDate($('#datetimepicker').val())) {
+    if (validateDate($('#datetimepicker').val()) && isFormFilled()) {
 
       // closes the form modal after the submit button is clicked
       if ($('#itemModal').is(':visible')) {
         $('#itemModal').modal('toggle');
       };
+
       socket.emit('post item', {
         name: $('#name').val(),
         description: $('#description').val(),
@@ -155,16 +155,37 @@ $(document).ready(function () {
       });
       $('#postForm').trigger('reset');
     } else {
-      console.log("time is invalid");
-      $('#datetimepicker').addClass("invalid-input");
-      $('.invalid-feedback').show();
+
+      if (!validateDate($('#datetimepicker').val())) {
+        $("#invalid-datetime").show();
+      } else {
+        $("#invalid-datetime").hide();
+      }
+
+      if (($("#name").val().trim().length === 0)) {
+        $("#invalid-name").show();
+      } else {
+        $("#invalid-name").hide();
+      }
+
+      if (($("#description").val().trim().length === 0)) {
+        $("#invalid-description").show();
+      } else {
+        $("#invalid-description").hide();
+      }
+
+      if (($("#file-input").get(0).files.length === 0)) {
+        $("#invalid-file-input").show();
+      } else {
+        $("#invalid-file-input").hide();
+      }
+
     }
     return false;
   });
 
   socket.on('post item return', (item) => {
-    console.log("postitemreturn item.sessionID:", item.sessionID);
-    console.log("postitemreturn active sessionID:", getSessionID('connect.sid'));
+    $('#empty-foodboard').css("display", "none");
     if (getSessionID('connect.sid') === item.sessionID) {
       createCardNoClaim(item.id, item.name, item.description, item.dateTime, item.foodgrouping, item.image);
     } else {
@@ -184,7 +205,6 @@ $(document).ready(function () {
    * from the data base. 
    */
   $(window).on('load', () => {
-    console.log('Client: page loaded:', getSessionID('connect.sid'));
     socket.emit('page loaded', {
       sessionID: getSessionID('connect.sid'),
     });
@@ -194,14 +214,8 @@ $(document).ready(function () {
     var role = items.role; // their role as administrator or user
     var userID = items.userID; // whos logged in the active session 
     var rows = items.rows;
-    console.log("SESSIONID OF THE USER WHO IS LOADING:", items.sessionID);
-    console.log("LOAD: ROWS: ", rows);
     for (var i = 0; i < rows.length; i++) {
-      console.log('userID: ', userID);
-      console.log('role', typeof role);
-      console.log(`rows[${i}].Users_user: `, rows[i].Users_userID);
-      console.log("ROLE: ", role );
-      if (role === 0) {
+      if (role == 0) {
         if (rows[i].Users_userID == userID) {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
@@ -214,20 +228,35 @@ $(document).ready(function () {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         } else {
-          console.log("REGULAR USER LOAD FEATURE: CREATING CARD NO DELETE");
+          
           createCardNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         }
       }
     }
+    isBoardEmpty();
+  });
+
+
+  /*************************************************************************
+ * 
+ *         FOOD BOARD AUTO-DELETE FEATURE - CLIENT SIDE
+ * 
+ *************************************************************************/
+  socket.on('delete expired posts', (deletedItems) => {
+    for (let i = 0; i < deletedItems.rows.length; i++) {
+      itemDeleted(deletedItems.rows[i].itemID);
+    }
+  });
+  
+  socket.on('empty foodboard', () => {
+    isBoardEmpty();
   });
 
   socket.on('myposts', (items) => {
     let userID = items.userID;
     let rows = items.rows;
-    console.log("MY POSTS: userID: ", userID);
     for (let i = 0; i < rows.length; i++) {
-      console.log("CREATING CARD NO CLAIM");
       createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime, rows[i].foodGroup, rows[i].foodImage);
     }
   });
@@ -254,47 +283,28 @@ $(document).ready(function () {
     itemClaimed(itemID);
   });
 
-  /************************************************
-  * 
-  *              SEARCH FEATURE
-  * 
-  *************************************************/
-  //#region search feature
 
-  /**
-   * Handles search bar clear button toggle
-   */
-  $('#search-bar').on('keyup', (event) => {
-    console.log('searchbar');
-    if ($('#search-bar').val() !== '') {
-      $('#search-bar-btn-reset').show();
-    } else {
-      $('#search-bar-btn-reset').hide();
+  $('#emoji').on('click', (event) => {
+    if ($('#emoji').html() === '~(˘▾˘~)') {
+      $('#emoji').html('(~˘▾˘)~');
+    } else if ($('#emoji').html() === '(~˘▾˘)~') {
+      $('#emoji').html('~(˘▾˘~)');
     }
   });
 
-  $('#search-bar-btn-reset').on('click', () => {
-    $('#search-bar-btn-reset').hide();
-  });
-
-  $(window).on('scroll', () => {
-    if ($(window).scrollTop() < 2) {
-      $('#search-bar-container').slideDown(150);
-      $('#card-list').animate({ 'margin-top': '2%', 'padding-top': '0%' }, 25, 'linear');
-      $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
-
-    } else {
-      $('#search-bar-container').slideUp(150);
-      $('#search-bar-container').animate({ 'padding-top': '15%' }, 25, 'linear');
-      $('#card-list').animate({ 'margin-top': '10%', 'padding-top': '2%' }, 25, 'linear');
-    }
-  });
-
-  $('#search-bar-form').on('submit', (event) => {
-    event.preventDefault();
-  });
 });
 //#endregion search feature
+
+/**
+ * Returns true if the add item form is filled
+ */
+function isFormFilled() {
+  return (!($("#name").val().length === 0) &&
+    !($("#description").val().length === 0) &&
+    !($("#datetimepicker").val().length === 0) &&
+    !($('#file-input').get(0).files.length === 0));
+
+}
 
 /**
  * Gets the session id. 
@@ -331,7 +341,6 @@ function validateDate(dateInput) {
 
   var input = new Date(dateInput).getTime(); //user input time converted to milliseconds
   var currentTime = Date.now(); //current time in milliseconds
-  console.log('input > currentTime:', (input > currentTime));
   return (input > currentTime);
 };
 
@@ -351,13 +360,15 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
   $('#card-list').prepend(`
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
-        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+        <img class="food-img" src="/images/${img}">
+        <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
             <div class="col-xs-10">
                 <h4>${name}</h4>
                 <p>Expires ${formatDate(dateTime)}</p>
+                <p id="dateTime${id}" style="display:none">${dateTime}</p>
             </div>
             <div class="col-xs-2">
                 <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
@@ -367,7 +378,7 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
     </div>
     <div class="contentDiv row">
         <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
-            <p>${foodGroup}</p>
+            <p style="display:none">${foodGroup}</p>
             <p>${description}</p>
             <form class="claim-form"
                 action="javascript:void(0);">
@@ -376,7 +387,7 @@ function createCardNoDelete(id, name, description, dateTime, foodGroup, img) {
             <p></p>
         </div>
     </div>`);
-}
+};
 
 /**
  * Creates Card from FoodItem Table without a 'Delete' Button.
@@ -391,13 +402,15 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
   $('#card-list').prepend(`
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
-        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+        <img class="food-img" src="/images/${img}">
+        <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
             <div class="col-xs-10">
                 <h4>${name}</h4>
                 <p>Expires ${formatDate(dateTime)}</p>
+                <p id="dateTime${id}" style="display:none">${dateTime}</p>
             </div>
             <div class="col-xs-2">
                 <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
@@ -407,7 +420,7 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
     </div>
     <div class="contentDiv row">
         <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
-            <p>${foodGroup}</p>
+            <p style="display:none">${foodGroup}</p>
             <p>${description}</p>
             <form class="claim-form"
                 action="javascript:void(0);">
@@ -416,7 +429,7 @@ function createCardBothButtons(id, name, description, dateTime, foodGroup, img) 
             <p></p>
         </div>
     </div>`);
-}
+};
 /**
  * Creates Card from FoodItem Table without a 'Claim' Button.
  * @param {*} id 
@@ -430,13 +443,15 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   $('#card-list').prepend(`
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
-        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+    <img class="food-img" src="/images/${img}">
+    <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
             <div class="col-xs-10">
                 <h4>${name}</h4>
                 <p>Expires ${formatDate(dateTime)}</p>
+                <p id="dateTime${id}" style="display:none">${dateTime}</p>
             </div>
             <div class="col-xs-2">
                 <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
@@ -446,11 +461,11 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
     </div>
     <div class="contentDiv row">
         <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
-            <p>${foodGroup}</p>
+            <p style="display:none">${foodGroup}</p>
             <p>${description}</p>
             <form class="claim-form"
                 action="javascript:void(0);">
-                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteItem(this.id)">
+                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteRoadBlock(this.id)">
             </form>
             <p></p>
         </div>
@@ -459,96 +474,139 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
 
 function deleteItem(itemID) {
   let sessionID = getSessionID('connect.sid');
-  socket.emit('delete item', {
-    id: itemID,
-    sessionID: sessionID
-  });
-}
+  var input = $(`#dateTime${itemID}`).text();
+  if (validateDate(input)) {
+    socket.emit('delete item', {
+      id: itemID,
+      sessionID: sessionID
+    });
+  } else {
+    alert("The card no longer exists. Please refresh the page");
+  }
+};
 
 /**
  * Removes the card from the board (client-side)
  * @param {*} id 
  */
 function itemDeleted(id) {
-  $(`#card${id}`).remove();
-}
+  $(`#confirmDeleteModal${id}`).modal('hide');
+  $(`#card${id}`).attr('disabled', 'true');
+  $(`#${id}`).attr('disabled', 'disabled');
 
+  $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
+  $(`#status${id}`).css("top", "28%");
+  $(`#status${id}`).css("left", "33%");
+  
+  $(`#status${id}`).animate().fadeIn("300", () => {
+   $(`#card${id}`).fadeOut("500", () => {
+      $(`#card${id}`).remove();
+      isBoardEmpty();
+    });
+  });
+};
+
+function deleteRoadBlock(id) {
+  var modalHtml = `<div id="confirmDeleteModal${id}" class="modal confirmDeleteModal fade">
+	<div class="modal-dialog modal-confirm">
+		<div class="modal-content">
+			<div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Are you sure?</h4>	
+			</div>
+			<div class="modal-body">
+				<p>Do you really want to delete this post? This process cannot be undone.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-danger" onclick="deleteItem(${id})">Delete</button>
+			</div>
+		</div>
+  </div>
+  </div>`
+  $(`#card${id}`).prepend(modalHtml);
+
+  $(`#confirmDeleteModal${id}`).modal('show');
+}
 /**
  * Removes the claimed items from the board.
  * @param {number} id 
  */
 function itemClaimed(id) {
-  $(`#card${id}`).remove();
+  $(`#confirmDeleteModal${id}`).modal('hide');
+  $(`#status${id}`).attr("src", "../../Pictures/checkmark.png");
+  $(`#status${id}`).css("top", "35%");
+  $(`#status${id}`).css("left", "36%");
+  
+  $(`#status${id}`).fadeIn("300", () => {
+    $(`#card${id}`).fadeOut("500", () => {
+      $(`#card${id}`).remove();
+      isBoardEmpty();
+    });
+  });
 };
 
 /**
-* Sends emits the item id to the server.
-* @param {number} itemID 
-*/
+ * Sends emits the item id to the server.
+ * @param {number} itemID 
+ */
 function claimItem(itemID) {
   let sessionID = getSessionID('connect.sid');
-  socket.emit('claim item', {
-    id: itemID,
-    sessionID: sessionID,
-  });
+  var input = $(`#dateTime${itemID}`).text();
+
+  if (validateDate(input)) {
+    socket.emit('claim item', {
+      id: itemID,
+      sessionID: sessionID,
+    });
+  } else {
+    alert("The card no longer exists. Please refresh the page");
+  }
 };
 //#endregion claim feature
 
 function formatDate(dateTime) {
   var expiryDate = new Date(dateTime);
-  console.log('Expiry date', expiryDate);
   var today = new Date(Date.now());
-  console.log('today', today);
   var formatedDate = moment(expiryDate).fromNow();
   return formatedDate;
 };
 
-function setPostImage(foodCategory, imgName) {
-  if (imgName !== "undefined.png") {
-    return `/images/${imgName}`;
+function isBoardEmpty() {
+  if( $('#card-list').is(':empty') || $.trim( $('#card-list').html() ).length === 0) {
+    flipEmoji();
+    $('#empty-foodboard').show();
+    $('#empty-foodboard').css('display', 'block');
   } else {
-    switch (foodCategory) {
-      case "Produce":
-        return "../../Pictures/default_produce.png";
-        break;
-      case "Meat":
-        return "../../Pictures/default_meat.png";
-        break;
-      case "Canned Goods":
-        return "../../Pictures/default_food.png";
-        break;
-      case "Packaged":
-        return "../../Pictures/default_packaged.png";
-        break;
-    }
+    $('#empty-foodboard').hide();
+    $('#empty-foodboard').css('display', 'none');
   }
-}
-//#endregion create card functions
+};
 
 
-
-// Creates a thumbnail when an image has been uploaded
-// function handleFileSelect(evt) {
-//     var files = evt.target.files; // FileList object
-
-//     // Only process image files.
-//   if (files[0].type.match('image.*')) {
-
-//         var reader = new FileReader();
-
-//        // Closure to capture the file information.
-//         reader.onload = (function (theFile) {
-//             return function (e) {
-//                 // Render thumbnail.
-//                 var span = document.createElement('span');
-//                 span.innerHTML = ['<img class="thumb" src="', e.target.result,
-//                     '" title="', escape(theFile.name), '"/>'].join('');
-//                 document.getElementById("output").appendChild(span);
-//             };
-//         })(files[0]);
-
-//        // Read in the image file as a data URL.
-//        reader.readAsDataURL(files[0]);
-//     }
-// }
-// document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
+function flipEmoji() {
+  let face = Math.floor(Math.random() * 6);
+  switch (face) {
+    case 0:
+      $('.emoji').html('~(˘▾˘~)');
+      break;
+    case 1:
+      $('.emoji').html('⚆ _ ⚆');
+      break;
+    case 2:
+      $('.emoji').html('(•◡•) /');
+      break;
+    case 3:
+      $('.emoji').html('(ﾉ◕◡◕)ﾉ');
+      break;
+    case 4:
+      $('.emoji').html("(ʘ╭╮ʘ')");
+      break;
+    case 5:
+      $('.emoji').html('ʕ•ᴥ•ʔ');
+      break;
+    default:
+      $('.emoji').html('~(˘▾˘~)');
+      break;
+  }
+};

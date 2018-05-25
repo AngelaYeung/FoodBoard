@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway');
+@import url('https://fonts.googleapis.com/css?family=Cookie');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+
 
 /* Header -> NavBar */
 @media screen and (max-width: 480px) {
@@ -39,23 +42,20 @@
     display:none;
   }
 
-  .col-lg-12 {
-    display:none;
-  }
-
   #homepage-body img {
     width: 50%;
     margin: 0 auto;
   }
 
   #homepage-body {
+    position: absolute;
     font-size: 16pt;
     color: white;
     z-index: 1;
-    -webkit-transform:translate(0%, -375%);
-        -ms-transform:translate(0%, -375%);
-            transform:translate(0%, -375%);
-    font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-family: 'Source Sans Pro', sans-serif;
+    -webkit-transform: translate(0%, -154.571%);
+        -ms-transform: translate(0%, -154.571%);
+            transform: translate(0%, -154.571%);
   }
   #homepage-body img {
     width: 50%;
@@ -81,10 +81,58 @@
   .glyphicon-menu-hamburger {
     font-size: 18pt;
     margin-top:-1%;
-    }
+  }
+
+  /** Hide 'Our Team' Section in Mobile */
+  #our-team {
+    display:none;
+  }
+
+  #getting-started {
+    top: 617px;
+  }
+
+  /** Style the carousel for mobile */
+  .carousel-indicators {
+    bottom:-25px !important;
+  }
+
+  .col-lg-6 p:nth-last-child(1) {
+    display:none;
+  }
+
+  .col-lg-6 > p:first-child {
+    width:35%;
+    margin: 0 auto;
+    font-family: 'Cookie', cursive;
+    border-bottom: 1px solid white;
+    font-size:22pt;
+    padding: 2% 1% 1%;
+    line-height:0.8em;
+  }
+
+  .container-contact-us {
+    padding: 35% 10% 15%;
+  }
+
+  .phone-card.col-lg-3.text-center {
+    padding-top: 5%;
+    width: 85%;
+    margin: 0 auto;
+  }
+  .invalid-feedback {
+    padding-bottom: 2.5%;
+    margin-top: -1.5%;
+  }
 }
 
+/************************************************
+*
+*               DESKTOP STYLING
+*
+************************************************/
 @media screen and (min-width: 481px) {
+  
   .homepage-background img {
     -webkit-filter: blur(5px);
             filter: blur(5px);
@@ -105,22 +153,29 @@
     display: none;
   }
 
-html{
-  overflow-y: scroll;
-}
+  html{
+    overflow-y: scroll;
+  }
 
-body#page-top.modal-open{
-  padding-right: 0!important;
-}
+  body#page-top.modal-open{
+    padding-right: 0!important;
+  }
 
-#homepage-body{
-  font-size: 26pt;
-  color: white;
-  z-index: 1;
-  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-style: italic;
-}
+  #homepage-body{
+    font-size: 24pt;
+    color: white;
+    z-index: 1;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-style: italic;
+  }
 
+  div#homepage-body {
+    position: absolute;
+    padding-left: 33.3%;
+    padding-right: 33.3%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
   #homepage-body img {
     margin: 0 auto;
@@ -129,6 +184,71 @@ body#page-top.modal-open{
   #homepage-body button {
     background-color:#4EB266;
     font-size: 20pt;
+  }
+  
+  /** Styling for 'Our Team' on desktop */
+  #our-team {
+    padding: 10% 0%;
+  }
+
+  #our-team-title {
+    font-family: 'Cookie', cursive;
+    font-size:60pt;
+    padding-bottom:5%;
+  }
+
+  /** Styling for How it works carousel on desktop */
+
+  #getting-started {
+    margin-top:-3%;
+  }
+  .col-lg-6 > p:first-child {
+    width: 60%;
+    margin: 0 auto;
+    font-family: 'Cookie', cursive;
+    padding-top: 25%;
+    font-size:60pt;
+    border-bottom: 1px solid white;
+    line-height:2em;
+  }
+
+  .col-lg-6 > p:nth-child(2) {
+    padding-top: 10%;
+    font-size:16pt;
+  }
+
+  /** Styling for Contact us */
+   .container-contact-us {
+    position: relative;
+    padding: 12% 0%;
+    color:#333131;
+    margin:0%;
+    width:100%;
+  }
+  .container-contact-us-content p {
+    font-size: 16pt;
+  }
+  .container-contact-us-content span {
+    font-size:8pt;
+  }
+  .container-contact-us-background {
+      background: url(https://images.unsplash.com/photo-1518665750801-883c188a660d?ixlib=rb-0.3.5&s=45578e4af327cda25527a0a6628ad5a9&auto=format&fit=crop&w=1934&q=80);
+      -webkit-filter: grayscale(800%) blur(3px);
+      -moz-filter: grayscale(800%) blur(3px);
+      -o-filter: grayscale(80%) blur(3px);
+      -ms-filter: grayscale(800%) blur(3px);
+      filter: grayscale(80%) blur(3px);
+      background-size:cover;
+      background-repeat:no-repeat;
+      background-position:center center;
+      position:absolute; top:0px; right:0px; bottom:0px; left:0px;
+  }
+  .logodiv {
+    margin: 2% 0% !important;
+  }
+
+  .invalid-feedback {
+    padding-bottom: 2.5%;
   }
 }
 
@@ -227,7 +347,7 @@ body {
 
 .navbar-right-custom {
   padding-right: 5%;
-  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: Helvetica;
   font-size:14pt;
   
 }
@@ -237,21 +357,6 @@ body {
   font-size: 14pt;
 }
 
-/* Customize jumbotron (how-it-works) */
-.jumbotron-custom {
-  background-color:white;
-  color:black;
-  padding-left: 1%;
-  padding-right: 1%;
-  border-radius:0px!important;
-  margin-bottom:0px;
-}
-
-.jumbotron-custom div p {
-  font-size:16pt;
-  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  padding: 2%;
-}
 
 .row {
   margin-right:0;
@@ -263,17 +368,15 @@ body {
 }
 
 .col-lg-12 {
-  padding: 0% 0% 5% 0%;
   margin: 10 10 10 10;
-  font-family: "HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-size: 40pt;
-  color: black;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 32pt;
 }
 
 /* Customize "About Us" */
 .col-lg-2 > img {
   width: 175px;
-  border: solid 1px ;
+
 }
 
 .col-lg-2 > p {
@@ -282,17 +385,15 @@ body {
 
 
 #our-team {
-  background-color: #596869 ;
-  padding: 8% 0% 8% 0%;
-  color:white;
+  background-color: white;
+  color:#333131;
+  width:100%;
 }
 
-#our-team-title {
-  color:white;
-}
 
 #homepage-body-container {
   padding: 0%;
+  background: #4EB266;
 }
 
 .linkButton { 
@@ -312,7 +413,7 @@ body {
 }
 .homepage-background img {
   -webkit-filter: blur(5px);
-          filter: blur(5px);
+  filter: blur(5px);
   opacity: 0.7;
   width: 100%;
 }
@@ -321,8 +422,8 @@ body {
 #homepage-body button {
   background-color:rgba(78, 178, 101);
   font-size: 16pt;
-  font-family:"HelveticaNeue-Light, Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-style: normal;
+  font-family: 'Source Sans Pro', sans-serif;
   border-color: black;
   border-radius: 20px;  
   color:white;
@@ -362,4 +463,82 @@ body {
 .glyphicon-menu-hamburger:active {
   -webkit-box-shadow:none;
           box-shadow:none;
+}
+
+/** Styling for 'How It Works' Carousel' */
+
+#getting-started {
+  position:absolute;
+  
+}
+.container-carousel-custom {
+  background: #333131;
+  margin:0%;
+  width:100%;
+  color:white;
+  padding: 2.5% 2% 5%;
+}
+
+.carousel-control {
+  width:auto;
+}
+
+.glyphicon-chevron-left {
+  margin-left: 10px !important;
+}
+
+.glyphicon-chevron-right {
+  margin-right: 10px !important;
+}
+
+.carousel-indicators {
+  bottom:0px;
+}
+
+.phone-border {
+  background:white;
+  border-radius:5px;
+  border: solid 1px lightgray;
+}
+
+.phone-speaker {
+  border: solid 2px lightgray;
+  width: 15%;
+  margin: 0 auto;
+  margin-top:5%;
+}
+
+.phone-home-button {
+  border: solid 2px lightgray;
+  width: 30px;
+  height:30px;
+  margin: 0 auto;
+  margin-bottom: 2.5%;
+  border-radius:50%;
+}
+
+.phone-content img {
+  width:95%;
+  height:auto;
+  padding: 5% 0.5% 2.5%;;
+}
+
+.carousel-inner .item .row{
+  padding-bottom: 2%;
+}
+
+
+/** Styling for the 'Contact Us' Page */
+#contact-us {
+  font-family: 'Cookie', cursive;
+  font-size:60pt;
+}
+#email-icon{
+  width:64px;
+}
+
+.invalid-feedback{
+  display: none;
+  text-align: center;
+  color: red;
 }

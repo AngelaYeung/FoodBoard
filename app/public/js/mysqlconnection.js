@@ -1,6 +1,10 @@
 const dbconfig = require('./dbconfig.js');
 const mysql = require('mysql');
 
+
+var pool = mysql.createPool(dbconfig);
+
+
 /**
  * Handles mysql database disconnection.
  * 
@@ -9,7 +13,7 @@ const mysql = require('mysql');
 function handleDisconnect() {
 
 
-    var connection = mysql.createConnection(dbconfig); // Recreate the connection, since
+    connection = mysql.createConnection(dbconfig); // Recreate the connection, since
     // the old one cannot be reused.
 
     connection.connect(function (err) { // The server is either down
@@ -22,7 +26,6 @@ function handleDisconnect() {
 
     connection.on('error', function (err) {
         console.log('DB TIMEOUT', err);
-        console.log('db error', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
             handleDisconnect(); // lost due to either server restart, or a
         } else { // connnection idle timeout (the wait_timeout
@@ -34,5 +37,5 @@ function handleDisconnect() {
 
 
 module.exports = {
-    handleDisconnect: handleDisconnect,
+    pool: pool,
 };

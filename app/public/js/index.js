@@ -1,49 +1,67 @@
-document.onreadystatechange = function() {
+document.onreadystatechange = function () {
   var screenHeight = $(window).outerHeight();
   var navbarHeight = $('.navbar-brand-sm').outerHeight();
   var sum = screenHeight + navbarHeight;
   $('#background-sm img, background-lg img').css('height', `${sum}`);
 
-  var sum2 = screenHeight/2;
+  var sum2 = screenHeight / 2;
   if ($(window).width() <= 900) {
     $('#homepage-body').css('transform', `translate(0%, -${sum2}%)`);
   } else {
-    $('#homepage-body').css('transform', `translate(0%, -${sum2/1.75}%)`);
+    $('#homepage-body').css('transform', `translate(0%, -${sum2 / 1.75}%)`);
   }
 }
 
 $(document).ready(function () {
+  //close modals with back btn
+$('.modal').on('show.bs.modal', function (e) {
+  window.history.pushState('forward', null, '#modal');
+});
 
-  // add scrollspy onto body of the page for about link
-  $("#about-link").click(function () {
-    $('html, body').animate({
-      scrollTop: $("#homepage-body-container").offset().top
-    }, 500);
-  });
+$('.modal').on('hide.bs.modal', function (e) {
+  //pop the forward state to go back to original state before pushing the "Modal!" button
+});
 
-  // add scrollspy onto body of the page for how it works link
-  $("#how-link").click(function () {
-    $('html, body').animate({
-      scrollTop: $("#how-it-works").offset().top
-    }, 500);
-  });
+$(window).on('popstate', function () {
+  $('.modal').modal('hide');
+});
 
-  // add scrollspy onto body of the page for our-team link
-  $("#team-link").click(function () {
+
+  // add scrollspy onto body of the page for 'Our Team' link
+  $("#our-team-link").click(function () {
     $('html, body').animate({
       scrollTop: $("#our-team").offset().top
     }, 500);
   });
 
-  // add scrollspy onto body of the page for login link
-  $("#about-link").click(function () {
+  // add scrollspy onto body of the page for 'Contact Us' link
+  $("#contact-us-link").click(function () {
     $('html, body').animate({
-      scrollTop: $("#homepage-body-container").offset().top
+      scrollTop: $("#contact-us").offset().top
+    }, 500);
+  });
+   // add scrollspy onto body of the page for 'Contact Us' link
+   $("#contact-us-link-desktop").click(function () {
+    $('html, body').animate({
+      scrollTop: $("#contact-us").offset().top
     }, 500);
   });
 
-  // add scrollspy onto body of the page for home link        
-  $(".navbar-brand a").click(function () {
+  // add scrollspy onto body of the page for'Getting Started' link
+  $("#getting-started-link").click(function () {
+    $('html, body').animate({
+      scrollTop: $("#getting-started").offset().top
+    }, 500);
+  });
+  // add scrollspy onto body of the page for'Getting Started' link
+  $("#getting-started-link-desktop").click(function () {
+    $('html, body').animate({
+      scrollTop: $("#getting-started").offset().top
+    }, 500);
+  });
+
+  // add scrollspy onto body of the page for 'Home' link        
+  $("#home-link").click(function () {
     $('html, body').animate({
       scrollTop: $("#page-top").offset().top
     }, 500);
@@ -53,7 +71,6 @@ $(document).ready(function () {
     if ($(".dropdown-menu").length > 0) {
       $('.navbar-fixed-top').css('background-color', "#4EB266");
     } else {
-      console.log('closed');
       $('.navbar-fixed-top').css('background-color', "transparent");
     }
   });
@@ -72,10 +89,6 @@ $(document).ready(function () {
       }
     });
 
-    //closes modal when clicking back button
-    $(window).on("popstate", this.handleBackpress);
-    document.addEventListener("backbutton", this.handleBackpress, false);
-
   });
 
   //change navbar colour green when opening dropdown
@@ -90,31 +103,37 @@ $(document).ready(function () {
     });
   });
 
-  //Change password field red if password is incorrect
-  $("#register_pwd_confirm").on('change', (e) => {
+  $("#register_pwd_confirm, #register_pwd").on('change', (e) => {
     if (validatePassword()) {
-      document.getElementById("register_pwd").style.borderColor = '#4EB266';
-      document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
+      $("#register_pwd").css("border", "2px solid #4EB266");
+      $("#register_pwd_confirm").css("border", "2px solid #4EB266");
+      $('.invalid-feedback').hide();
+      $('#register-submit').removeClass('disabled');
+      $('#register-submit').removeAttr('disabled')
     } else {
-      document.getElementById("register_pwd").style.borderColor = "#E34234";
-      document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
-    }
-  });
-  //Change password field red if password is incorrect
-  $("#register_pwd").on('change', (e) => {
-    e.preventDefault();
-    if (validatePassword()) {
-      document.getElementById("register_pwd").style.borderColor = '#4EB266';
-      document.getElementById("register_pwd_confirm").style.borderColor = '#4EB266';
-    } else {
-      document.getElementById("register_pwd").style.borderColor = "#E34234";
-      document.getElementById("register_pwd_confirm").style.borderColor = "#E34234";
+      $("#register_pwd").css("border", "2px solid #E34234");
+      $("#register_pwd_confirm").css("border", "2px solid #E34234");
+      $('.invalid-feedback').show();
+      $('#register-submit').addClass('disabled');
+      $('#register-submit').attr('disabled', 'disabled');
     }
   });
 
+  $('#logreg-modal').on('shown.bs.modal', function () {
+    $('#log-first-field, #reg-first-field').focus();
+  });
 });
 
 
+$("#newPW,#confirmPW").on('change', (e) => {
+  if (validatePassword()) {
+    $("#confirmPW").css("border", "2px solid #4EB266");
+    $("#newPW").css("border", "2px solid #4EB266");
+  } else {
+    $("#confirmPW").css("border", "2px solid #E34234");
+    $("#newPW").css("border", "2px solid #E34234");
+  }
+});
 
 //validate the password
 function validatePassword() {
@@ -123,13 +142,4 @@ function validatePassword() {
   } else {
     return true;
   }
-}
-
-//closes modal when clicking back button
-function handleBackpress(e) {
-  e.preventDefault();
-  e.stopPropagation();
-
-  $(".modal").modal("hide");
-  $(".modal-backdrop").remove();
 }

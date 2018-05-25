@@ -1,64 +1,63 @@
 <header id="header">
-    <div class="container-fluid">
-        <nav class="navbar navbar-expand-sm navbar-fixed-top navbar-custom">
-            <div class="nav navbar-brand">
-                <a class="navbar-foodboard" href="/">
-                    <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
-                </a>
-            </div>
+  <div class="container-fluid">
+    <nav class="navbar navbar-expand-sm navbar-fixed-top navbar-custom">
+      <div class="nav navbar-brand">
+        <a class="navbar-foodboard" href="../boardpage">
+          <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
+        </a>
+      </div>
 
-            <!-- navbar logo for mobile-->
-            <div class="nav navbar-brand-sm">
-                <div class="text-center">
+      <!-- navbar logo for mobile-->
+      <div class="nav navbar-brand-sm">
+        <div class="text-center">
+          <a class="navbar-foodboard" href="../boardpage">
+            <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
+          </a>
+        </div>
+        <div class="navbar-right dropdown">
+          <a style="background: transparent;" id='color-change' class="btn btn-primary btn-lg dropdown-toggle glyphicon glyphicon-menu-hamburger navbar-color-change"
+            data-toggle="dropdown" aria-expanded='false'></a>
+          <button type="button" class="btn btn-default" aria-label="Right Align" class="btn additem" data-toggle="modal" data-target="#itemModal">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li class="nav-item text-center">
+              <a href="/" class="nav-link">HOME</a>
+            </li>
+            <li class="nav-item text-center">
+              <a href="/myposts" class="nav-link">MY POSTS</a>
+            </li>
+            <li class="nav-item text-center">
+              <a href="/my_claims" class="nav-link">MY CLAIMS</a>
+            </li>
+            <li class="nav-item text-center">
+              <a href="/account" class="nav-link">ACCOUNT SETTINGS</a>
+            </li>
+            <li class="nav-item text-center">
+              <a href="/logout" class="nav-link">LOGOUT</a>
+            </li>
 
-                    <a class="navbar-foodboard" href="#page-top">
-                        <img src="./Pictures/fb-logo-transparent.png" alt="FoodBoard">
-                    </a>
-                </div>
-                <div class="navbar-right dropdown">
-                    <a style="background: transparent;" id='color-change' class="btn btn-primary btn-lg dropdown-toggle glyphicon glyphicon-menu-hamburger navbar-color-change"
-                        data-toggle="dropdown" aria-expanded='false'></a>
-                    <button type="button" class="btn btn-default" aria-label="Right Align" class="btn additem" data-toggle="modal" data-target="#itemModal">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li class="nav-item text-center">
-                            <a href="/" class="nav-link">HOME</a>
-                        </li>
-                        <li class="nav-item text-center">
-                            <a href="/account" class="nav-link">ACCOUNT SETTINGS</a>
-                        </li>
-                        <li class="nav-item text-center">
-                            <a href="/myposts" class="nav-link">MY POSTS</a>
-                        </li>
-                        <li class="nav-item text-center">
-                            <a href="/my_claims" class="nav-link">MY CLAIMS</a>
-                        </li>
-                        <li class="nav-item text-center">
-                            <a href="/logout" class="nav-link">LOGOUT</a>
-                        </li>
-
-                    </ul>
-                </div>
-            </div>
-            <!--Nav bar for Desktop-->
-            <ul class="nav navbar-nav navbar-right navbar-right-custom">
-                <li class="nav-item text-center">
-                    <a href="/" class="nav-link">HOME</a>
-                </li>
-                <li class="nav-item text-center">
-                    <a href="/account" class="nav-link">ACCOUNT SETTINGS</a>
-                </li>
-                <li class="nav-item text-center">
-                    <a href="/myposts" class="nav-link">MY POSTS</a>
-                </li>
-                <li class="nav-item text-center">
-                    <a href="/my_claims" class="nav-link">MY CLAIMS</a>
-                </li>
-                <li class="nav-item text-center">
-                    <a href="/logout" class="nav-link">LOGOUT</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+          </ul>
+        </div>
+      </div>
+      <!--Nav bar for Desktop-->
+      <ul class="nav navbar-nav navbar-right navbar-right-custom">
+        <li class="nav-item text-center">
+          <a href="/" class="nav-link">HOME</a>
+        </li>
+        <li class="nav-item text-center">
+          <a href="/myposts" class="nav-link">MY POSTS</a>
+        </li>
+        <li class="nav-item text-center">
+          <a href="/my_claims" class="nav-link">MY CLAIMS</a>
+        </li>
+        <li class="nav-item text-center">
+          <a href="/account" class="nav-link">ACCOUNT SETTINGS</a>
+        </li>
+        <li class="nav-item text-center">
+          <a href="/logout" class="nav-link">LOGOUT</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 </header>

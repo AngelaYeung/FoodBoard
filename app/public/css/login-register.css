@@ -1,43 +1,44 @@
 /* Tabbed Modal */
+
 .green {
-  background-color: #4EB266; }
+  background-color: #4EB266;
+}
 
 .modal-dialog.tabbed-modal .nav-tabs {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex; 
-    border-radius: 2px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  border-radius: 2px;
 }
 
 .modal-dialog.tabbed-modal .nav-tabs li {
-    -ms-flex: 1;
-    -webkit-box-flex: 1;
-            flex: 1; 
+  -ms-flex: 1;
+  -webkit-box-flex: 1;
+  flex: 1;
 }
 
 .modal-dialog.tabbed-modal .nav-tabs li a {
-    text-align: center; 
-    margin: 0;
-    border-radius: 2px;
-
+  text-align: center;
+  margin: 0;
+  border-radius: 2px;
 }
 
-.modal-content{
+.modal-content {
   border-radius: 2px;
   border: 0px;
 }
 
-.nav-tabs> li > a{
+.nav-tabs>li>a {
   border-radius: 0;
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
 }
 
-.tab-content > .tab-pane {
+.tab-content>.tab-pane {
   display: none !important;
 }
 
-.tab-content > .active {
+.tab-content>.active {
   display: block !important;
 }
 
@@ -64,4 +65,5 @@
   margin-top: 150px;
   margin-bottom: 50px;
 }
+
 /* End Tabbed Modal */

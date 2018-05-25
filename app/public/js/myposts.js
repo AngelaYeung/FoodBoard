@@ -1,12 +1,8 @@
 // needs to be declared as a global variable to be in same scope as claimItem(), deleteItem()
 var socket;
 
-$(window).on('load', () => {
-  window.scroll(0, 10);
-});
 $(document).ready(function () {
   var sessionID = getSessionID('connect.sid');
-  console.log('sessionID', sessionID);
 
   socket = io();
   const uploader = new SocketIOFileUpload(socket);
@@ -25,7 +21,9 @@ $(document).ready(function () {
    */
   $(window).on('load', () => {
 
-    console.log('Myposts loading.....', sessionID);
+    socket.emit('page loaded', {
+      sessionID: getSessionID('connect.sid'),
+    });
     socket.emit('my posts', {
       sessionID: sessionID,
     });
@@ -35,7 +33,7 @@ $(document).ready(function () {
     var role = items.role; // their role as administrator or user
     var userID = items.userID; // whos logged in
     var rows = items.rows;
-    console.log("MYPOSTS JAVASCRIPT EVENT: items: ", items);
+
     for (var i = 0; i < rows.length; i++) {
       createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
         rows[i].foodGroup, rows[i].foodImage);
@@ -48,17 +46,36 @@ $(document).ready(function () {
    * 
    *************************************************************************/
   socket.on('delete return', (itemID) => {
-    itemDeleted(itemID); //deletes the item
+
+    itemDeleted(itemID); //deletes the item    
+    $(`#card${itemID}`).attr('disabled', 'true');
+    $(`#${itemID}`).attr('disabled', 'disabled');
+  });
+
+  /*************************************************************************
+* 
+*         FOOD BOARD AUTO-DELETE FEATURE - CLIENT SIDE
+* 
+*************************************************************************/
+  socket.on('delete expired posts', (deletedItems) => {
+    for (let i = 0; i < deletedItems.rows.length; i++) {
+      itemDeleted(deletedItems.rows[i].itemID);
+    }
   });
 });
 
 function deleteItem(itemID) {
   let sessionID = getSessionID('connect.sid');
-  socket.emit('delete item', {
-    id: itemID,
-    sessionID: sessionID
-  });
-}
+  var input = $(`#dateTime${itemID}`).text();
+  if (validateDate(input)) {
+    socket.emit('delete item', {
+      id: itemID,
+      sessionID: sessionID
+    });
+  } else {
+    alert("The card no longer exists. Please refresh the page");
+  }
+};
 
 /**
  * Gets the session id. 
@@ -83,31 +100,42 @@ function getCookie(name) {
   }
 };
 
-function setPostImage(foodCategory, imgName) {
-  if (imgName !== "undefined.png") {
-    return `/images/${imgName}`;
-  } else {
-    switch (foodCategory) {
-      case "Produce":
-        return "../../Pictures/default_produce.png";
-        break;
-      case "Meat":
-        return "../../Pictures/default_meat.png";
-        break;
-      case "Canned Goods":
-        return "../../Pictures/default_food.png";
-        break;
-      case "Packaged":
-        return "../../Pictures/default_packaged.png";
-        break;
-    }
-  }
-}
-
 function itemDeleted(id) {
-  $(`#card${id}`).remove();
-}
+  $(`#card${id}`).attr('disabled', 'true');
+  $(`#${id}`).attr('disabled', 'disabled');
+  $(`#confirmDeleteModal`).modal('hide');
+  $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
+  $(`#status${id}`).css("top", "28%");
+  $(`#status${id}`).css("left", "33%");
 
+  $(`#status${id}`).fadeIn("300", () => {
+    $(`#card${id}`).fadeOut("500", () => {
+      $(`#card${id}`).remove();
+    });
+  });
+};
+
+function deleteRoadBlock(id) {
+  var modalHtml = `<div id="confirmDeleteModal" class="modal confirmDeleteModal fade">
+	<div class="modal-dialog modal-confirm">
+		<div class="modal-content">
+			<div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Are you sure?</h4>	
+			</div>
+			<div class="modal-body">
+				<p>Do you really want to delete this post? This process cannot be undone.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-danger" onclick="deleteItem(${id})">Delete</button>
+			</div>
+		</div>
+	</div>`
+  $(`#card${id}`).prepend(modalHtml);
+
+  $(`#confirmDeleteModal`).modal('show');
+}
 /**
  * Creates Card from FoodItem Table without a 'Claim' Button.
  * @param {*} id 
@@ -121,13 +149,15 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
   $('#card-list').prepend(`
   <div id="card${id}" class="cardContainer">
     <div class="imgDiv">
-        <img class="food-img" src="${setPostImage(foodGroup, img)}">
+        <img class="food-img" src="/images/${img}">
+        <img id="status${id}" class="status-text" style="display:none;">
     </div>
     <div class="header-Div">
         <div class="row">
             <div class="col-xs-10">
                 <h4>${name}</h4>
                  <p>Expires ${formatDate(dateTime)}</p>
+                 <p id="dateTime${id}" style="display:none">${dateTime}</p>
             </div>
             <div class="col-xs-2">
                 <button data-toggle="collapse" data-target="#collapseDiv${id}" class="glyphicon glyphicon glyphicon-option-vertical collapse-button"
@@ -137,11 +167,11 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
     </div>
     <div class="contentDiv row">
         <div id="collapseDiv${id}" class="col-xs-12 collapse" aria-expanded="true" style="">
-            <p>${foodGroup}</p>
+            <p style="display:none">${foodGroup}</p>
             <p>${description}</p>
             <form class="claim-form"
                 action="javascript:void(0);">
-                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteItem(this.id)">
+                <input id="${id}" class="delete-button" type="button" value="DELETE" onclick="deleteRoadBlock(this.id)">
             </form>
             <p></p>
         </div>
@@ -152,9 +182,21 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
 
 function formatDate(dateTime) {
   var expiryDate = new Date(dateTime);
-  console.log('Expiry date', expiryDate);
   var today = new Date(Date.now());
-  console.log('today', today);
   var formatedDate = moment(expiryDate).fromNow();
   return formatedDate;
 };
+
+/**
+ * Returns true if the input time is larger than the current time --> it is a valid date
+ * , otherwise returns false.
+ * @param {*} dateInput 
+ */
+function validateDate(dateInput) {
+
+  var input = new Date(dateInput).getTime(); //user input time converted to milliseconds
+  var currentTime = Date.now(); //current time in milliseconds
+  return (input > currentTime);
+};
+
+

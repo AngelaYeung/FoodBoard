@@ -1,8 +1,7 @@
 //load bcrypt
 var bCrypt = require('bcrypt-nodejs');
 const mysqlconnection = require('../../public/js/mysqlconnection');
-var connection = mysqlconnection.handleDisconnect();
-var slackcmd = require('../../public/js/slackcommands');
+var slacklog = require('../../public/js/slacklogs');
 
 module.exports = function (passport, user) {
 
@@ -31,16 +30,19 @@ module.exports = function (passport, user) {
         return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
       };
 
+
       var userSelect = "SELECT userID FROM users WHERE email = ? LIMIT 1";
-      connection.query(userSelect, [register_email], (error, results) => {
+
+      mysqlconnection.pool.query(userSelect, [register_email], (error, results) => {
         if (error) {
-          slackcmd.log(`Event: Passport. ${query}.`, error);
+          slacklog.log(`Event: Passport. ${userSelect}.`, error);
           console.log(new Date(Date.now()), 'Error:', error);
+
           return done(error);
-        }
-        if (results.length) { // Return fail
+        } else if (results.length) { // Return fail
+
           return done(null, false, console.log("Email is already taken."));
-        } else { 
+        } else {
           var userPassword = generateHash(register_pwd); // hashed password
           var data = {
             email: register_email,
@@ -53,9 +55,11 @@ module.exports = function (passport, user) {
 
           User.create(data).then((newUser, created) => {
             if (!newUser) {
+
               return done(null, false);
             }
             if (newUser) {
+
               return done(null, newUser);
             }
           });

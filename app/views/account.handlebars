@@ -2,112 +2,127 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <Title>Account</Title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="/public/css/account.css">
-    <link rel="stylesheet" href="/public/css/boardpage.css">
-    <link rel="stylesheet" href="/public/css/navbar.css">
-    <script src="/public/js/account.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <Title>Account</Title>
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" type="image/x-icon" href='../favicon.ico' />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="/public/css/account.css">
+  <link rel="stylesheet" href="/public/css/boardpage.css">
+  <link rel="stylesheet" href="/public/css/navbar.css">
+  <script src="/public/js/account.js"></script>
 </head>
 
 <body>
 
-    {{>acc_navbar}}
-
+  {{>acc_navbar}}
+  <div class="account-form">
     <div class="account">
-        <h3>Account Settings</h3>
-
+      <p>ACCOUNT SETTINGS</p>
     </div>
 
     <div class="account-settings-container">
-        <div class="row">
-            <div class="col-xs-4">
-                Name
-            </div>
-            <div class="col-xs-8">
-                {{name}}
-            </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-4 heading">
+          Name
         </div>
-        <div class="row">
-            <div class="col-xs-4">
-                Email
-            </div>
-            <div class="col-xs-8">
-                {{email}}
-            </div>
+        <div class="col-xs-4">
+          {{name}}
         </div>
-        <div class="row">
-            <div>
-                <div class="col-xs-4">
-                    Current Password
-                </div>
-                <div class="col-xs-4">
-                    *********
-                </div>
-                <div class="col-xs-4">
-                    <a class="btn-xs btn-primary edit-info" data-toggle="collapse" href="#pw-form">Edit Info</a>
-                </div>
-                 {{passwordMessage}}
-            </div>
+        <div class="col-xs-2"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-4 heading">
+          Email
         </div>
-        <div class="row">
+        <div class="col-xs-4">
+          {{email}}
+        </div>
+        <div class="col-xs-2"></div>
+      </div>
+      <div class="row">
+        <div>
+          <div class="col-xs-1"></div>
+          <div class="col-xs-4 heading">
+            Current Password
+          </div>
+          <div class="col-xs-4">
+            *********
+          </div>
+          <div class="col-xs-2">
+            <a class="btn-xs btn-primary edit-info" data-toggle="collapse" href="#pw-form">Edit</a>
+          </div>
+        </div>
+      </div>
+      <div class="text-center">
+        <b>{{passwordMessage}}</b>
+      </div>
+      <div class="row">
 
-            <div id="pw-form" class="collapse">
-                <form id="changePWForm" action="/changepassword" method="POST">
-                    <p class="text-center">Change password</p>
-                    <div class="form-group text-center">
-                        <input id="currentPW" name="currentPW" type="password" value="" placeholder="Current Password" required>
-                    </div>
-                    <div class="form-group text-center">
-                        <input id="newPW" name="newPW" type="password" placeholder="Enter new password">
-                    </div>
-                    <div class="form-group text-center">
-                        <input id="confirmPW" name="confirmPW" type="password" placeholder="Confirm new password">
-                    </div>
-                    <div class="form-group text-center">
-                        <button id="pw-submit" class="btn btn-primary disabled" type="submit">Save Changes</button>
-                        <button class="btn btn-danger" type="button" data-toggle="collapse" data-target="#pw-form">Cancel</button>
-                    </div>
-                </form>
+        <div id="pw-form" class="collapse">
+          <form id="changePWForm" action="/changepassword" method="POST">
+            <p class="text-center">Change Password</p>
+            <div class="form-group text-center">
+              <input id="currentPW" name="currentPW" type="password" value="" placeholder="Current Password" required>
             </div>
+            <div class="form-group text-center">
+              <input id="newPW" name="newPW" type="password" placeholder="Enter new password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">
+            </div>
+            <div class="form-group text-center">
+              <input id="confirmPW" name="confirmPW" type="password" placeholder="Confirm new password">
+              <div class='invalid-feedback'> Your passwords are not the same. </div>
+            </div>
+            <div class="form-group text-center">
+              <button id="pw-submit" class="btn btn-save-changes btn-primary disabled" type="submit" disabled>Save Changes</button>
+              <button class="btn btn-danger" type="button" data-toggle="collapse" data-target="#pw-form">Cancel</button>
+            </div>
+          </form>
         </div>
-
-        <div class="row">
-            <div class="col-xs-4">
-                Suite No.
-            </div>
-            <div class="col-xs-4">
-                {{suiteNum}}
-            </div>
-            <div class="col-xs-4">
-                <a class="btn-xs btn-primary edit-info" data-toggle="collapse" href="#suite-form">Edit Info</a>
-            </div>
-           {{suiteMessage}}
-        </div>
-        <div class="row">
-
-            <div id="suite-form" class="collapse">
-                <form id="changeSuiteForm" action="/changesuitenumber" method="POST">
-                    <p class="text-center">Change Suite Number</p>
-
-                    <div class="form-group text-center">
-                        <input class="currentPW" name="currentPW" type="password" value="" placeholder="Enter Password" required>
-                    </div>
-                    <div class="form-group text-center">
-                        <input id="newSuite" name="newSuite" type="text" placeholder="Enter new Suite Number">
-                    </div>
-                    <div class="form-group text-center">
-                        <button id="suite-submit" class="btn btn-primary disabled" type="submit">Save Changes</button>
-                        <button class="btn btn-danger" type="button" data-target="#suite-form" data-toggle="collapse">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+      </div>
     </div>
+
+    <div class="row">
+      <div>
+        <div class="col-xs-1"></div>
+        <div class="col-xs-4 heading">
+          Suite No.
+        </div>
+        <div class="col-xs-4">
+          {{suiteNum}}
+        </div>
+        <div class="col-xs-2">
+          <a class="btn-xs btn-primary edit-info" data-toggle="collapse" href="#suite-form">Edit</a>
+        </div>
+      </div>
+    </div>
+    <div class="text-center">
+      <b>{{suiteMessage}}</b>
+    </div>
+    <div class="row">
+      <div id="suite-form" class="collapse">
+        <form id="changeSuiteForm" action="/changesuitenumber" method="POST">
+          <p class="text-center">Change Suite Number</p>
+          <div class="form-group text-center">
+            <input class="currentPW" name="currentPW" type="password" value="" placeholder="Enter Password" required>
+          </div>
+          <div class="form-group text-center">
+            <input id="newSuite" name="newSuite" type="number" placeholder="Enter new Suite Number">
+          </div>
+          <div class="form-group text-center">
+            <button id="suite-submit" class="btn btn-save-changes btn-primary disabled" type="submit" disabled>Save Changes</button>
+            <button class="btn btn-danger" type="button" data-target="#suite-form" data-toggle="collapse">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
 
 </body>
 

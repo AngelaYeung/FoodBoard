@@ -1,7 +1,6 @@
 $(function () {
     var socket = io();
-    $('#postForm').submit(function () {
-      console.log('Submit triggered!');  
+    $('#postForm').submit(function () { 
       socket.emit('post item', {
           name: $('#name').val(),
           description: $('#description').val(),

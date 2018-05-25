@@ -1,8 +1,6 @@
 var exports = module.exports = {}
 var mysqlconnection = require('../public/js/mysqlconnection');
 
-var connection = mysqlconnection.handleDisconnect();
-
 exports.signup = (req, res) => {
   res.render('home');
 }
@@ -28,13 +26,18 @@ exports.logout = (req, res) => {
     if (err) {
       console.log("Error occured while logging out: ", err);
     }
-    connection.query(`DELETE FROM Sessions WHERE sessionID = '${req.sessionID}'`, (error, rows, fields) => {
+
+
+    mysqlconnection.pool.query(`DELETE FROM Sessions WHERE sessionID = '${req.sessionID}'`, (error, rows, fields) => {
       if (error) {
         console.log("Error occured while trying to delete sessionID from Sessions: ", error);
       } else {
         console.log("Successful deletion of sessionID from Sessions.");
       }
+
     });
+
+
     res.redirect('/');
 
   });
