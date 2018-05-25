@@ -228,7 +228,7 @@ $(document).ready(function () {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         } else {
-          console.log("REGULAR USER LOAD FEATURE: CREATING CARD NO DELETE");
+          
           createCardNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         }
