@@ -28,9 +28,9 @@ $(document).ready(() => {
  * 
  *************************************************************************/
   socket.on('delete return', (itemID) => {
+    itemDeleted(itemID); //deletes the item
     $(`#card${id}`).attr('disabled', 'true');
     $(`#${id}`).attr('disabled', 'disabled');
-    itemDeleted(itemID); //deletes the item
   });
 
   /*************************************************************************
@@ -119,7 +119,6 @@ function formatDate(dateTime) {
 function itemDeleted(id) {
   $(`#card${id}`).attr('disabled', 'true');
   $(`#${id}`).attr('disabled', 'disabled');
-  $(`#confirmDeleteModal${id}`).modal('hide');
   $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
   $(`#status${id}`).css("transform", "translate(86%, -145%)");
 
