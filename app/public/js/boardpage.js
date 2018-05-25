@@ -228,7 +228,7 @@ $(document).ready(function () {
           createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         } else {
-          console.log("REGULAR USER LOAD FEATURE: CREATING CARD NO DELETE");
+          
           createCardNoDelete(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
             rows[i].foodGroup, rows[i].foodImage);
         }
@@ -597,10 +597,10 @@ function flipEmoji() {
       $('.emoji').html('(•◡•) /');
       break;
     case 3:
-      $('.emoji').html('(ﾉ◕ヮ◕)ﾉ');
+      $('.emoji').html('(ﾉ◕◡◕)ﾉ');
       break;
     case 4:
-      $('.emoji').html("(ʘᗩʘ')");
+      $('.emoji').html("(ʘ╭╮ʘ')");
       break;
     case 5:
       $('.emoji').html('ʕ•ᴥ•ʔ');
