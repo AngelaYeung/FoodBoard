@@ -29,8 +29,8 @@ $(document).ready(() => {
  *************************************************************************/
   socket.on('delete return', (itemID) => {
     itemDeleted(itemID); //deletes the item
-    $(`#card${id}`).attr('disabled', 'true');
-    $(`#${id}`).attr('disabled', 'disabled');
+    $(`#card${itemID}`).attr('disabled', 'true');
+    $(`#${itemID}`).attr('disabled', 'disabled');
   });
 
   /*************************************************************************
