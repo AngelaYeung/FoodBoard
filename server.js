@@ -149,45 +149,44 @@ app.post('/slack/command/users', (req, res) => {
 
 
 
-/*************************************************************************
- * 
- *         FOOD BOARD ACCOUNT PAGE FEATURE - SERVER SIDE
- * 
- *************************************************************************/
-app.get('/account', (req, res) => {
-  var sessionID = req.sessionID;
+// /*************************************************************************
+//  * 
+//  *         FOOD BOARD ACCOUNT PAGE FEATURE - SERVER SIDE
+//  * 
+//  *************************************************************************/
+// app.get('/account', (req, res) => {
+//   var sessionID = req.sessionID;
 
-  var query = `SELECT * FROM Sessions WHERE sessionID = '${sessionID}' LIMIT 1`;
-  mysqlconnection.pool.query(query, (error, rows, fields) => {
-    if (error) {
-      console.log(new Date(Date.now()), 'Error grabbing userID from Sessions table: ', error);
-    } else {
+//   var query = `SELECT * FROM Sessions WHERE sessionID = '${sessionID}' LIMIT 1`;
+//   mysqlconnection.pool.query(query, (error, rows, fields) => {
+//     if (error) {
+//       console.log(new Date(Date.now()), 'Error grabbing userID from Sessions table: ', error);
+//     } else {
 
-      if (rows.length) {
-        var userID = rows[0].Users_userID;
-        //Query for user info for current user
-        var userInfo = "SELECT * FROM users WHERE userID = ?";
-        mysqlconnection.pool.query(userInfo, [userID], (error, rows, field) => {
-          if (error) {
-            console.log(new Date(Date.now()), "Error querying for user information for account settings feature.");
-          } else {
-            console.log("Successful query for user information in account settings feature.");
-            var name = rows[0].firstName + " " + rows[0].lastName;
-            var email = rows[0].email;
-            var suiteNum = rows[0].suiteNumber;
+//       if (rows.length) {
+//         var userID = rows[0].Users_userID;
+//         //Query for user info for current user
+//         var userInfo = "SELECT * FROM users WHERE userID = ?";
+//         mysqlconnection.pool.query(userInfo, [userID], (error, rows, field) => {
+//           if (error) {
+//             console.log(new Date(Date.now()), "Error querying for user information for account settings feature.");
+//           } else {
+//             console.log("Successful query for user information in account settings feature.");
+//             var name = rows[0].firstName + " " + rows[0].lastName;
+//             var email = rows[0].email;
+//             var suiteNum = rows[0].suiteNumber;
 
-            res.render('account', {
-              name: name,
-              email: email,
-              suiteNum: suiteNum,
-            });
-          }
-        });
-      }
-    }
-  });
-
-});
+//             res.render('account', {
+//               name: name,
+//               email: email,
+//               suiteNum: suiteNum,
+//             });
+//           }
+//         });
+//       }
+//     }
+//   });
+// });
 
 /*************************************************************************
  * 
