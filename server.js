@@ -713,10 +713,9 @@ io.on('connection', (socket) => {
                     }
                   });
                 } catch (error) {
-
+                  slacklog.log("Prevented server crash when querying into database for 'Delete item1'", error);
+                  console.log(new Date(Date.now()), "Prevented server crash when querying into database for 'Delete item1'", error);
                 }
-                slacklog.log("Prevented server crash when querying into database for 'Delete item1'", error);
-                console.log(new Date(Date.now()), "Prevented server crash when querying into database for 'Delete item1'", error);
               }
             }
           });
