@@ -112,7 +112,7 @@ function itemDeleted(id) {
 };
 
 function deleteRoadBlock(id) {
-  var modalHtml = `<div id="confirmDeleteModal" class="modal fade">
+  var modalHtml = `<div id="confirmDeleteModal" class="modal confirmDeleteModal fade">
 	<div class="modal-dialog modal-confirm">
 		<div class="modal-content">
 			<div class="modal-header">
