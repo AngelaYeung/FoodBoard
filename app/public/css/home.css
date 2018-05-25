@@ -53,7 +53,9 @@
     color: white;
     z-index: 1;
     font-family: 'Source Sans Pro', sans-serif;
-    transform: translate(0%, -154.571%);
+    -webkit-transform: translate(0%, -154.571%);
+        -ms-transform: translate(0%, -154.571%);
+            transform: translate(0%, -154.571%);
   }
   #homepage-body img {
     width: 50%;
@@ -540,4 +542,3 @@ body {
   text-align: center;
   color: red;
 }
-

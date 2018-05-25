@@ -1,89 +1,85 @@
-@media screen and (max-width: 480px) {   
-    .form-control{
-        width: 85%;
-        margin-left: 3em;
-        margin-top: -2.3em;
-      }
-
-      .form-group input {
-          border: 0.5px solid #333131;
-          border-radius: 2px;
-          padding-left: 1%;
-      }
-    
-      .glyphicon{
-        padding-left:0!important;
-      }
-
-      .input-addon .glyphicon {
-        padding-left: 30px;
-        font-size: 25px;
-        color: #4EB266;
-      }
-
-      .account{
-          padding-top: 10%;
-          text-align: center;
-      }
-
-      .logoHead img {
-        width: 12%;
-      }
-
-      .row {
-          padding: 2%;
-      }
-
-      .col-xs-4 {
-          font-weight: bold;
-      }
-      #pw-form {
-          border-top: 2px solid lightgray;
-          border-bottom: 2px solid lightgray;
-      }
-      #pw-form form {
-          padding-top: 5%;
-      }
-
-      #suite-form {
-        border-top: 2px solid lightgray;
-        border-bottom: 2px solid lightgray;
-    }
-    #suite-form form {
-        padding-top: 5%;
-    }
-
+@media screen and (max-width: 480px) {
+  .form-control {
+    width: 85%;
+    margin-left: 3em;
+    margin-top: -2.3em;
+  }
+  .form-group input {
+    border: 0.5px solid #333131;
+    border-radius: 2px;
+    padding-left: 1%;
+  }
+  .glyphicon {
+    padding-left: 0 !important;
+  }
+  .input-addon .glyphicon {
+    padding-left: 30px;
+    font-size: 25px;
+    color: #4EB266;
+  }
+  .account {
+    padding-top: 10%;
+    text-align: center;
+  }
+  .logoHead img {
+    width: 12%;
+  }
+  .row {
+    padding: 2%;
+  }
+  .col-xs-4 {
+    font-weight: bold;
+  }
+  #pw-form {
+    border-top: 2px solid lightgray;
+    border-bottom: 2px solid lightgray;
+  }
+  #pw-form form {
+    padding-top: 5%;
+  }
+  #suite-form {
+    border-top: 2px solid lightgray;
+    border-bottom: 2px solid lightgray;
+  }
+  #suite-form form {
+    padding-top: 5%;
+  }
 }
 
 @media screen and (min-width: 1200px) {
-    .container {
-        width: 480px;
-        margin-top: 18%;
-    }
+  .container {
+    width: 480px;
+    margin-top: 18%;
+  }
 }
 
-    .heading{
-        font-weight: bold;
-    }
+.heading {
+  font-weight: bold;
+}
 
 input:focus {
-    outline: none;
+  outline: none;
 }
 
 .edit-info {
-    border: none;
-    background: #333131;
+  border: none;
+  background: #333131;
 }
 
 .account p {
-    text-align: center;
-    padding-top: 7%;
-    font-family: "Raleway";
-    font-size: 22pt;
-
+  text-align: center;
+  padding-top: 7%;
+  font-family: "Raleway";
+  font-size: 22pt;
 }
 
-  .btn-primary:active:focus, .btn-primary:active:hover,.btn-primary.active, .btn-primary:active, .open>.dropdown-toggle.btn-primary.btn-primary.focus, .btn-primary:focus, .btn-primary:hover {
+.btn-primary:active:focus,
+.btn-primary:active:hover,
+.btn-primary.active,
+.btn-primary:active,
+.open>.dropdown-toggle.btn-primary.btn-primary.focus,
+.btn-primary:focus,
+.btn-primary:hover {
   background: #333131;
 }
 
@@ -100,8 +96,21 @@ input:focus {
 }
 
 /** Change colour of the 'Save Changes' Item*/
-.btn-save-changes.disabled, .btn-save-changes[disabled], .btn-save-changes.disabled:hover, .btn-save-changes[disabled]:hover, .btn-save-changes.disabled:focus, .btn-save-changes[disabled]:focus, .btn-save-changes, .btn-save-changes:active:focus, .btn-save-changes:active:hover,.btn-save-changes.active, .btn-save-changes:active, .open>.dropdown-toggle.btn-save-changes.btn-primary.focus, .btn-save-changes:focus, .btn-save-changes:hover {
-    background-color: #4EB266;
-    border-color: #4EB266;
-}
 
+.btn-save-changes.disabled,
+.btn-save-changes[disabled],
+.btn-save-changes.disabled:hover,
+.btn-save-changes[disabled]:hover,
+.btn-save-changes.disabled:focus,
+.btn-save-changes[disabled]:focus,
+.btn-save-changes,
+.btn-save-changes:active:focus,
+.btn-save-changes:active:hover,
+.btn-save-changes.active,
+.btn-save-changes:active,
+.open>.dropdown-toggle.btn-save-changes.btn-primary.focus,
+.btn-save-changes:focus,
+.btn-save-changes:hover {
+  background-color: #4EB266;
+  border-color: #4EB266;
+}
