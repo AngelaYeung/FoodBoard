@@ -399,22 +399,6 @@ io.on('connection', (socket) => {
   uploader.dir = path.join(__dirname, '/app/images'); // sets the upload directory
   uploader.listen(socket); // listens for image uploads
 
-
-  /**
-   * Logs the number of open sessions to slack.
-   */
-
-  var query = `SELECT * FROM Sessions`;
-  mysqlconnection.pool.query(query, (error, rows, fields) => {
-    if (error) {
-      slacklog.log(`Event: Connection ${query}.`, error);
-      console.log(new Date(Date.now()), 'Connection: ', error);
-    } else {
-      slacklog.log('Number of active sessions', rows.length);
-    }
-  });
-
-
   /*************************************************************************
    * 
    *         FOOD BOARD LOAD FEATURE - SERVER SIDE
@@ -662,9 +646,8 @@ io.on('connection', (socket) => {
           mysqlconnection.pool.query(checkRole, [posterUserID], (error, rows, field) => {
             if (error) {
               console.log(new Date(Date.now()), "Error checking for role of user:", error);
-
-            } else {
               slacklog.log(`Event: Delete item. ${checkRole}.`, error);
+            } else {
               console.log("Successfully inquired for poster's information: ", rows);
               role = rows[0].role;
               posterFirstName = rows[0].firstName;

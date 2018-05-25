@@ -3,7 +3,6 @@ var socket;
 
 $(document).ready(function () {
   var sessionID = getSessionID('connect.sid');
-  console.log('sessionID', sessionID);
 
   socket = io();
   const uploader = new SocketIOFileUpload(socket);
@@ -22,7 +21,6 @@ $(document).ready(function () {
    */
   $(window).on('load', () => {
 
-    console.log('Myposts loading.....', sessionID);
     socket.emit('my posts', {
       sessionID: sessionID,
     });
@@ -32,7 +30,7 @@ $(document).ready(function () {
     var role = items.role; // their role as administrator or user
     var userID = items.userID; // whos logged in
     var rows = items.rows;
-    console.log("MYPOSTS JAVASCRIPT EVENT: items: ", items);
+
     for (var i = 0; i < rows.length; i++) {
       createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
         rows[i].foodGroup, rows[i].foodImage);
@@ -178,9 +176,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
 
 function formatDate(dateTime) {
   var expiryDate = new Date(dateTime);
-  console.log('Expiry date', expiryDate);
   var today = new Date(Date.now());
-  console.log('today', today);
   var formatedDate = moment(expiryDate).fromNow();
   return formatedDate;
 };
@@ -194,7 +190,6 @@ function validateDate(dateInput) {
 
   var input = new Date(dateInput).getTime(); //user input time converted to milliseconds
   var currentTime = Date.now(); //current time in milliseconds
-  console.log('input > currentTime:', (input > currentTime));
   return (input > currentTime);
 };
 

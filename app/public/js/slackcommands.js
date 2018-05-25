@@ -25,7 +25,6 @@ function getItems(req, res) {
         channel: slackReqObj.channel_id,
         text: 'Sorry but the boards empty :white_frowning_face:',
       }
-      console.log('Slack Commands:', response);
 
       return res.json(response);
     } else {
@@ -34,7 +33,6 @@ function getItems(req, res) {
         channel: slackReqObj.channel_id,
         text: `\`\`\`${JSON.stringify(rows, undefined, 3)}\`\`\``,
       }
-      console.log('Slack Commands:', response);
 
       return res.json(response);
     }
@@ -62,7 +60,6 @@ function getSessions(req, res) {
         channel: slackReqObj.channel_id,
         text: 'Currently there are no active sessions :white_frowning_face:',
       }
-      console.log('Slack Commands:', response);
 
       return res.json(response);
     } else {
@@ -71,7 +68,6 @@ function getSessions(req, res) {
         channel: slackReqObj.channel_id,
         text: `\`\`\`${JSON.stringify(rows, undefined, 3)}\`\`\``,
       }
-      console.log('Slack Commands:', response);
 
       return res.json(response);
     }
@@ -95,7 +91,6 @@ function getUsers(req, res) {
         channel: slackReqObj.channel_id,
         text: 'Currently there are no users registered :white_frowning_face:',
       }
-      console.log('Slack Commands:', response);
 
       return res.json(response);
     } else {
@@ -104,7 +99,6 @@ function getUsers(req, res) {
         channel: slackReqObj.channel_id,
         text: `\`\`\`${JSON.stringify(rows, undefined, 3)}\`\`\``,
       }
-      console.log('Slack Commands:', response);
 
       return res.json(response);
     }
