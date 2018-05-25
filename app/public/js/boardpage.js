@@ -205,7 +205,8 @@ $(document).ready(function () {
    * from the data base. 
    */
   $(window).on('load', () => {
-    socket.emit('page loaded', {
+  console.log("Page is loaded.");  
+  socket.emit('page loaded', {
       sessionID: getSessionID('connect.sid'),
     });
   });
