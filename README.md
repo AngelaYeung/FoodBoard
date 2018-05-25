@@ -23,6 +23,8 @@ This project was created from April 23 2018 - May 25 2018 for the COMP2910 cours
 - [ ] image uploaded from certain phones are rotated
 - [ ] certain .png types cannot be uploaded in the card form
 - [ ] Some features do not work properly cross-platform or when in incognito mode.
+- [ ] We do not handle different device resolutions and landscape mode for mobile. 
+
 
 
 <a id="challenges"></a>
