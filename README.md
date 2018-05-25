@@ -6,7 +6,7 @@ This project was created from April 23 2018 - May 25 2018 for the COMP2910 cours
 
 **Link to our webpage**: [FoodBoard](http://foodboard.ca)
 
-**Completion: 95% for MVP || 70% for project vision** 
+**Completion: 90% for MVP || 70% for project vision** 
 
 
 ## Table of Contents
@@ -24,7 +24,8 @@ This project was created from April 23 2018 - May 25 2018 for the COMP2910 cours
 - [ ] certain .png types cannot be uploaded in the card form
 - [ ] Some features do not work properly cross-platform or when in incognito mode.
 - [ ] We do not handle different device resolutions and landscape mode for mobile. 
-
+- [ ] Items cannot be posted on Firefox because the DateTime-local input is not supported
+- [ ] Sometimes the load function doesn't load the items onto the food board. 
 
 
 <a id="challenges"></a>
@@ -43,6 +44,11 @@ If you receive a "socketio-upload not found error" then:
 ```
 npm install socketio-upload
 ```
+
+This project uses a mysql database. 
+
+Import the databasenorelationship.sql for the database. 
+
 <a id="usage"></a>
 ## Usage
 ```
