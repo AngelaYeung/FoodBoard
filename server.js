@@ -689,45 +689,49 @@ io.on('connection', (socket) => {
                   console.log(new Date(Date.now()), "Error querying from FoodItem Table: ", error);
 
                 } else {
-                  console.log("Successfully obtained food item info from FoodItem Table");
-                  foodName = rows[0].foodName;
-                  foodDescription = rows[0].foodDescription;
-                  foodExpiryTime = rows[0].foodExpiryTime;
-                  foodImage = rows[0].foodImage;
-                  claimerUserID = rows[0].Users_claimerUserID;
+                  try {
+                    console.log("Successfully obtained food item info from FoodItem Table");
+                    foodName = rows[0].foodName;
+                    foodDescription = rows[0].foodDescription;
+                    foodExpiryTime = rows[0].foodExpiryTime;
+                    foodImage = rows[0].foodImage;
+                    claimerUserID = rows[0].Users_claimerUserID;
 
-                  // item can now be deleted from fooditem table, we have all relevant information
-                  deleteFoodItem(itemID);
+                    // item can now be deleted from fooditem table, we have all relevant information
+                    deleteFoodItem(itemID);
 
-                  if (!claimerUserID) {
-                    console.log("TEST DELETE: claimerUSERID doesnt exist!");
-                    //posted food item has not been claimed by anyone, no email necessary
-                    io.emit('delete return', (itemID));
+                    if (!claimerUserID) {
+                      console.log("TEST DELETE: claimerUSERID doesnt exist!");
+                      //posted food item has not been claimed by anyone, no email necessary
+                      io.emit('delete return', (itemID));
 
-                  } else {
+                    } else {
 
-                    // posted food item has been claimed
-                    // query for claimer's information so we can send an automated email
-                    var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
-                    mysqlconnection.pool.query(claimerQuery, [claimerUserID], (error, rows, field) => {
-                      if (error) {
-                        slacklog.log(`Event: Delete item. ${claimerQuery}.`, error);
-                        console.log(new Date(Date.now()), "Error checking for role of user:", error);
-                      } else {
-                        console.log("Successfully inquired for claimer's information.")
-                        claimerEmail = rows[0].email;
-                        claimerFirstName = rows[0].firstName;
-                        claimerSuiteNumber = rows[0].suiteNumber;
+                      // posted food item has been claimed
+                      // query for claimer's information so we can send an automated email
+                      var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
+                      mysqlconnection.pool.query(claimerQuery, [claimerUserID], (error, rows, field) => {
+                        if (error) {
+                          slacklog.log(`Event: Delete item. ${claimerQuery}.`, error);
+                          console.log(new Date(Date.now()), "Error checking for role of user:", error);
+                        } else {
+                          console.log("Successfully inquired for claimer's information.")
+                          claimerEmail = rows[0].email;
+                          claimerFirstName = rows[0].firstName;
+                          claimerSuiteNumber = rows[0].suiteNumber;
 
-                        // sends an email to the claimer of the post 
-                        sendDeleteEmailToClaimer(claimerEmail, claimerFirstName,
-                          foodName, foodDescription, foodExpiryTime, foodImage,
-                          posterFirstName, posterSuiteNumber);
+                          // sends an email to the claimer of the post 
+                          sendDeleteEmailToClaimer(claimerEmail, claimerFirstName,
+                            foodName, foodDescription, foodExpiryTime, foodImage,
+                            posterFirstName, posterSuiteNumber);
 
-                        io.emit('delete return', (itemID));
-                      }
+                          io.emit('delete return', (itemID));
+                        }
 
-                    });
+                      });
+                    }
+                  } catch (error) {
+                    console.log("Deleted too fast.", error);;
                   }
                 }
               });
