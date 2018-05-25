@@ -6,7 +6,8 @@ This project was created from April 23 2018 - May 25 2018 for the COMP2910 cours
 
 **Link to our webpage**: [FoodBoard](http://foodboard.ca)
 
-**Completion: 95%**
+**Completion: 98% for MVP || 70% for project vision** 
+
 
 ## Table of Contents
 * [Known bugs](#known-bugs)
@@ -14,12 +15,15 @@ This project was created from April 23 2018 - May 25 2018 for the COMP2910 cours
 * [Installation](#installation)
 * [Usage](#usage)
 * [Contact Us](#Contact-us)
+* [Extras](#extras)
 
 <a id="known-bugs"></a>
 ## Known bugs
 - [ ] board page is buggy on apple products
-- [ ] image uploaded from iphone cameras are rotated
+- [ ] image uploaded from certain phones are rotated
 - [ ] certain .png types cannot be uploaded in the card form
+- [ ] Some features do not work properly cross-platform or when in incognito mode.
+
 
 <a id="challenges"></a>
 ## Challenges we experienced as a group
@@ -52,4 +56,9 @@ node server.js
 | Robert Ozdoba|A01047477| [rozdoba](https://github.com/rozdoba) | https://www.linkedin.com/in/robertozdoba|
 |Angela Yeung | A00942641| [angelayeung](https://github.com/AngelaYeung) | https://www.linkedin.com/in/angela-sy-yeung/ |
 | Michael Yu | A01041867| [michaelmhyu1013](https://github.com/michaelmhyu1013) | https://www.linkedin.com/in/michael-mh-yu/| 
+
+<a id="extras"></a>
+## Extras
+* [Project Pitch](https://youtu.be/9IqOjB07PRo)
+* [Project Walkthrough[(https://www.youtube.com/watch?v=qvdmC-RovnU&t=42s)
 
