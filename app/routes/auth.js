@@ -60,14 +60,6 @@ var validate = (app, passport) => {
     })(req, res, next);
   });
 
-
-  /*************************************************************************
-   * 
-   *         FOOD BOARD ACCOUNT SETTINGS FEATURE - SERVER SIDE
-   * 
-   * 
-   *************************************************************************/
-
   function isLoggedIn(req, res, next) {
     if (req.isAuthenticated())
       return next();
