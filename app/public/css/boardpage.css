@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway:900');
 @import url('https://fonts.googleapis.com/css?family=Cookie');
-
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -10,7 +9,6 @@ body {
     display: inline-block;
     width: 100%;
   }
-
   /* My Claims and My Posts Title */
   .boardpage-title {
     text-align: center;
@@ -19,41 +17,35 @@ body {
     font-size: 22pt;
     margin-bottom: -3%;
   }
-  
   .boardpage-title p {
     margin: 0;
   }
-
   .cardContainer {
-  background-color: white;
-  width: 90%;
-  margin: 20px auto;
-  -webkit-box-shadow: 2px 3px 20px grey;
-          box-shadow: 2px 3px 20px grey;
-  border-radius: 3px;
+    background-color: white;
+    width: 90%;
+    margin: 20px auto;
+    -webkit-box-shadow: 2px 3px 20px grey;
+    box-shadow: 2px 3px 20px grey;
+    border-radius: 3px;
   }
-
   /* Card-list on my claims and my posts page */
   .list-mobile {
     padding-top: 0% !important;
-    -webkit-transform: translate(0px, -10px); /* Safari */
-        -ms-transform: translate(0px, -10px); /* IE 9 */
-            transform: translate(0px, -10px);
+    -webkit-transform: translate(0px, -10px);
+    /* Safari */
+    -ms-transform: translate(0px, -10px);
+    /* IE 9 */
+    transform: translate(0px, -10px);
   }
-
   #card-list {
     margin: 0 auto;
   }
-
-  .navbar-foodboard > img {
-    padding-top:1.3%;
-    padding-bottom:1%;
+  .navbar-foodboard>img {
+    padding-top: 1.3%;
+    padding-bottom: 1%;
   }
-
   /** Add spacing from navbar to the top of the first card */
-
-
-  .btn-default{
+  .btn-default {
     float: right;
     background-color: #4EB266;
     border-color: #4EB266;
@@ -61,51 +53,44 @@ body {
     margin-top: -0.7%;
   }
   /* Style the 'add item' button */
-  .btn-default:focus{
+  .btn-default:focus {
     color: #4EB266;
     background-color: #4EB266;
     border-color: #4EB266;
-    text-decoration:none;
+    text-decoration: none;
   }
   .btn-default:hover {
-    background-color:#4EB266;
+    background-color: #4EB266;
     border-color: #4EB266;
   }
-
   .btn-default:active {
     color: #4EB266;
     background-color: #4EB266;
     border-color: #4EB266;
-    text-decoration:none;
+    text-decoration: none;
   }
-  
-  .glyphicon{
-    color:white;
-    top: 6px;  
+  .glyphicon {
+    color: white;
+    top: 6px;
   }
-
   /** Position the hamburger icon. */
   .glyphicon-menu-hamburger {
     font-size: 18pt;
     margin-top: -2.5%;
-    }
-  
-    /** Position the add icon. */
-    .glyphicon-plus {
-      font-size:14pt;
-      margin-top: -100%;
-    }
-
-    .additem {
-      display: none;
-    }
-
+  }
+  /** Position the add icon. */
+  .glyphicon-plus {
+    font-size: 14pt;
+    margin-top: -100%;
+  }
+  .additem {
+    display: none;
+  }
   #search-bar-container {
     margin: 0 auto;
     width: 77%;
-    display:none;
+    display: none;
   }
-  
   #search-bar {
     border: 0px;
     border-bottom: 1px solid #7D7D7D;
@@ -114,18 +99,15 @@ body {
     color: #7D7D7D;
     width: 20em;
   }
-  
   #search-bar-btn {
     border: 0;
     width: 25px;
     outline: none;
     background: transparent;
   }
-  
   #search-bar-btn img {
     width: 100%;
   }
-  
   #search-bar-btn-reset {
     border: 0;
     width: 20px;
@@ -135,16 +117,13 @@ body {
     margin-left: -20px;
     display: none;
   }
-  
   #search-bar-btn-reset img {
     width: 100%;
   }
-  
   .emoji {
     font-size: 60pt;
     padding-top: 50%;
   }
-
   .empty-message {
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 18pt;
@@ -153,7 +132,6 @@ body {
     line-height: 1.2em;
     padding-top: 3%;
   }
-
   /** Position modal for deletion road block */
   .confirmDeleteModal {
     margin-top: 65%;
@@ -165,12 +143,12 @@ body {
 *   Styling for desktop.
 *
 **********************************************************/
-@media screen and (min-width: 481px){
+
+@media screen and (min-width: 481px) {
   #board {
     display: inline-block;
     width: 100%;
   }
-
   /* My Claims and My Posts Title */
   .boardpage-title {
     text-align: center;
@@ -178,52 +156,44 @@ body {
     font-family: "Raleway";
     font-size: 30pt;
   }
-  
   .boardpage-title p {
     margin: 0;
   }
-
   .cardContainer {
     background-color: white;
     margin: 15px;
     -webkit-box-shadow: 2px 3px 20px grey;
-            box-shadow: 2px 3px 20px grey;
-    }
-
-    .list-desktop {
-      padding-top: 0% !important;
-    }
-
-    #card-list {
-      width: 400px;
-      padding-top:1%;
-      margin: 0 auto;
-    }
-
-    .additem {
-      position: fixed;
-      right: 5px;
-      bottom: 5px;
-      -webkit-box-shadow: none !important;
-      box-shadow: none !important;
-    }
-  
-    .emoji {
-      font-size: 80pt;
-      padding-top: 15%;
-    }
-  
-    .empty-message {
-      font-family: 'Source Sans Pro', sans-serif;
-      font-size: 20pt;
-      font-style: italic;
-      line-height: 1.2em;
-      padding-top: 3%;
-    }
-
-    .confirmDeleteModal {
-      margin-top: 15%;
-    }
+    box-shadow: 2px 3px 20px grey;
+  }
+  .list-desktop {
+    padding-top: 0% !important;
+  }
+  #card-list {
+    width: 400px;
+    padding-top: 1%;
+    margin: 0 auto;
+  }
+  .additem {
+    position: fixed;
+    right: 5px;
+    bottom: 5px;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+  }
+  .emoji {
+    font-size: 80pt;
+    padding-top: 15%;
+  }
+  .empty-message {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 20pt;
+    font-style: italic;
+    line-height: 1.2em;
+    padding-top: 3%;
+  }
+  .confirmDeleteModal {
+    margin-top: 15%;
+  }
 }
 
 #submit {
@@ -248,21 +218,19 @@ Styling the location and layout of the expandable text for a card.
 .collapsing {
   -webkit-transition-duration: 0.15s !important;
   -o-transition-duration: 0.15s !important;
-     transition-duration: 0.15s !important;
-
-
+  transition-duration: 0.15s !important;
 }
 
 .contentDiv {
   visibility: visible;
 }
 
-
 /** Styling the navbar icons */
 
 .collapse-button img {
   height: 20px;
 }
+
 .food-img {
   height: 300px;
   width: 100%;
@@ -270,41 +238,48 @@ Styling the location and layout of the expandable text for a card.
   padding-bottom: 1.5%;
 }
 
-
 .header-Div {
   height: 60px;
 }
 
 /** Remove outline for buttons on focus. */
-.btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
+
+.btn.active.focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn:active:focus,
+.btn:focus {
   outline: none;
 }
 
 /** Remove background color for '+' (add new item) button. */
-.btn-default:active:focus, .btn-default:active:hover {
-  background-color:inherit;
+
+.btn-default:active:focus,
+.btn-default:active:hover {
+  background-color: inherit;
 }
 
 /** Style for the claim button on individual cards. */
+
 .claim-button {
   width: 100%;
   height: 40px;
   padding: 1%;
   border-color: #4EB266;
-  background: -webkit-gradient(linear, left top, left bottom, from(#4EB266), to(#3F9152) );
-  background: -webkit-linear-gradient(top, #4EB266, #3F9152 );
-  background: -o-linear-gradient(top, #4EB266, #3F9152 );
-  background: linear-gradient(-180deg, #4EB266, #3F9152 );
-  color:white;
+  background: -webkit-gradient(linear, left top, left bottom, from(#4EB266), to(#3F9152));
+  background: -webkit-linear-gradient(top, #4EB266, #3F9152);
+  background: -o-linear-gradient(top, #4EB266, #3F9152);
+  background: linear-gradient(-180deg, #4EB266, #3F9152);
+  color: white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 14pt;
   font-weight: 500;
-  float:right;
-  border:0.8px #333131 solid;
+  float: right;
+  border: 0.8px #333131 solid;
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
-  outline:none;
-
+  outline: none;
 }
 
 .delete-button {
@@ -312,90 +287,99 @@ Styling the location and layout of the expandable text for a card.
   height: 40px;
   padding: 1%;
   border-color: red;
-  background: -webkit-gradient(linear, left top, left bottom, from(rgb(180, 15, 15)), to(darkred) );
-  background: -webkit-linear-gradient(top, rgb(180, 15, 15), darkred );
-  background: -o-linear-gradient(top, rgb(180, 15, 15), darkred );
-  background: linear-gradient(-180deg, rgb(180, 15, 15), darkred );
-  color:white;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgb(180, 15, 15)), to(darkred));
+  background: -webkit-linear-gradient(top, rgb(180, 15, 15), darkred);
+  background: -o-linear-gradient(top, rgb(180, 15, 15), darkred);
+  background: linear-gradient(-180deg, rgb(180, 15, 15), darkred);
+  color: white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 14pt;
   font-weight: 500;
-  float:right;
-  border:0.8px #333131 solid;
+  float: right;
+  border: 0.8px #333131 solid;
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
-  outline:none;
+  outline: none;
 }
 
 /** Remove outline for add glyphicon. */
+
 .glyphicon-plus {
-  outline:none;
+  outline: none;
 }
 
 a#color-change {
-  background-color:transparent !important ;
+  background-color: transparent !important;
 }
 
 .glyphicon-menu-hamburger:active {
-  -webkit-box-shadow:none;
-          box-shadow:none;
-  outline:none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  outline: none;
 }
 
 /** Style the positioning of the Card description */
+
 .row {
-  margin-right:0px !important;
-  margin-left:0px !important;
+  margin-right: 0px !important;
+  margin-left: 0px !important;
 }
+
 .claim-form {
-  width:100%;
-  }
+  width: 100%;
+}
 
 #claims {
   padding: 0%;
 }
-.collapse{
-  padding-left:0%;
-  padding-right:0%;
+
+.collapse {
+  padding-left: 0%;
+  padding-right: 0%;
 }
+
 .collapsing {
-  padding-left:0%;
-  padding-right:0%;
+  padding-left: 0%;
+  padding-right: 0%;
 }
 
 .collapse p {
-  padding-left:15px;
-  padding-right:15px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
+
 .collapsing p {
-  padding-left:15px;
-  padding-right:15px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 /** Style the collapse button for the Card Item */
+
 .glyphicon-option-vertical {
-  color:darkslategrey !important;
-  background:transparent;
+  color: darkslategrey !important;
+  background: transparent;
   border: none;
-  outline:none;
+  outline: none;
   margin-top: 80%;
 }
 
 /** Styles the text for invalid time input **/
+
 .invalid-feedback {
   display: none;
   color: red;
 }
 
 /** Styles the input box for invalid time input **/
+
 .invalid-input {
-    -webkit-box-shadow: 0 0 2px 2px rgb(199, 108, 108);
-    box-shadow: 0 0 2px 2px rgb(199, 108, 108);
+  -webkit-box-shadow: 0 0 2px 2px rgb(199, 108, 108);
+  box-shadow: 0 0 2px 2px rgb(199, 108, 108);
 }
 
-
-
 .status-text {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
   width: fit-content;
   padding: 10%;
   border-radius: 5%;
@@ -410,14 +394,14 @@ a#color-change {
   height: 300px;
 }
 
-.invalid-feedback{
+.invalid-feedback {
   display: none;
 }
 
-  #empty-foodboard {
-    text-align: center;
-    color: #7D7D7D;
-    display: none;
+#empty-foodboard {
+  text-align: center;
+  color: #7D7D7D;
+  display: none;
 }
 
 img {
