@@ -118,7 +118,9 @@ function formatDate(dateTime) {
 };
 
 function itemDeleted(id) {
-  $(`#confirmDeleteModal`).modal('hide');
+  $(`#card${id}`).attr('disabled', 'true');
+  $(`#${id}`).attr('disabled', 'disabled');
+  $(`#confirmDeleteModal${id}`).modal('hide');
   $(`#status${id}`).attr("src", "../../Pictures/garbage-can.png");
   $(`#status${id}`).css("transform", "translate(86%, -145%)");
 
