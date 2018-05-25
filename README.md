@@ -6,7 +6,7 @@ This project was created from April 23 2018 - May 25 2018 for the COMP2910 cours
 
 **Link to our webpage**: [FoodBoard](http://foodboard.ca)
 
-**Completion: 98% for MVP || 70% for project vision** 
+**Completion: 95% for MVP || 70% for project vision** 
 
 
 ## Table of Contents
