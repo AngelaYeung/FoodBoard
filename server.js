@@ -171,7 +171,6 @@ app.get('/account', (req, res) => {
           if (error) {
             console.log(new Date(Date.now()), "Error querying for user information for account settings feature.");
           } else {
-            console.log("Successful query for user information in account settings feature.");
             var name = rows[0].firstName + " " + rows[0].lastName;
             var email = rows[0].email;
             var suiteNum = rows[0].suiteNumber;
@@ -213,7 +212,6 @@ app.post('/changepassword', (req, res) => {
       console.log(new Date(Date.now()), 'Error grabbing userID from Sessions table: ', error);
 
     } else {
-      console.log("Successfully queried for userID.");
       if (rows.length) {
         userID = rows[0].Users_userID;
 
@@ -258,7 +256,6 @@ app.post('/changepassword', (req, res) => {
                   console.log(new Date(Date.now()), "Error occured while trying to change password:", error);
 
                 } else {
-                  console.log("Successfully changed password.");
 
                   res.render('account', {
                     passwordMessage: "Your password has been changed!",
@@ -295,8 +292,7 @@ app.post("/changesuitenumber", (req, res) => {
   let email;
   let oldSuiteNumber;
 
-  console.log("Session ID: ", sessionID);
-  // first check if the user is in a session
+
 
 
   var query = `SELECT * FROM Sessions WHERE sessionID = ? LIMIT 1`;
@@ -343,7 +339,6 @@ app.post("/changesuitenumber", (req, res) => {
                   console.log(new Date(Date.now()), "Error occured while trying to change suiteNumber:", error);
 
                 } else {
-                  console.log("Successfully changed suite number.");
 
                   res.render('account', {
                     suiteMessage: "Your suite number has been changed!",
@@ -429,14 +424,12 @@ io.on('connection', (socket) => {
           // emit the deleted rows to myClaims, myPosts, boardpage
           emitDeletedRows = "SELECT itemID from FoodItem where foodExpiryTime < ?";
           mysqlconnection.pool.query(emitDeletedRows, [new Date(Date.now())], (error, rows, field) => {
-            console.log(rows);
             if (error) {
               slacklog.log(`Event: Delete expired food items. ${emitDeletedRows}.`, error);
               console.log(new Date(Date.now()), "Error occured when attempting to select expired food items: ", error);
             }
             else if (rows.length == 0) {
               console.log("There are no expired food items to delete at this time: ", new Date(Date.now()));
-              console.log(rows.length)
             } else {
               io.emit('delete expired posts', {
                 rows: rows
@@ -451,7 +444,6 @@ io.on('connection', (socket) => {
                   console.log(new Date(Date.now()), "Error occured when attempting to delete expired food items: ", error);
                 } else if (rows.affectedRows == 0) {
                   console.log("There are no expired food items to delete at this time: ", new Date(Date.now()));
-                  console.log(rows.length)
                 } else {
                   console.log("Successful deletion of expired food items.");
                 }
@@ -475,10 +467,8 @@ io.on('connection', (socket) => {
                   console.log(new Date(Date.now()), "Error grabbing food items");
 
                 } else if (rows.length == 0) {
-                  console.log("Database is empty.");
                   socket.emit('empty foodboard');
                 } else {
-                  console.log("Successfully grabbed food items.");
 
                   var sessionID = session.sessionID;
                   /* Sends list of food items to the client to print to browser */
@@ -526,7 +516,6 @@ io.on('connection', (socket) => {
               console.log("This user has no posts to load in 'myposts' page.");
               //TODO generate some kind of user prompt
             } else {
-              console.log("Successfully loading the users posts.");
               socket.emit('load my posts', {
                 rows: rows,
                 userID: userID,
@@ -578,14 +567,12 @@ io.on('connection', (socket) => {
             console.log(error);
           } else {
             // else return the updated table
-            console.log("Successful insertion:");
             itemID = rows.insertId;
           }
         });
 
         /* Once image transfer has complete, tell client to create it's card */
         uploader.once('complete', () => {
-          console.log('File Transfer Completed...');
           slacklog.log('Item being posted: ', {
             sessionID: sessionID,
             id: itemID,
@@ -648,7 +635,6 @@ io.on('connection', (socket) => {
               console.log(new Date(Date.now()), "Error checking for role of user:", error);
               slacklog.log(`Event: Delete item. ${checkRole}.`, error);
             } else {
-              console.log("Successfully inquired for poster's information: ", rows);
               role = rows[0].role;
               posterFirstName = rows[0].firstName;
               posterSuiteNumber = rows[0].suiteNumber;
@@ -670,7 +656,6 @@ io.on('connection', (socket) => {
                       console.log(new Date(Date.now()), "Error querying from FoodItem Table: ", error);
 
                     } else {
-                      console.log("Successfully obtained food item info from FoodItem Table");
                       foodName = rows[0].foodName;
                       foodDescription = rows[0].foodDescription;
                       foodExpiryTime = rows[0].foodExpiryTime;
@@ -681,7 +666,6 @@ io.on('connection', (socket) => {
                       deleteFoodItem(itemID);
 
                       if (!claimerUserID) {
-                        console.log("TEST DELETE: claimerUSERID doesnt exist!");
                         //posted food item has not been claimed by anyone, no email necessary
                         io.emit('delete return', (itemID));
 
@@ -695,7 +679,6 @@ io.on('connection', (socket) => {
                             slacklog.log(`Event: Delete item. ${claimerQuery}.`, error);
                             console.log(new Date(Date.now()), "Error checking for role of user:", error);
                           } else {
-                            console.log("Successfully inquired for claimer's information.")
                             claimerEmail = rows[0].email;
                             claimerFirstName = rows[0].firstName;
                             claimerSuiteNumber = rows[0].suiteNumber;
@@ -760,7 +743,6 @@ io.on('connection', (socket) => {
         } else if (rows.length) {
 
           claimerUserID = rows[0].Users_userID; // ID of the user in the session
-          console.log("CLAIMERUSERID:", claimerUserID);
 
           var setClaimerID = `UPDATE FoodItem SET Users_claimerUserID = ? WHERE itemID = ?`;
           mysqlconnection.pool.query(setClaimerID, [claimerUserID, itemID], (error, rows, field) => {
@@ -771,7 +753,6 @@ io.on('connection', (socket) => {
 
             } else {
               // else return the updated table
-              console.log("Successfully updated claimerID into FoodItem table.");
               console.log("PRINTING THE UPDATED FIELD OF FOODITEM TABLE WITH CLAIMER ID:", rows);
 
               var queryFoodItemTable = "SELECT * FROM FoodItem WHERE itemID = ?";
@@ -783,14 +764,11 @@ io.on('connection', (socket) => {
                     console.log(new Date(Date.now()), "Error querying from FoodItem Table", error);
 
                   } else {
-                    console.log("Successfully obtained Poster's userID from FoodItem Table", rows);
                     posterUserID = rows[0].Users_userID;
                     foodName = rows[0].foodName;
                     foodDescription = rows[0].foodDescription;
                     foodExpiryTime = rows[0].foodExpiryTime;
                     foodImage = rows[0].foodImage;
-                    console.log("THIS IS THE POSTER USER ID:", posterUserID);
-                    console.log("THIS IS THE CLAIMER USER ID:", claimerUserID);
 
                     var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
                     mysqlconnection.pool.query(claimerQuery, [claimerUserID], (error, rows, field) => {
@@ -801,7 +779,6 @@ io.on('connection', (socket) => {
 
                       } else {
                         //else return the users information
-                        console.log("Successfully grabbed user of claimed item. ", rows);
                         claimerFirstName = rows[0].firstName;
                         claimerEmail = rows[0].email;
                         claimerSuiteNumber = rows[0].suiteNumber;
@@ -814,22 +791,13 @@ io.on('connection', (socket) => {
                             console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
 
                           } else {
-                            console.log("Successfully grabbed user of claimed item. ", rows);
                             posterFirstName = rows[0].firstName;
                             posterEmail = rows[0].email;
-
-                            console.log("CLAIMERS FIRST NAME: ", claimerFirstName);
-                            console.log("POSTERS FIRST NAME: ", posterFirstName);
-                            console.log("CLAIMER SUITE NUMBER: ", claimerSuiteNumber);
-                            console.log("CLAIMERUSERID:", claimerUserID);
-                            console.log("POSTER EMAIL", posterEmail);
-                            console.log("CLAIMER EMAIL", claimerEmail);
 
                             sendClaimEmailToPoster(posterEmail, posterFirstName,
                               foodName, foodDescription, foodExpiryTime, foodImage,
                               claimerEmail, claimerFirstName, claimerSuiteNumber);
 
-                            console.log(itemID);
                             io.emit('claim return', (itemID));
                           }
 
@@ -900,7 +868,6 @@ io.on('connection', (socket) => {
 
 
   socket.on('unclaim item', (cardID) => {
-    console.log("Entered Unclaim Item Event");
     let postID = cardID.cardID;
     let sessionID = cardID.sessionID;
     let posterUserID, posterEmail, posterFirstName;
@@ -913,7 +880,6 @@ io.on('connection', (socket) => {
         if (error) {
           console.log(new Date(Date.now()), "Error occurred while inquiring for sessionID", error);
         } else {
-          console.log("User is logged in and can unclaim the fooditem.");
           if (rows.length) {
 
             claimerUserID = rows[0].Users_userID;
@@ -925,7 +891,6 @@ io.on('connection', (socket) => {
                 console.log(new Date(Date.now()), "Error querying for food item information in unclaim event", error);
 
               } else {
-                console.log("Successfully obtained food item information in unclaim event.");
                 foodName = rows[0].foodName;
                 foodDescription = rows[0].foodDescription;
                 foodExpiryTime = rows[0].foodExpiryTime;
@@ -939,7 +904,6 @@ io.on('connection', (socket) => {
                     console.log(new Date(Date.now()), "Error changing claim status of food item", error);
 
                   } else {
-                    console.log("Successfully unclaimed food item.");
 
                     var claimerQuery = "SELECT * FROM users WHERE userID = ? LIMIT 1";
                     mysqlconnection.pool.query(claimerQuery, [claimerUserID], (error, rows, field) => {
@@ -951,7 +915,6 @@ io.on('connection', (socket) => {
                       } else {
                         try {
                           //else return the users information
-                          console.log("Successfully grabbed user of claimed item. ", rows);
                           claimerFirstName = rows[0].firstName;
                           claimerEmail = rows[0].email;
                           claimerSuiteNumber = rows[0].suiteNumber;
@@ -964,16 +927,9 @@ io.on('connection', (socket) => {
                               console.log(new Date(Date.now()), "Error grabbing user of claimed item: ", error);
 
                             } else {
-                              console.log("Successfully grabbed user of claimed item. ", rows);
                               posterFirstName = rows[0].firstName;
                               posterEmail = rows[0].email;
 
-                              console.log("CLAIMERS FIRST NAME: ", claimerFirstName);
-                              console.log("POSTERS FIRST NAME: ", posterFirstName);
-                              console.log("CLAIMER SUITE NUMBER: ", claimerSuiteNumber);
-                              console.log("CLAIMERUSERID:", claimerUserID);
-                              console.log("POSTER EMAIL", posterEmail);
-                              console.log("CLAIMER EMAIL", claimerEmail);
 
                               // Send email to poster that their food item has been unclaimed.
                               sendUnclaimEmailToPoster(posterEmail, posterFirstName, foodName, foodDescription, foodExpiryTime, foodImage, claimerFirstName, claimerSuiteNumber);
