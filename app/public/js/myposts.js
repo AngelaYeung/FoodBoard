@@ -21,6 +21,9 @@ $(document).ready(function () {
    */
   $(window).on('load', () => {
 
+    socket.emit('page loaded', {
+      sessionID: getSessionID('connect.sid'),
+    });
     socket.emit('my posts', {
       sessionID: sessionID,
     });

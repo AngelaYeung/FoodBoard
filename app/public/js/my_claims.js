@@ -7,6 +7,9 @@ $(document).ready(() => {
   var sessionID = getSessionID('connect.sid');
 
   $(window).on('load', () => {
+    socket.emit('page loaded', {
+      sessionID: getSessionID('connect.sid'),
+    });
 
     socket.emit('my claims', {
       sessionID: sessionID,
