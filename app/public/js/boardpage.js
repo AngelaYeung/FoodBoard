@@ -597,10 +597,10 @@ function flipEmoji() {
       $('.emoji').html('(•◡•) /');
       break;
     case 3:
-      $('.emoji').html('(ﾉ◕ヮ◕)ﾉ');
+      $('.emoji').html('(ﾉ◕◡◕)ﾉ');
       break;
     case 4:
-      $('.emoji').html("(ʘᗩʘ')");
+      $('.emoji').html("(ʘ╭╮ʘ')");
       break;
     case 5:
       $('.emoji').html('ʕ•ᴥ•ʔ');
