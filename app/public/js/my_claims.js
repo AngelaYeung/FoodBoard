@@ -28,6 +28,8 @@ $(document).ready(() => {
  * 
  *************************************************************************/
   socket.on('delete return', (itemID) => {
+    $(`#card${id}`).attr('disabled', 'true');
+    $(`#${id}`).attr('disabled', 'disabled');
     itemDeleted(itemID); //deletes the item
   });
 
