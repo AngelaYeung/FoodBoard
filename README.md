@@ -60,5 +60,5 @@ node server.js
 <a id="extras"></a>
 ## Extras
 * [Project Pitch](https://youtu.be/9IqOjB07PRo)
-* [Project Walkthrough[(https://www.youtube.com/watch?v=qvdmC-RovnU&t=42s)
+* [Project Walkthrough](https://www.youtube.com/watch?v=qvdmC-RovnU&t=42s)
 
