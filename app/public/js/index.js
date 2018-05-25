@@ -71,7 +71,6 @@ $(window).on('popstate', function () {
     if ($(".dropdown-menu").length > 0) {
       $('.navbar-fixed-top').css('background-color', "#4EB266");
     } else {
-      console.log('closed');
       $('.navbar-fixed-top').css('background-color', "transparent");
     }
   });

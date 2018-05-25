@@ -16,7 +16,6 @@ $(document).ready(() => {
     var role = item.role;
     var rows = item.rows;
     var claimerID = item.claimerUserID;
-    console.log(item.claimerUserID);
     for (var i = 0; i < rows.length; i++) {
       createCardNoClaim(rows[i].itemID, rows[i].foodName, rows[i].foodDescription, rows[i].foodExpiryTime,
         rows[i].foodGroup, rows[i].foodImage);
@@ -29,6 +28,8 @@ $(document).ready(() => {
  * 
  *************************************************************************/
   socket.on('delete return', (itemID) => {
+    $(`#card${id}`).attr('disabled', 'true');
+    $(`#${id}`).attr('disabled', 'disabled');
     itemDeleted(itemID); //deletes the item
   });
 
@@ -110,9 +111,7 @@ function createCardNoClaim(id, name, description, dateTime, foodGroup, img) {
 };
 function formatDate(dateTime) {
   var expiryDate = new Date(dateTime);
-  console.log('Expiry date', expiryDate);
   var today = new Date(Date.now());
-  console.log('today', today);
   var formatedDate = moment(expiryDate).fromNow();
   return formatedDate;
 };
@@ -134,7 +133,6 @@ function itemDeleted(id) {
 function unclaimItem(cardID) {
   var input = $(`#dateTime${cardID}`).text();
   if (validateDate(input)) {
-    console.log("The cardID is:", cardID);
     let sessionID = getSessionID('connect.sid');
     socket.emit('unclaim item', {
       cardID: cardID,
@@ -164,7 +162,6 @@ function validateDate(dateInput) {
 
   var input = new Date(dateInput).getTime(); //user input time converted to milliseconds
   var currentTime = Date.now(); //current time in milliseconds
-  console.log('input > currentTime:', (input > currentTime));
   return (input > currentTime);
 };
 
